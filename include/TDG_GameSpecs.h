@@ -16,23 +16,23 @@ using namespace std;
 
 typedef struct
 {
-    int winWidth = 0;
-    int winHight = 0;
-    int fpsCap = 0;
-    bool fullscreen = false;
+    int winWidth;
+    int winHight;
+    int fpsCap;
+    bool fullscreen;
 }Options;
 
 typedef struct
 {
-    int playerCharID = 0;
-    int roomID = 0;
+    int playerCharID;
+    int roomID;
 }SavePoint;
 
 typedef struct
 {
-    int id = 0;
-    int posX = -1;
-    int posY = -1;
+    int id;
+    int posX;
+    int posY;
 }Entity;
 
 typedef struct
@@ -43,10 +43,10 @@ typedef struct
     list<Entity> obj;
 
     list<int> tileIDs;
-    int tileRows = 0;
-    int tileColumns = 0;
-    int** tileIDArrangement = NULL;
-    bool** enviromentCollision = NULL;
+    int tileRows;
+    int tileColumns;
+    int** tileIDArrangement;
+    bool** enviromentCollision;
 
 }Room;
 

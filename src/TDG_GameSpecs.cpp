@@ -5,6 +5,22 @@ TDG_GameSpecs::TDG_GameSpecs()
     this->opt = new Options();
     this->room = new Room();
     this->sPoint = new SavePoint();
+
+    this->opt->fpsCap = 0;
+    this->opt->fullscreen = false;
+    this->opt->winHight = 0;
+    this->opt->winWidth = 0;
+
+    this->room->enviromentCollision = NULL;
+    this->room->tileIDArrangement = NULL;
+    this->room->player.id = 0;
+    this->room->player.posX = 0;
+    this->room->player.posY = 0;
+    this->room->tileColumns = 0;
+    this->room->tileRows = 0;
+
+    this->sPoint->playerCharID = 0;
+    this->sPoint->roomID = 0;
 }
 
 TDG_GameSpecs::~TDG_GameSpecs()
@@ -30,12 +46,36 @@ bool TDG_GameSpecs::load()
         if(loadSPoint())
         {
             if(this->sPoint->roomID != 0)
-                loadRoom(this->sPoint->roomID);
+            {
+                if(!loadRoom(this->sPoint->roomID))
+                {
+                    cout << "Error while loading room file!" << endl;
+                    return false;
+                }
+            }
+            //default room
             else
-                loadRoom(1);
+            {
+                if(!loadRoom(1))
+                {
+                    cout << "Error while loading room file!" << endl;
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            cout << "Error while loading save-point file!" << endl;
+            return false;
         }
     }
-    return false;
+    else
+    {
+        cout << "Error while loading option file!" << endl;
+        return false;
+    }
+
+    return true;
 }
 
 bool TDG_GameSpecs::loadRoom(int roomID)
@@ -80,7 +120,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             }
             else if(!entry.compare("size:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                if(!entries.empty() && (entries.size() == 3))
                 {
                     this->room->tileColumns = nextInt(entries);
                     this->room->tileRows = nextInt(entries);
@@ -195,7 +235,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 else
                     this->room->player.id = this->sPoint->playerCharID;
 
-                if(!entries.empty() && (entries.size() == 2))
+                if(!entries.empty() && (entries.size() == 3))
                 {
                     this->room->player.posX = nextInt(entries);
                     this->room->player.posY = nextInt(entries);
