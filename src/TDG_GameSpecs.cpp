@@ -30,12 +30,9 @@ bool TDG_GameSpecs::load()
         if(loadSPoint())
         {
             if(this->sPoint->roomID != 0)
-            {
                 loadRoom(this->sPoint->roomID);
-                return true;
-            }
             else
-                cout << "Error while loading the save point. (invalid room ID)" << endl;
+                loadRoom(1);
         }
     }
     return false;

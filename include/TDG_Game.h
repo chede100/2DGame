@@ -1,6 +1,13 @@
 #ifndef TDG_GAME_H
 #define TDG_GAME_H
 
+#include "TDG_GUI.h"
+#include "TDG_GameSpecs.h"
+#include "TDG_EventHandler.h"
+#include <iostream>
+
+using namespace std;
+
 class TDG_Game
 {
     public:
@@ -14,6 +21,9 @@ class TDG_Game
     protected:
 
     private:
+        TDG_GUI* gui;
+        TDG_GameSpecs* gs;
+        TDG_EventHandler* e;
 
 };
 
