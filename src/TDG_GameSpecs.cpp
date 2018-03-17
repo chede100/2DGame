@@ -108,7 +108,16 @@ bool TDG_GameSpecs::loadRoom(int roomID)
 
             if(!entry.compare("name:"))
             {
-                this->room->roomName = nextString(entries);
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    this->room->roomName = nextString(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << rPath << " at statement -name-!"<< endl;
+                    room.close();
+                    return false;
+                }
             }
             else if(!entry.compare("tileIDs"))
             {
@@ -127,7 +136,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 }
                 else
                 {
-                    cout << "Invalid cout of arguments in " << rPath << " at statement -size-!"<< endl;
+                    cout << "Invalid count of arguments in " << rPath << " at statement -size-!"<< endl;
                     room.close();
                     return false;
                 }
@@ -147,7 +156,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 int** tmp;
                 if((tmp = (int**) malloc(rows*sizeof(int*))) == NULL)
                 {
-                    cout << "Background couldnt be loaded!(1)" << endl;
+                    cout << "Background-Array from file" << rPath << " couldnt be initialized!(1)" << endl;
                     room.close();
                     return false;
                 }
@@ -156,7 +165,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 {
                     if((tmp[k] = (int*) malloc(columns*sizeof(int))) == NULL)
                     {
-                        cout << "Background couldnt be loaded!(2)" << endl;
+                        cout << "Background-Array from file" << rPath << " couldnt be initialized!(2)" << endl;
                         room.close();
                         return false;
                     }
@@ -193,7 +202,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 bool** tmp;
                 if((tmp = (bool**) malloc(rows*sizeof(bool*))) == NULL)
                 {
-                    cout << "Background couldnt be loaded!(1)" << endl;
+                    cout << "Background-Collision-Array from file" << rPath << " couldnt be initialized!(1)" << endl;
                     room.close();
                     return false;
                 }
@@ -202,7 +211,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 {
                     if((tmp[k] = (bool*) malloc(columns*sizeof(bool))) == NULL)
                     {
-                        cout << "Background couldnt be loaded!(2)" << endl;
+                        cout << "Background-Collision-Array from file" << rPath << " couldnt be initialized!(2)" << endl;
                         room.close();
                         return false;
                     }
@@ -230,10 +239,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             else if(!entry.compare("player:"))
             {
                 //default player character
-                if(this->sPoint->playerCharID <= 0)
-                    this->room->player.id = 1;
-                else
-                    this->room->player.id = this->sPoint->playerCharID;
+                this->room->player.id = 1;
 
                 if(!entries.empty() && (entries.size() == 3))
                 {
@@ -242,7 +248,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 }
                 else
                 {
-                    cout << "Invalid cout of arguments in " << rPath << " at statement -player-!"<< endl;
+                    cout << "Invalid count of arguments in " << rPath << " at statement -player-!"<< endl;
                     room.close();
                     return false;
                 }
@@ -297,11 +303,29 @@ bool TDG_GameSpecs::loadSPoint()
 
             if(!entry.compare("playerCharacterID:"))
             {
-                this->sPoint->playerCharID = nextInt(entries);
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    this->sPoint->playerCharID = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << spPath << " at statement -playerCharacterID-!"<< endl;
+                    saveP.close();
+                    return false;
+                }
             }
             else if(!entry.compare("roomID:"))
             {
-                this->sPoint->roomID = nextInt(entries);
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    this->sPoint->roomID = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << spPath << " at statement -roomID-!"<< endl;
+                    saveP.close();
+                    return false;
+                }
             }
         }
         saveP.close();
@@ -329,19 +353,47 @@ bool TDG_GameSpecs::loadOpt()
 
             if(!entry.compare("windowSize:"))
             {
-                this->opt->winWidth = nextInt(entries);
-                this->opt->winHight = nextInt(entries);
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    this->opt->winWidth = nextInt(entries);
+                    this->opt->winHight = nextInt(entries);
+                }
+                //default window size settings
+                else
+                {
+                    this->opt->winWidth = 640;
+                    this->opt->winHight = 480;
+                    cout << "Invalid count of arguments in " << oPath << " at statement -windowSize-!"<< endl;
+                }
             }
             else if(!entry.compare("fullscreen:"))
             {
-                if(nextInt(entries) == 1)
-                    this->opt->fullscreen = true;
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    if(nextInt(entries) == 1)
+                        this->opt->fullscreen = true;
+                    else
+                        this->opt->fullscreen = false;
+                }
+                //default fullscreen setting
                 else
+                {
                     this->opt->fullscreen = false;
+                    cout << "Invalid count of arguments in " << oPath << " at statement -fullscreen-!"<< endl;
+                }
             }
             else if(!entry.compare("fpsCap:"))
             {
-                this->opt->fpsCap = nextInt(entries);
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    this->opt->fpsCap = nextInt(entries);
+                }
+                //default fpsCap setting
+                else
+                {
+                    this->opt->fpsCap = 60;
+                    cout << "Invalid count of arguments in " << oPath << " at statement -fpsCap-!"<< endl;
+                }
             }
         }
         opt.close();
