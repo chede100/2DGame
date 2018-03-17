@@ -412,15 +412,15 @@ bool TDG_GameSpecs::loadOpt()
     return true;
 }
 
-Room* TDG_GameSpecs::getRoomSpecs()
+Room* TDG_GameSpecs::getRoom()
 {
     return this->room;
 }
-Options* TDG_GameSpecs::getOptSpecs()
+Options* TDG_GameSpecs::getOpt()
 {
     return this->opt;
 }
-SavePoint* TDG_GameSpecs::getSPointSpecs()
+SavePoint* TDG_GameSpecs::getSPoint()
 {
     return this->sPoint;
 }

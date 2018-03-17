@@ -22,7 +22,7 @@ class TDG_Game
 
     private:
         TDG_GUI* gui;
-        TDG_GameSpecs* gs;
+        TDG_GameSpecs* specs;
         TDG_EventHandler* e;
 
 };

@@ -58,9 +58,9 @@ class TDG_GameSpecs
 
         bool load();
 
-        Room* getRoomSpecs();
-        Options* getOptSpecs();
-        SavePoint* getSPointSpecs();
+        Room* getRoom();
+        Options* getOpt();
+        SavePoint* getSPoint();
 
     protected:
 

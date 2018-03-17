@@ -7,8 +7,8 @@ TDG_Game::TDG_Game()
 
 TDG_Game::~TDG_Game()
 {
-    if(this->gs != NULL)
-        delete this->gs;
+    if(this->specs != NULL)
+        delete this->specs;
     if(this->gui != NULL)
         delete this->gui;
     if(this->e != NULL)
@@ -17,13 +17,19 @@ TDG_Game::~TDG_Game()
 
 bool TDG_Game::init()
 {
-    this->gs = new TDG_GameSpecs();
-    if(!this->gs->load())
+    this->specs = new TDG_GameSpecs();
+    if(!this->specs->load())
+    {
+        cout << "Couldnt load data from files to build the game!" << endl;
         return false;
+    }
 
     this->gui = new TDG_GUI();
-    if(!this->gui->init(this->gs->getOptSpecs()))
+    if(!this->gui->init(this->specs->getOpt()))
+    {
+        cout << "Couldnt initialize GUI!" << endl;
         return false;
+    }
 
     this->e = new TDG_EventHandler();
     if(this->e == NULL)
