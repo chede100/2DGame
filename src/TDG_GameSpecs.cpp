@@ -29,8 +29,19 @@ TDG_GameSpecs::~TDG_GameSpecs()
     this->room->obj.clear();
     this->room->tileIDs.clear();
 
+    int k;
+    for(k = 0; k < this->room->tileRows; k++)
+    {
+        free(this->room->tileIDArrangement[k]);
+    }
     if(this->room->tileIDArrangement != NULL)
         free(this->room->tileIDArrangement);
+
+    int l;
+    for(l = 0; l < this->room->tileRows; l++)
+    {
+        free(this->room->enviromentCollision[l]);
+    }
     if(this->room->enviromentCollision != NULL)
         free(this->room->enviromentCollision);
 
