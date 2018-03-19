@@ -2,41 +2,61 @@
 
 TDG_Game::TDG_Game()
 {
-
+    this->board = NULL;
+    this->event = NULL;
+    this->gui = NULL;
 }
 
 TDG_Game::~TDG_Game()
 {
-    if(this->specs != NULL)
-        delete this->specs;
     if(this->gui != NULL)
         delete this->gui;
-    if(this->e != NULL)
-        delete this->e;
+    if(this->event != NULL)
+        delete this->event;
+    if(this->board != NULL)
+        delete this->board;
 }
 
 bool TDG_Game::init()
 {
-    this->specs = new TDG_GameSpecs();
-    if(!this->specs->load())
+    //Obj to store temporally all game relevant information
+    TDG_GameSpecs* specs = new TDG_GameSpecs();
+    if(specs == NULL)
+    {
+        cout << "Couldnt create game specification object!" << endl;
+        return false;
+    }
+
+    //get all game relevant information from files
+    if(!specs->load())
     {
         cout << "Couldnt load data from files to build the game!" << endl;
+        delete specs;
         return false;
     }
 
+    //create Window and Renderer
     this->gui = new TDG_GUI();
-    if(!this->gui->init(this->specs->getOpt()))
+    if(!this->gui->init(specs->getOpt()))
     {
         cout << "Couldnt initialize GUI!" << endl;
+        delete specs;
         return false;
     }
 
-    this->e = new TDG_EventHandler();
-    if(this->e == NULL)
+    //create game board (load background, entity animation images etc.)
+    this->board = new TDG_GameBoard();
+    if(!this->board->create(this->gui, specs))
     {
-        cout << "Couldnt initialize EventHandler!" << endl;
+        cout << "Unable to create game board!" << endl;
+        delete specs;
         return false;
     }
+
+    //create EventHandler
+    this->event = new TDG_EventHandler();
+
+    delete specs;
 
     return true;
 }
@@ -48,7 +68,7 @@ bool TDG_Game::start()
 
 void TDG_Game::gameloop()
 {
-    while(!this->e->quit())
+    while(!this->event->quit())
     {
 
     }

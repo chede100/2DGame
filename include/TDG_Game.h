@@ -4,6 +4,7 @@
 #include "TDG_GUI.h"
 #include "TDG_GameSpecs.h"
 #include "TDG_EventHandler.h"
+#include "TDG_GameBoard.h"
 #include <iostream>
 
 using namespace std;
@@ -22,8 +23,9 @@ class TDG_Game
 
     private:
         TDG_GUI* gui;
-        TDG_GameSpecs* specs;
-        TDG_EventHandler* e;
+        TDG_EventHandler* event;
+
+        TDG_GameBoard* board;
 
 };
 

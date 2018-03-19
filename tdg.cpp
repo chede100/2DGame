@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[])
 {
+    std::cout << "hey" << std::endl;
     TDG_Game* game = new TDG_Game();
 
     if(game->init())
