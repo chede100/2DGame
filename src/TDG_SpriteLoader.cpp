@@ -56,7 +56,8 @@ SDL_Texture* TDG_SpriteLoader::getSpriteImage(TDG_GUI* gui, int imageNumber)
     }
     SDL_Rect imageRect = {0, 0, this->imgWidth, this->imgHight};
 
-    if(!SDL_BlitSurface(spriteSheet, &spriteRect, image, &imageRect))
+
+    if(SDL_BlitSurface(spriteSheet, &spriteRect, image, &imageRect) != 0)
     {
         cout << "Could not copy one image from sprite sheet " << this->path << " into a new image!" << endl;
         return NULL;

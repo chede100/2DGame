@@ -364,7 +364,7 @@ bool TDG_GameSpecs::loadOpt()
 
             if(!entry.compare("windowSize:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                if(!entries.empty() && (entries.size() == 3))
                 {
                     this->opt->winWidth = nextInt(entries);
                     this->opt->winHight = nextInt(entries);

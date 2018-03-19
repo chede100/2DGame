@@ -70,6 +70,6 @@ void TDG_Game::gameloop()
 {
     while(!this->event->quit())
     {
-
+        SDL_Delay(100);
     }
 }
