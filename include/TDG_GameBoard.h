@@ -4,6 +4,8 @@
 #include "TDG_Background.h"
 #include "TDG_GUI.h"
 #include "TDG_GameSpecs.h"
+#include "TDG_View.h"
+#include "TDG_Position.h"
 #include <string>
 #include <iostream>
 
@@ -17,12 +19,15 @@ class TDG_GameBoard
 
         bool create(TDG_GUI* gui, TDG_GameSpecs* specs);
 
+        void render();
+
     protected:
 
     private:
         string roomName;
 
         TDG_Background* backg;
+        TDG_View* view;
 
 };
 
