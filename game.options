@@ -1,4 +1,4 @@
-windowSize: 640 480
+windowSize: 1024 640
 fullscreen: 0
 fpsCap: 60
 playerCharacterID: 1

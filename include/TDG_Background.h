@@ -7,6 +7,7 @@
 #include "TDG_GUI.h"
 #include "TDG_SpriteLoader.h"
 #include <iostream>
+#include <SDL.h>
 
 #define TILE_WIDTH 32
 #define TILE_HIGHT 32
@@ -21,9 +22,13 @@ class TDG_Background
 
         bool create(TDG_GUI* gui, Room* room);
 
+        bool renderAtPos(TDG_GUI* gui, int x, int y, int scaleFaktor);
+
     protected:
 
     private:
+        SDL_Texture* getTileImage(int id);
+
         int tileRows, tileColumns;
 
         TDG_StoredTiles* sTiles;

@@ -45,6 +45,15 @@ TDG_GameSpecs::~TDG_GameSpecs()
     if(this->room->enviromentCollision != NULL)
         free(this->room->enviromentCollision);
 
+    int m;
+    for(m = 0; m < this->room->tileRows; m++)
+    {
+        free(this->room->tileRotationDegree[m]);
+    }
+    if(this->room->tileRotationDegree != NULL)
+        free(this->room->tileRotationDegree);
+
+
     delete this->opt;
     delete this->room;
     delete this->sPoint;
@@ -130,7 +139,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     return false;
                 }
             }
-            else if(!entry.compare("tileIDs"))
+            else if(!entry.compare("tileIDs:"))
             {
                 while(!entries.empty())
                 {
@@ -195,6 +204,52 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     {
                         this->room->tileIDArrangement[i][j] = atoi(tileIDs.front().c_str());
                         tileIDs.erase(tileIDs.begin());
+                    }
+                }
+            }
+            else if(!entry.compare("rotation:"))
+            {
+                if(this->room->tileColumns <= 0 || this->room->tileRows <= 0)
+                {
+                    cout << "Error in " << rPath << " size is not valid!(2)" << endl;
+                    room.close();
+                    return false;
+                }
+
+                int columns = this->room->tileColumns;
+                int rows = this->room->tileRows;
+
+                int** tmp;
+                if((tmp = (int**) malloc(rows*sizeof(int*))) == NULL)
+                {
+                    cout << "Rotation degrees of all tiles from file" << rPath << " couldnt be loaded!(1)" << endl;
+                    room.close();
+                    return false;
+                }
+                int k;
+                for(k = 0; k < rows; k++)
+                {
+                    if((tmp[k] = (int*) malloc(columns*sizeof(int))) == NULL)
+                    {
+                        cout << "Rotation degrees of all tiles from file" << rPath << " couldnt be loaded!(2)" << endl;
+                        room.close();
+                        return false;
+                    }
+                }
+                this->room->tileRotationDegree = tmp;
+
+                vector<string> rotDeg;
+
+                int i, j;
+                for(i = 0; i < rows; i++)
+                {
+                    getline(room, line);
+                    rotDeg = split(line, ' ');
+
+                    for(j = 0; j < columns; j++)
+                    {
+                        this->room->tileRotationDegree[i][j] = atoi(rotDeg.front().c_str());
+                        rotDeg.erase(rotDeg.begin());
                     }
                 }
             }

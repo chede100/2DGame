@@ -19,11 +19,13 @@ class TDG_GameBoard
 
         bool create(TDG_GUI* gui, TDG_GameSpecs* specs);
 
-        void render();
+        bool render(TDG_GUI* gui, int scaleFaktor);
 
     protected:
 
     private:
+        bool renderBackground(TDG_GUI* gui, int scaleFaktor);
+
         string roomName;
 
         TDG_Background* backg;

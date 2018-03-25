@@ -2,9 +2,9 @@
 
 TDG_StoredTiles::TDG_StoredTiles(SDL_Texture* img, int tileID)
 {
-    this->image = NULL;
+    this->image = img;
     this->next = NULL;
-    this->tileID = 0;
+    this->tileID = tileID;
 }
 
 TDG_StoredTiles::~TDG_StoredTiles()

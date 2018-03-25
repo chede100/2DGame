@@ -46,6 +46,7 @@ typedef struct
     int tileRows;
     int tileColumns;
     int** tileIDArrangement;
+    int** tileRotationDegree;
     bool** enviromentCollision;
 
 }Room;

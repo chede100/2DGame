@@ -7,6 +7,8 @@
 #include "TDG_GameBoard.h"
 #include <iostream>
 
+#define SCALING_FAKTOR 2
+
 using namespace std;
 
 class TDG_Game

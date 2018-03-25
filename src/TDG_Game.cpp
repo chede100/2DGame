@@ -44,6 +44,8 @@ bool TDG_Game::init()
         return false;
     }
 
+    //SDL_RenderSetLogicalSize(gui->getRenderer(), 640, 480);
+
     //create game board (load background, entity animation images etc.)
     this->board = new TDG_GameBoard();
     if(!this->board->create(this->gui, specs))
@@ -70,6 +72,12 @@ void TDG_Game::gameloop()
 {
     while(!this->event->quit())
     {
+        if(!this->board->render(this->gui, SCALING_FAKTOR))
+        {
+            cout << "Failed on rendering game board!" << endl;
+            break;
+        }
+
         SDL_Delay(100);
     }
 }

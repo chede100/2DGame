@@ -18,12 +18,17 @@ void TDG_View::init(int width, int hight)
     this->hight = hight;
 }
 
-void TDG_View::bindTo(TDG_Position* pos)
+bool TDG_View::bindTo(TDG_Position* pos)
 {
     if(pos == NULL)
+    {
         cout << "TDG_View: tried to bind to unvalid Postion!" << endl;
+        return false;
+    }
     else
         this->pos = pos;
+
+    return true;
 }
 
 int TDG_View::getPosX()
