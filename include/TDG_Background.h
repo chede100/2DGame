@@ -11,6 +11,8 @@
 
 #define TILE_WIDTH 32
 #define TILE_HIGHT 32
+#define TILE_SPRITE_MAX_ROWS 50
+#define TILE_SPRITE_MAX_COLUMNS 50
 
 using namespace std;
 

@@ -2,6 +2,7 @@
 #define TDG_SPRITELOADER_H
 
 #include "TDG_GUI.h"
+#include "TDG_Animation.h"
 #include <string>
 #include <iostream>
 #include <SDL.h>
@@ -12,13 +13,13 @@ using namespace std;
 class TDG_SpriteLoader
 {
     public:
-        TDG_SpriteLoader(string path, int imgWidth, int imgHight);
+        TDG_SpriteLoader();
         virtual ~TDG_SpriteLoader();
 
-        SDL_Texture* getSpriteImage(TDG_GUI* gui, int imageNumber);
+        bool loadSprite(string path, int imgWidth, int imgHight, int spriteRows, int spriteColumns);
 
-        void setSpriteMaxRows(int rows);
-        void setSpriteMaxColumns(int columns);
+        SDL_Texture* getImage(TDG_GUI* gui, int row, int column);
+        TDG_Animation* getAnimation(TDG_GUI* gui, int row, int numberOfImages);
 
     protected:
 
@@ -27,9 +28,9 @@ class TDG_SpriteLoader
         int imgWidth, imgHight;
 
         //Maximum number of images in a row and column of the sprite sheet
-        int maxRows, maxColumns;
+        int spriteRows, spriteColumns;
 
-        SDL_Texture* sprite;
+        SDL_Surface* sprite;
 };
 
 #endif // TDG_SPRITELOADER_H

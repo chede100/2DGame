@@ -50,11 +50,23 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     this->tileRows = room->tileRows;
     this->tileColumns = room->tileColumns;
 
+    //********************************************************************************************************/
     //Load needed images from sprite and save them in the TDG_StoredTiles list
-    TDG_SpriteLoader* loader = new TDG_SpriteLoader("./data/img/room/room.png", 32, 32);
 
+    TDG_SpriteLoader* loader = new TDG_SpriteLoader();
+    loader->loadSprite("./data/img/room/room.png", 32, 32, TILE_SPRITE_MAX_ROWS, TILE_SPRITE_MAX_COLUMNS);
+
+    //Get the tile id. The sprite is numbered from 1 to TILE_SPRITE_MAX_COLUMN for all rows with size TILE_SPRITE_MAX_ROWS.
     int id =  room->tileIDs.front();
-    SDL_Texture* newImage = loader->getSpriteImage(gui, id);
+    if(id > TILE_SPRITE_MAX_ROWS*TILE_SPRITE_MAX_COLUMNS)
+    {
+        cout << "Invalid tile sprite id. ID overflows the size of the sprite. ID: " << id << endl;
+        delete loader;
+        return false;
+    }
+
+    //Adjust the tile ID to the location of the image on the sprite sheet (row, column)
+    SDL_Texture* newImage = loader->getImage(gui, (int) id/TILE_SPRITE_MAX_COLUMNS + 1 , (int) id%TILE_SPRITE_MAX_COLUMNS);
     if(newImage == NULL)
     {
         cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
@@ -65,11 +77,19 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
 
     this->sTiles = new TDG_StoredTiles(newImage, id);
 
+    //continuously load all tiles from sprite sheet
     TDG_StoredTiles* sTiles = this->sTiles;
     while(!room->tileIDs.empty())
     {
         id =  room->tileIDs.front();
-        SDL_Texture* newImage = loader->getSpriteImage(gui, id);
+        if(id > TILE_SPRITE_MAX_ROWS*TILE_SPRITE_MAX_COLUMNS)
+        {
+            cout << "Invalid tile sprite id. ID overflows the size of the sprite. ID: " << id << endl;
+            delete loader;
+            return false;
+        }
+
+        newImage = loader->getImage(gui, (int) id/TILE_SPRITE_MAX_COLUMNS + 1 , (int) id%TILE_SPRITE_MAX_COLUMNS);
         if(newImage == NULL)
         {
             cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
@@ -85,8 +105,9 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
 
     delete loader;
 
-
+    //**************************************************************************************************************/
     //create tile array (contains all information about the background)
+
     TDG_Tile*** tmp;
     if((tmp = (TDG_Tile***) malloc(this->tileRows*sizeof(TDG_Tile**))) == NULL)
     {

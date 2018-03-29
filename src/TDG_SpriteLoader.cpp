@@ -1,53 +1,64 @@
 #include "TDG_SpriteLoader.h"
 
-TDG_SpriteLoader::TDG_SpriteLoader(string path, int imgWidth, int imgHight)
+TDG_SpriteLoader::TDG_SpriteLoader()
 {
-    this->path = path;
-    this->imgWidth = imgWidth;
-    this->imgHight = imgHight;
-    this->maxRows = 100;
-    this->maxColumns = 100;
+    this->spriteRows = 0;
+    this->spriteColumns = 0;
+    this->imgWidth = 0;
+    this->imgHight = 0;
     this->sprite = NULL;
 }
 
 TDG_SpriteLoader::~TDG_SpriteLoader()
 {
     if(this->sprite != NULL)
-        SDL_DestroyTexture(this->sprite);
+        SDL_FreeSurface(this->sprite);
 }
 
-SDL_Texture* TDG_SpriteLoader::getSpriteImage(TDG_GUI* gui, int imageNumber)
+bool TDG_SpriteLoader::loadSprite(string path, int imgWidth, int imgHight, int spriteRows, int spriteColumns)
 {
-    if(imageNumber <= 0)
+    this->path = path;
+    this->imgWidth = imgWidth;
+    this->imgHight = imgHight;
+    this->spriteRows = spriteRows;
+    this->spriteColumns = spriteColumns;
+
+    if((this->spriteRows <= 0) || (this->spriteColumns <= 0))
     {
-        cout << "Couldnt load image " << imageNumber << " from "<< this->path << endl;
-        cout << "Image number 0 is not valid (image id must be greater 0)!" << endl;
-        return NULL;
+        cout << "Number of columns or rows from sprite " << this->path << " is <= 0. Not valid!" << endl;
+        return false;
     }
-
-    imageNumber--;
-
-    if(this->maxColumns == 0)
-    {
-        cout << "Max column size of sprite " << this->path << " is 0. Not valid!" << endl;
-        return NULL;
-    }
-
-    double row = imageNumber/this->maxColumns;
-    int imageRow = row;
-
-    int imageColumn = imageNumber%(this->maxColumns-1);
 
     //load sprite sheet
-    SDL_Surface* spriteSheet = IMG_Load(this->path.c_str());
-    if(spriteSheet == NULL)
+    this->sprite = IMG_Load(path.c_str());
+    if(this->sprite == NULL)
     {
-        cout << "Couldnt load sprite sheet " << this->path << "!" << endl;
+        cout << "Couldnt load sprite sheet " << path << "!" << endl;
+        return false;
+    }
+
+    return true;
+}
+
+SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
+{
+    if((row <= 0) || (column <= 0))
+    {
+        cout << "Couldnt load image at position row: " << row << " column: " << column << " from "<< this->path << endl;
+        cout << "Position is not valid (sprite sheet starts with row and column 1))!" << endl;
         return NULL;
     }
-    SDL_Rect spriteRect = {imageColumn*this->imgWidth, imageRow*this->imgHight, this->imgWidth, this->imgHight};
+    if((this->spriteRows < row) || (this->spriteColumns < column))
+    {
+        cout << "Couldnt load image at position row: " << row << " column: " << column << " from "<< this->path << endl;
+        cout << "Position of image is outside of the sprite sheets size!" << endl;
+        return NULL;
+    }
 
-    //create new image and copy one image of the sprite sheet into it
+    row--;
+    column--;
+
+    //create new image
     SDL_Surface* image = SDL_CreateRGBSurface(0, this->imgWidth, this->imgHight, 32, 0, 0, 0, 0);
     if(image == NULL)
     {
@@ -56,15 +67,15 @@ SDL_Texture* TDG_SpriteLoader::getSpriteImage(TDG_GUI* gui, int imageNumber)
     }
     SDL_Rect imageRect = {0, 0, this->imgWidth, this->imgHight};
 
-
-    if(SDL_BlitSurface(spriteSheet, &spriteRect, image, &imageRect) != 0)
+    //copy one image from sprite sheet into the new image
+    SDL_Rect spriteRect = {column*this->imgWidth, row*this->imgHight, this->imgWidth, this->imgHight};
+    if(SDL_BlitSurface(this->sprite, &spriteRect, image, &imageRect) != 0)
     {
         cout << "Could not copy one image from sprite sheet " << this->path << " into a new image!" << endl;
         return NULL;
     }
 
-    SDL_FreeSurface(spriteSheet);
-
+    //create Texture based on the new image
     SDL_Texture* newImage = SDL_CreateTextureFromSurface(gui->getRenderer(), image);
     if(newImage == NULL)
     {
@@ -75,11 +86,7 @@ SDL_Texture* TDG_SpriteLoader::getSpriteImage(TDG_GUI* gui, int imageNumber)
     return newImage;
 }
 
-void TDG_SpriteLoader::setSpriteMaxRows(int rows)
+TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, int numberOfImages)
 {
-    this->maxRows = rows;
-}
-void TDG_SpriteLoader::setSpriteMaxColumns(int columns)
-{
-    this->maxColumns = columns;
+    return NULL;
 }
