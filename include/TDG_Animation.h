@@ -2,6 +2,7 @@
 #define TDG_ANIMATION_H
 
 #include "TDG_ImageList.h"
+#include <SDL.h>
 
 typedef enum
 {
@@ -16,6 +17,13 @@ class TDG_Animation
     public:
         TDG_Animation();
         virtual ~TDG_Animation();
+
+        void addImg(SDL_Texture* img);
+
+        void setTyp(AnimationTyp typ);
+
+        TDG_ImageList* getFirstImg();
+        AnimationTyp getTyp();
 
     protected:
 
