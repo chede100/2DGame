@@ -9,11 +9,6 @@
 #include <iostream>
 #include <SDL.h>
 
-#define TILE_WIDTH 32
-#define TILE_HIGHT 32
-#define TILE_SPRITE_MAX_ROWS 50
-#define TILE_SPRITE_MAX_COLUMNS 50
-
 using namespace std;
 
 class TDG_Background
@@ -32,6 +27,7 @@ class TDG_Background
         SDL_Texture* getTileImage(int id);
 
         int tileRows, tileColumns;
+        int tileWidth, tileHight;
 
         TDG_StoredTiles* sTiles;
 

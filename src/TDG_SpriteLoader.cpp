@@ -13,15 +13,20 @@ TDG_SpriteLoader::~TDG_SpriteLoader()
 {
     if(this->sprite != NULL)
         SDL_FreeSurface(this->sprite);
+
+    this->imgPerRow.clear();
 }
 
-bool TDG_SpriteLoader::loadSprite(string path, int imgWidth, int imgHight, int spriteRows, int spriteColumns)
+bool TDG_SpriteLoader::loadSprite(string pathToFolder, string spriteName)
 {
-    this->path = path;
-    this->imgWidth = imgWidth;
-    this->imgHight = imgHight;
-    this->spriteRows = spriteRows;
-    this->spriteColumns = spriteColumns;
+    this->path = pathToFolder + spriteName + ".png";
+
+    string iPath = pathToFolder + spriteName + ".info";
+    if(!loadSpriteInfo(iPath))
+    {
+        cout << "Unable to load information file for room sprite sheet!" << endl;
+        return false;
+    }
 
     if((this->spriteRows <= 0) || (this->spriteColumns <= 0))
     {
@@ -29,11 +34,17 @@ bool TDG_SpriteLoader::loadSprite(string path, int imgWidth, int imgHight, int s
         return false;
     }
 
+    if((this->imgWidth <= 0) || (this->imgHight <= 0))
+    {
+        cout << "Size of images from sprite sheet " << this->path << " is <= 0. Not valid!" << endl;
+        return false;
+    }
+
     //load sprite sheet
-    this->sprite = IMG_Load(path.c_str());
+    this->sprite = IMG_Load(this->path.c_str());
     if(this->sprite == NULL)
     {
-        cout << "Couldnt load sprite sheet " << path << "!" << endl;
+        cout << "Couldnt load sprite sheet " << this->path << "!" << endl;
         return false;
     }
 
@@ -55,9 +66,6 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
         return NULL;
     }
 
-    row--;
-    column--;
-
     //create new image
     SDL_Surface* image = SDL_CreateRGBSurface(0, this->imgWidth, this->imgHight, 32, 0, 0, 0, 0);
     if(image == NULL)
@@ -68,6 +76,8 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     SDL_Rect imageRect = {0, 0, this->imgWidth, this->imgHight};
 
     //copy one image from sprite sheet into the new image
+    row--;
+    column--;
     SDL_Rect spriteRect = {column*this->imgWidth, row*this->imgHight, this->imgWidth, this->imgHight};
     if(SDL_BlitSurface(this->sprite, &spriteRect, image, &imageRect) != 0)
     {
@@ -86,7 +96,102 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     return newImage;
 }
 
-TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, int numberOfImages)
+TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row)
 {
+
+
     return NULL;
+}
+
+bool TDG_SpriteLoader::loadSpriteInfo(string path)
+{
+    ifstream sprite;
+    sprite.open(path.c_str(), ios::out);
+    if(!sprite.is_open())
+    {
+        cout << "Path " << path << " to Sprite information file is unvalid!" << endl;
+        return false;
+    }
+    else
+    {
+        string line;
+        while(getline(sprite, line))
+        {
+            vector<string> entries = split(line, ' ');
+            string entry = entries.front();
+
+            if(!entry.compare("imgSize:"))
+            {
+                if(!entries.empty() && (entries.size() == 3))
+                {
+                    this->imgWidth = nextInt(entries);
+                    this->imgHight = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -imgSize-!"<< endl;
+                    sprite.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("spriteSize:"))
+            {
+               if(!entries.empty() && (entries.size() == 3))
+                {
+                    this->spriteRows = nextInt(entries);
+                    this->spriteColumns = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -spriteSize-!"<< endl;
+                    sprite.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("imgPerRow:"))
+            {
+                while(!entries.empty())
+                {
+                    this->imgPerRow.push_back(nextInt(entries));
+                }
+            }
+        }
+    }
+    sprite.close();
+
+    return true;
+}
+
+int TDG_SpriteLoader::getSpriteMaxRows()
+{
+    return this->spriteRows;
+}
+
+int TDG_SpriteLoader::getSpriteMaxColumns()
+{
+    return this->spriteColumns;
+}
+
+int TDG_SpriteLoader::getImgWidth()
+{
+    return this->imgWidth;
+}
+
+int TDG_SpriteLoader::getImgHight()
+{
+    return this->imgHight;
+}
+
+int TDG_SpriteLoader::nextInt(vector<string>& entries)
+{
+    entries.erase(entries.begin());
+    return atoi(entries.front().c_str());
+}
+
+vector<string> TDG_SpriteLoader::split(const string& str, char delimiter)
+{
+    istringstream is(str);
+    vector<string> result;
+    for(string cur; getline(is, cur, delimiter); result.push_back(cur));
+    return result;
 }

@@ -6,6 +6,8 @@ TDG_Background::TDG_Background()
     this->tileArrangement = NULL;
     this->tileColumns = 0;
     this->tileRows = 0;
+    this->tileWidth = 0;
+    this->tileHight = 0;
 }
 
 TDG_Background::~TDG_Background()
@@ -53,47 +55,43 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     //********************************************************************************************************/
     //Load needed images from sprite and save them in the TDG_StoredTiles list
 
-    TDG_SpriteLoader* loader = new TDG_SpriteLoader();
-    loader->loadSprite("./data/img/room/room.png", 32, 32, TILE_SPRITE_MAX_ROWS, TILE_SPRITE_MAX_COLUMNS);
-
-    //Get the tile id. The sprite is numbered from 1 to TILE_SPRITE_MAX_COLUMN for all rows with size TILE_SPRITE_MAX_ROWS.
-    int id =  room->tileIDs.front();
-    if(id > TILE_SPRITE_MAX_ROWS*TILE_SPRITE_MAX_COLUMNS)
+    //Load sprite sheet and all important information from a file.
+    TDG_SpriteLoader* sprite = new TDG_SpriteLoader();
+    if(!sprite->loadSprite("./data/img/room/", "room"))
     {
-        cout << "Invalid tile sprite id. ID overflows the size of the sprite. ID: " << id << endl;
-        delete loader;
+        cout << "Unable to load background sprite!" << endl;
         return false;
     }
 
+    this->tileWidth = sprite->getImgWidth();
+    this->tileHight = sprite->getImgHight();
+
+    //Get the tile id.
+    int id = room->tileIDs.front();
+
     //Adjust the tile ID to the location of the image on the sprite sheet (row, column)
-    SDL_Texture* newImage = loader->getImage(gui, (int) id/TILE_SPRITE_MAX_COLUMNS + 1 , (int) id%TILE_SPRITE_MAX_COLUMNS);
+    //Load first image from sprite sheet and init StoredTiles list
+    SDL_Texture* newImage = sprite->getImage(gui, (int) id/sprite->getSpriteMaxColumns() + 1 , (int) id%sprite->getSpriteMaxColumns());
     if(newImage == NULL)
     {
         cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
-        delete loader;
+        delete sprite;
         return false;
     }
     room->tileIDs.erase(room->tileIDs.begin());
-
     this->sTiles = new TDG_StoredTiles(newImage, id);
 
-    //continuously load all tiles from sprite sheet
+    //continuously load all tile images from sprite sheet
     TDG_StoredTiles* sTiles = this->sTiles;
     while(!room->tileIDs.empty())
     {
         id =  room->tileIDs.front();
-        if(id > TILE_SPRITE_MAX_ROWS*TILE_SPRITE_MAX_COLUMNS)
-        {
-            cout << "Invalid tile sprite id. ID overflows the size of the sprite. ID: " << id << endl;
-            delete loader;
-            return false;
-        }
 
-        newImage = loader->getImage(gui, (int) id/TILE_SPRITE_MAX_COLUMNS + 1 , (int) id%TILE_SPRITE_MAX_COLUMNS);
+        newImage = sprite->getImage(gui, (int) id/sprite->getSpriteMaxColumns() + 1 , (int) id%sprite->getSpriteMaxColumns());
         if(newImage == NULL)
         {
             cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
-            delete loader;
+            delete sprite;
             return false;
         }
         room->tileIDs.erase(room->tileIDs.begin());
@@ -103,16 +101,15 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         sTiles = newTileImg;
     }
 
-    delete loader;
+    delete sprite;
 
     //**************************************************************************************************************/
-    //create tile array (contains all information about the background)
+    //create tile array (contains information about the background)
 
     TDG_Tile*** tmp;
     if((tmp = (TDG_Tile***) malloc(this->tileRows*sizeof(TDG_Tile**))) == NULL)
     {
         cout << "Tile arrangement array couldnt be created!" << endl;
-        delete loader;
         return false;
     }
     int k;
@@ -121,7 +118,6 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         if((tmp[k] = (TDG_Tile**) malloc(this->tileColumns*sizeof(TDG_Tile*))) == NULL)
         {
             cout << "Tile arrangement array couldnt be created!" << endl;
-            delete loader;
             return false;
         }
     }
@@ -160,7 +156,7 @@ bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y, int scaleFaktor)
             int rotDegree = this->tileArrangement[r][c]->getRotDegree();
 
             //render tile with scale 1:1
-            SDL_Rect rect = {x + c*(TILE_WIDTH*scaleFaktor), y + r*(TILE_HIGHT*scaleFaktor), TILE_WIDTH*scaleFaktor, TILE_HIGHT*scaleFaktor};
+            SDL_Rect rect = {x + c*(this->tileWidth*scaleFaktor), y + r*(this->tileHight*scaleFaktor), this->tileWidth*scaleFaktor, this->tileHight*scaleFaktor};
             SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, SDL_FLIP_NONE);
         }
     }
