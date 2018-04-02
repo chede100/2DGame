@@ -39,6 +39,7 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int entityID, EntityTyp 
     if(!sprite->loadSprite(folderPath, sName))
     {
         cout << "Unable to load sprite: " << folderPath << sName << endl;
+        delete sprite;
         return false;
     }
 
