@@ -28,6 +28,14 @@ bool TDG_SpriteLoader::loadSprite(string pathToFolder, string spriteName)
         return false;
     }
 
+    int maxRows = this->imgPerRow.size();
+    if(maxRows != this->spriteRows)
+    {
+        cout << maxRows << " " << this->spriteRows << endl;
+        cout << "Incorrectly created list with number of sprite images at every row. Sprite: " << this->path << endl;
+        return false;
+    }
+
     if((this->spriteRows <= 0) || (this->spriteColumns <= 0))
     {
         cout << "Number of columns or rows from sprite " << this->path << " is <= 0. Not valid!" << endl;
@@ -96,11 +104,56 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     return newImage;
 }
 
-TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row)
+TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, AnimationTyp typ)
 {
+    int imagesAtRow;
 
+    if(!this->imgPerRow.empty())
+    {
+        if((row <= this->spriteRows))
+        {
+            if(row <= 0)
+            {
+                cout << "Spriteloader could not load animation, because the given row was <= 0. Sprite: " << this->path << " Row: " << row << endl;
+                return NULL;
+            }
 
-    return NULL;
+            list<int>::const_iterator it = this->imgPerRow.begin();
+
+            //get the iterator in list that equals the number of row
+            advance(it, row-1);
+
+            //get the value of the iterator
+            imagesAtRow = *it;
+        }
+        else
+        {
+            cout << "Requested row for animation creation is out of bound. Sprite: " << this->path << " Row: " << row << endl;
+            return NULL;
+        }
+    }
+    else
+    {
+        cout << "Spriteloader couldnt correctly load the number of images at a specific row. Error at sprite: " << this->path << endl;
+        return NULL;
+    }
+
+    TDG_Animation* newAni = new TDG_Animation();
+    newAni->setTyp(typ);
+
+    int i;
+    for(i = 1; i <= imagesAtRow; i++)
+    {
+        SDL_Texture* img = getImage(gui, row, i);
+        if(img == NULL)
+        {
+            cout << "Unable to load image from sprite " << this->path << " Row:" << row << " Column: " << i << endl;
+            return NULL;
+        }
+        newAni->addImg(img);
+    }
+
+    return newAni;
 }
 
 bool TDG_SpriteLoader::loadSpriteInfo(string path)
@@ -122,7 +175,8 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
 
             if(!entry.compare("imgSize:"))
             {
-                if(!entries.empty() && (entries.size() == 3))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 2))
                 {
                     this->imgWidth = nextInt(entries);
                     this->imgHight = nextInt(entries);
@@ -136,7 +190,8 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
             }
             else if(!entry.compare("spriteSize:"))
             {
-               if(!entries.empty() && (entries.size() == 3))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 2))
                 {
                     this->spriteRows = nextInt(entries);
                     this->spriteColumns = nextInt(entries);
@@ -150,6 +205,7 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
             }
             else if(!entry.compare("imgPerRow:"))
             {
+                entries.erase(entries.begin());
                 while(!entries.empty())
                 {
                     this->imgPerRow.push_back(nextInt(entries));
@@ -184,8 +240,9 @@ int TDG_SpriteLoader::getImgHight()
 
 int TDG_SpriteLoader::nextInt(vector<string>& entries)
 {
+    int result = atoi(entries.front().c_str());
     entries.erase(entries.begin());
-    return atoi(entries.front().c_str());
+    return result;
 }
 
 vector<string> TDG_SpriteLoader::split(const string& str, char delimiter)

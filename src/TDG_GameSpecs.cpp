@@ -128,9 +128,10 @@ bool TDG_GameSpecs::loadRoom(int roomID)
 
             if(!entry.compare("name:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
                 {
-                    this->room->roomName = nextString(entries);
+                    nextString(entries, this->room->roomName);
                 }
                 else
                 {
@@ -141,6 +142,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             }
             else if(!entry.compare("tileIDs:"))
             {
+                entries.erase(entries.begin());
                 while(!entries.empty())
                 {
                     int tileID = nextInt(entries);
@@ -149,7 +151,8 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             }
             else if(!entry.compare("size:"))
             {
-                if(!entries.empty() && (entries.size() == 3))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 2))
                 {
                     this->room->tileColumns = nextInt(entries);
                     this->room->tileRows = nextInt(entries);
@@ -307,7 +310,8 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 //default player character
                 this->room->player.id = 1;
 
-                if(!entries.empty() && (entries.size() == 3))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 2))
                 {
                     this->room->player.posX = nextInt(entries);
                     this->room->player.posY = nextInt(entries);
@@ -321,6 +325,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             }
             else if(!entry.compare("npc:"))
             {
+                entries.erase(entries.begin());
                 while(!entries.empty() && (entries.size() >= 3))
                 {
                     int id = nextInt(entries);
@@ -333,6 +338,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             }
             else if(!entry.compare("obj:"))
             {
+                entries.erase(entries.begin());
                 while(!entries.empty() && (entries.size() >= 3))
                 {
                     int id = nextInt(entries);
@@ -369,7 +375,8 @@ bool TDG_GameSpecs::loadSPoint()
 
             if(!entry.compare("playerCharacterID:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
                 {
                     this->sPoint->playerCharID = nextInt(entries);
                 }
@@ -382,7 +389,8 @@ bool TDG_GameSpecs::loadSPoint()
             }
             else if(!entry.compare("roomID:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
                 {
                     this->sPoint->roomID = nextInt(entries);
                 }
@@ -419,7 +427,8 @@ bool TDG_GameSpecs::loadOpt()
 
             if(!entry.compare("windowSize:"))
             {
-                if(!entries.empty() && (entries.size() == 3))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 2))
                 {
                     this->opt->winWidth = nextInt(entries);
                     this->opt->winHight = nextInt(entries);
@@ -434,7 +443,8 @@ bool TDG_GameSpecs::loadOpt()
             }
             else if(!entry.compare("fullscreen:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
                 {
                     if(nextInt(entries) == 1)
                         this->opt->fullscreen = true;
@@ -450,7 +460,8 @@ bool TDG_GameSpecs::loadOpt()
             }
             else if(!entry.compare("fpsCap:"))
             {
-                if(!entries.empty() && (entries.size() == 2))
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
                 {
                     this->opt->fpsCap = nextInt(entries);
                 }
@@ -482,14 +493,15 @@ SavePoint* TDG_GameSpecs::getSPoint()
 
 int TDG_GameSpecs::nextInt(vector<string>& entries)
 {
+    int result = atoi(entries.front().c_str());
     entries.erase(entries.begin());
-    return atoi(entries.front().c_str());
+    return result;
 }
 
-string& TDG_GameSpecs::nextString(vector<string>& entries)
+void TDG_GameSpecs::nextString(vector<string>& entries, string& input)
 {
+    input = entries.front();
     entries.erase(entries.begin());
-    return entries.front();
 }
 
 vector<string> TDG_GameSpecs::split(const string& str, char delimiter)

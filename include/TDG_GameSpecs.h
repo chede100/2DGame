@@ -75,7 +75,7 @@ class TDG_GameSpecs
         Options* opt;
 
         int nextInt(vector<string>& entries);
-        string& nextString(vector<string>& entries);
+        void nextString(vector<string>& entries, string& input);
         vector<string> split(const string& str, char delimiter);
 };
 

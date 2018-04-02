@@ -25,7 +25,7 @@ class TDG_SpriteLoader
         bool loadSprite(string pathToFolder, string spriteName);
 
         SDL_Texture* getImage(TDG_GUI* gui, int row, int column);
-        TDG_Animation* getAnimation(TDG_GUI* gui, int row);
+        TDG_Animation* getAnimation(TDG_GUI* gui, int row, AnimationTyp typ);
 
         int getSpriteMaxRows();
         int getSpriteMaxColumns();
