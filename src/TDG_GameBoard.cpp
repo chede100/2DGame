@@ -4,6 +4,7 @@ TDG_GameBoard::TDG_GameBoard()
 {
     this->backg = NULL;
     this->view = NULL;
+    this->entityGraphics = NULL;
 }
 
 TDG_GameBoard::~TDG_GameBoard()
@@ -12,12 +13,39 @@ TDG_GameBoard::~TDG_GameBoard()
         delete this->backg;
     if(this->view != NULL)
         delete this->view;
+    if(this->entityGraphics != NULL)
+        delete this->entityGraphics;
 }
 
 bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
 {
     this->roomName = specs->getRoom()->roomName;
 
+    //*************************************************************************************
+    //Load and store all necessary entity graphics (animations from Player, NPC, Objects)
+    this->entityGraphics = new TDG_StoredEntityAnimations();
+
+    //Store all npc graphics/animations
+    list<Entity>::const_iterator it, e;
+    for (it = specs->getRoom()->npc.begin(), e = specs->getRoom()->npc.end(); it != e; it++)
+    {
+        if(!this->entityGraphics->isStored(NPC, it->animationID))
+            this->entityGraphics->loadAndAdd(gui, NPC, it->animationID);
+    }
+
+    //Store all object graphics/animations
+    for (it = specs->getRoom()->obj.begin(), e = specs->getRoom()->obj.end(); it != e; it++)
+    {
+        if(!this->entityGraphics->isStored(Object, it->animationID))
+            this->entityGraphics->loadAndAdd(gui, Object, it->animationID);
+    }
+
+    //Store player graphics/animations
+    if(!this->entityGraphics->isStored(Player, specs->getRoom()->player.animationID))
+        this->entityGraphics->loadAndAdd(gui, Player, specs->getRoom()->player.animationID);
+    //*************************************************************************************
+
+    //Create background
     this->backg = new TDG_Background();
     if(!this->backg->create(gui, specs->getRoom()))
     {

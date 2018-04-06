@@ -114,7 +114,7 @@ TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, AnimationTy
         {
             if(row <= 0)
             {
-                cout << "Spriteloader could not load animation, because the given row was <= 0. Sprite: " << this->path << " Row: " << row << endl;
+                cout << "Spriteloader could not load animation, because the given position in the sprite sheet is invalid (<= 0). Sprite: " << this->path << " Row: " << row << endl;
                 return NULL;
             }
 

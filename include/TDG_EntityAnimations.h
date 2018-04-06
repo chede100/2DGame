@@ -4,11 +4,7 @@
 #include "TDG_AnimationList.h"
 #include "TDG_GUI.h"
 #include "TDG_SpriteLoader.h"
-
-typedef enum
-{
-    Player, NPC, Object
-}EntityTyp;
+#include "TDG_Information.h"
 
 class TDG_EntityAnimations
 {
@@ -16,16 +12,18 @@ class TDG_EntityAnimations
         TDG_EntityAnimations();
         virtual ~TDG_EntityAnimations();
 
-        bool loadAnimations(TDG_GUI* gui, int entityID, EntityTyp typ);
+        bool loadAnimations(TDG_GUI* gui, int animationID, EntityTyp typ);
 
         TDG_Animation* getAnimation(AnimationTyp typ);
+        EntityTyp getTyp();
+        int getID();
 
     protected:
 
     private:
         void add(TDG_Animation* ani);
 
-        int entityID;
+        int animationID;
         EntityTyp typ;
 
         TDG_AnimationList* aniL;

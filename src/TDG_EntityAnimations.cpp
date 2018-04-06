@@ -3,7 +3,7 @@
 TDG_EntityAnimations::TDG_EntityAnimations()
 {
     this->aniL = NULL;
-    this->entityID = 0;
+    this->animationID = 0;
 }
 
 TDG_EntityAnimations::~TDG_EntityAnimations()
@@ -19,9 +19,9 @@ TDG_EntityAnimations::~TDG_EntityAnimations()
     }
 }
 
-bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int entityID, EntityTyp typ)
+bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int animationID, EntityTyp typ)
 {
-    this->entityID = entityID;
+    this->animationID = animationID;
     this->typ = typ;
 
     string folderPath;
@@ -32,7 +32,7 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int entityID, EntityTyp 
 
     string sName = "";
     ostringstream ss;
-    ss << entityID;
+    ss << animationID;
     sName += ss.str();
 
     TDG_SpriteLoader* sprite = new TDG_SpriteLoader();
@@ -43,12 +43,17 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int entityID, EntityTyp 
         return false;
     }
 
-    add(sprite->getAnimation(gui, 1, move_east));
-    add(sprite->getAnimation(gui, 2, move_north));
-    add(sprite->getAnimation(gui, 3, move_south));
-    add(sprite->getAnimation(gui, 4, stand_east));
-    add(sprite->getAnimation(gui, 5, stand_north));
-    add(sprite->getAnimation(gui, 6, stand_south));
+    if(typ == Player || typ == NPC)
+    {
+        add(sprite->getAnimation(gui, 1, move_east));
+        add(sprite->getAnimation(gui, 2, move_north));
+        add(sprite->getAnimation(gui, 3, move_south));
+        add(sprite->getAnimation(gui, 4, stand_east));
+        add(sprite->getAnimation(gui, 5, stand_north));
+        add(sprite->getAnimation(gui, 6, stand_south));
+    }
+    else if(typ == Object)
+        add(sprite->getAnimation(gui, 1, stand_south));
 
     delete sprite;
 
@@ -68,6 +73,16 @@ TDG_Animation* TDG_EntityAnimations::getAnimation(AnimationTyp typ)
     }
 
     return NULL;
+}
+
+EntityTyp TDG_EntityAnimations::getTyp()
+{
+    return this->typ;
+}
+
+int TDG_EntityAnimations::getID()
+{
+    return this->animationID;
 }
 
 void TDG_EntityAnimations::add(TDG_Animation* ani)

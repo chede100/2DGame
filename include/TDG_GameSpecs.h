@@ -1,6 +1,7 @@
 #ifndef TDG_GAMESPECS_H
 #define TDG_GAMESPECS_H
 
+#include "TDG_Information.h"
 #include <cstddef>
 #include <list>
 #include <stdlib.h>
@@ -24,7 +25,6 @@ typedef struct
 
 typedef struct
 {
-    int playerCharID;
     int roomID;
 }SavePoint;
 
@@ -33,6 +33,12 @@ typedef struct
     int id;
     int posX;
     int posY;
+
+    string name;
+    int animationID;
+    int width, hight;
+    int speed;
+
 }Entity;
 
 typedef struct
@@ -73,6 +79,8 @@ class TDG_GameSpecs
         Room* room;
         SavePoint* sPoint;
         Options* opt;
+
+        bool loadEntity(EntityTyp typ, Entity* e);
 
         int nextInt(vector<string>& entries);
         void nextString(vector<string>& entries, string& input);

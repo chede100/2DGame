@@ -19,7 +19,6 @@ TDG_GameSpecs::TDG_GameSpecs()
     this->room->tileColumns = 0;
     this->room->tileRows = 0;
 
-    this->sPoint->playerCharID = 0;
     this->sPoint->roomID = 0;
 }
 
@@ -307,14 +306,24 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             }
             else if(!entry.compare("player:"))
             {
-                //default player character
-                this->room->player.id = 1;
+                if(this->room->player.id == 0)
+                {
+                    cout << "Invalid player ID! ID: 0" << endl;
+                    room.close();
+                    return false;
+                }
 
                 entries.erase(entries.begin());
                 if(!entries.empty() && (entries.size() == 2))
                 {
                     this->room->player.posX = nextInt(entries);
                     this->room->player.posY = nextInt(entries);
+
+                    if(!loadEntity(Player, &this->room->player))
+                    {
+                        cout << "Unable to load player specifications! ID: " << this->room->player.id << endl;
+                        return false;
+                    }
                 }
                 else
                 {
@@ -328,12 +337,18 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 entries.erase(entries.begin());
                 while(!entries.empty() && (entries.size() >= 3))
                 {
-                    int id = nextInt(entries);
-                    int x = nextInt(entries);
-                    int y = nextInt(entries);
+                    Entity newNPC;
+                    newNPC.id = nextInt(entries);
+                    newNPC.posX = nextInt(entries);
+                    newNPC.posY = nextInt(entries);
 
-                    Entity newEntity = {id, x, y};
-                    this->room->npc.push_back(newEntity);
+                    if(!loadEntity(NPC, &newNPC))
+                    {
+                        cout << "Unable to load npc specifications! ID: " << newNPC.id << endl;
+                        return false;
+                    }
+
+                    this->room->npc.push_back(newNPC);
                 }
             }
             else if(!entry.compare("obj:"))
@@ -341,12 +356,18 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 entries.erase(entries.begin());
                 while(!entries.empty() && (entries.size() >= 3))
                 {
-                    int id = nextInt(entries);
-                    int x = nextInt(entries);
-                    int y = nextInt(entries);
+                    Entity newObj;
+                    newObj.id = nextInt(entries);
+                    newObj.posX = nextInt(entries);
+                    newObj.posY = nextInt(entries);
 
-                    Entity newEntity = {id, x, y};
-                    this->room->obj.push_back(newEntity);
+                    if(!loadEntity(Object, &newObj))
+                    {
+                        cout << "Unable to load object specifications! ID: " << newObj.id << endl;
+                        return false;
+                    }
+
+                    this->room->obj.push_back(newObj);
                 }
             }
         }
@@ -378,7 +399,7 @@ bool TDG_GameSpecs::loadSPoint()
                 entries.erase(entries.begin());
                 if(!entries.empty() && (entries.size() == 1))
                 {
-                    this->sPoint->playerCharID = nextInt(entries);
+                    this->room->player.id = nextInt(entries);
                 }
                 else
                 {
@@ -489,6 +510,106 @@ Options* TDG_GameSpecs::getOpt()
 SavePoint* TDG_GameSpecs::getSPoint()
 {
     return this->sPoint;
+}
+
+bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
+{
+    e->speed = 0;
+
+    string path;
+    if(typ == NPC || typ == Player)
+        path = "./data/spec/entity/char/";
+    else if(typ == Object)
+        path = "./data/spec/entity/object/";
+
+    ostringstream ss;
+    ss << e->id;
+
+    if(typ == NPC || typ == Player)
+        path += ss.str() + ".character";
+    else if(typ == Object)
+        path += ss.str() + ".object";
+
+    ifstream entity;
+    entity.open(path.c_str(), ios::out);
+    if(!entity.is_open())
+    {
+        if(typ == NPC || typ == Player)
+            cout << "Unable to load a specific character! ID: " << e->id << endl;
+        else if(typ == Object)
+            cout << "Unable to load a specific object! ID: " << e->id << endl;
+        return false;
+    }
+    else
+    {
+        string line;
+        while(getline(entity, line))
+        {
+            vector<string> entries = split(line, ' ');
+            string entry = entries.front();
+
+            if(!entry.compare("name:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
+                {
+                    nextString(entries, e->name);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -name-!"<< endl;
+                    entity.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("animationID:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
+                {
+                    e->animationID = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -animationID-!"<< endl;
+                    entity.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("size:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 2))
+                {
+                    e->width = nextInt(entries);
+                    e->hight = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -size-!"<< endl;
+                    entity.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("speed:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
+                {
+                    e->speed = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -speed-!"<< endl;
+                    entity.close();
+                    return false;
+                }
+            }
+        }
+        entity.close();
+    }
+
+    return true;
 }
 
 int TDG_GameSpecs::nextInt(vector<string>& entries)

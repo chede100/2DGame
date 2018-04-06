@@ -4,17 +4,12 @@
 #include "TDG_GUI.h"
 #include "TDG_Animation.h"
 #include <string>
-#include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
 #include <list>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
 #include <vector>
-
-using namespace std;
 
 class TDG_SpriteLoader
 {

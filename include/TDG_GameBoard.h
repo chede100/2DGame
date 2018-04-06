@@ -6,10 +6,7 @@
 #include "TDG_GameSpecs.h"
 #include "TDG_View.h"
 #include "TDG_Position.h"
-#include <string>
-#include <iostream>
-
-using namespace std;
+#include "TDG_StoredEntityAnimations.h"
 
 class TDG_GameBoard
 {
@@ -30,6 +27,8 @@ class TDG_GameBoard
 
         TDG_Background* backg;
         TDG_View* view;
+
+        TDG_StoredEntityAnimations* entityGraphics;
 
 };
 
