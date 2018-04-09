@@ -19,6 +19,12 @@ TDG_StoredEntityAnimations::~TDG_StoredEntityAnimations()
 
 bool TDG_StoredEntityAnimations::loadAndAdd(TDG_GUI* gui, EntityTyp typ, int animationID)
 {
+    if(this->isStored(typ, animationID))
+    {
+        cout << "Animation " << animationID << " already stored!" << endl;
+        return true;
+    }
+
     //Initial load and add
     if(this->eAniL == NULL)
     {
@@ -39,6 +45,7 @@ bool TDG_StoredEntityAnimations::loadAndAdd(TDG_GUI* gui, EntityTyp typ, int ani
     //If the list was already initialized
     else
     {
+        //Add new entity animation collection at the end of the list
         TDG_EntityAnimationsList* tmp = this->eAniL;
         TDG_EntityAnimationsList* next = this->eAniL->getNext();
 

@@ -3,7 +3,7 @@
 
 typedef enum
 {
-    Player, NPC, Object
+    Character, Object
 }EntityTyp;
 
 #endif // TDG_INFORMATION_H_INCLUDED

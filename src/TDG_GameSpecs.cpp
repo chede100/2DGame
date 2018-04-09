@@ -319,7 +319,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     this->room->player.posX = nextInt(entries);
                     this->room->player.posY = nextInt(entries);
 
-                    if(!loadEntity(Player, &this->room->player))
+                    if(!loadEntity(Character, &this->room->player))
                     {
                         cout << "Unable to load player specifications! ID: " << this->room->player.id << endl;
                         return false;
@@ -342,7 +342,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     newNPC.posX = nextInt(entries);
                     newNPC.posY = nextInt(entries);
 
-                    if(!loadEntity(NPC, &newNPC))
+                    if(!loadEntity(Character, &newNPC))
                     {
                         cout << "Unable to load npc specifications! ID: " << newNPC.id << endl;
                         return false;
@@ -517,15 +517,20 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
     e->speed = 0;
 
     string path;
-    if(typ == NPC || typ == Player)
+    if(typ == Character)
         path = "./data/spec/entity/char/";
     else if(typ == Object)
         path = "./data/spec/entity/object/";
+    else
+    {
+        cout << "Unable to load entity because the entity typ is invalid." << endl;
+        return false;
+    }
 
     ostringstream ss;
     ss << e->id;
 
-    if(typ == NPC || typ == Player)
+    if(typ == Character)
         path += ss.str() + ".character";
     else if(typ == Object)
         path += ss.str() + ".object";
@@ -534,7 +539,7 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
     entity.open(path.c_str(), ios::out);
     if(!entity.is_open())
     {
-        if(typ == NPC || typ == Player)
+        if(typ == Character)
             cout << "Unable to load a specific character! ID: " << e->id << endl;
         else if(typ == Object)
             cout << "Unable to load a specific object! ID: " << e->id << endl;

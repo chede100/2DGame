@@ -25,7 +25,7 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int animationID, EntityT
     this->typ = typ;
 
     string folderPath;
-    if(typ == Player || typ == NPC)
+    if(typ == Character)
         folderPath = "./data/img/entity/char/";
     else if(typ == Object)
         folderPath = "./data/img/entity/object/";
@@ -43,19 +43,27 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int animationID, EntityT
         return false;
     }
 
-    if(typ == Player || typ == NPC)
+    //Load all entity animations from sprite sheet and store them.
+    int i;
+    for(i = 1; i <= sprite->getSpriteMaxRows(); i++)
     {
-        add(sprite->getAnimation(gui, 1, move_east));
-        add(sprite->getAnimation(gui, 2, move_north));
-        add(sprite->getAnimation(gui, 3, move_south));
-        add(sprite->getAnimation(gui, 4, stand_east));
-        add(sprite->getAnimation(gui, 5, stand_north));
-        add(sprite->getAnimation(gui, 6, stand_south));
+        TDG_Animation* newAni = sprite->getAnimation(gui, i);
+        if(newAni == NULL)
+        {
+            cout << "Unable to load animation. Row: " << i << " Sprite sheet: " << folderPath << sName << endl;
+            delete sprite;
+            return false;
+        }
+        else
+            add(newAni);
     }
-    else if(typ == Object)
-        add(sprite->getAnimation(gui, 1, stand_south));
 
     delete sprite;
+
+    if(typ == Character)
+        cout << "Stored character animation with ID: "<< this->animationID << endl;
+    else if(typ == Object)
+        cout << "Stored object animation with ID: " << this->animationID << endl;
 
     return true;
 }

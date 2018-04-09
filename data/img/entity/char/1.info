@@ -1,3 +1,9 @@
 imgSize: 21 25
 spriteSize: 6 6
 imgPerRow: 6 4 4 4 4 3
+1: move_east
+2: move_north
+3: move_south
+4: stand_east
+5: stand_north
+6: stand_south

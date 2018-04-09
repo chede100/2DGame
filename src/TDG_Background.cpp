@@ -81,6 +81,8 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     room->tileIDs.erase(room->tileIDs.begin());
     this->sTiles = new TDG_StoredTiles(newImage, id);
 
+    cout << "Stored tile image with ID: " << id << endl;
+
     //continuously load all tile images from sprite sheet
     TDG_StoredTiles* sTiles = this->sTiles;
     while(!room->tileIDs.empty())
@@ -99,6 +101,8 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         TDG_StoredTiles* newTileImg = new TDG_StoredTiles(newImage, id);
         sTiles->setNext(newTileImg);
         sTiles = newTileImg;
+
+        cout << "Stored tile image with ID: " << id << endl;
     }
 
     delete sprite;

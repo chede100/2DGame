@@ -20,7 +20,7 @@ class TDG_SpriteLoader
         bool loadSprite(string pathToFolder, string spriteName);
 
         SDL_Texture* getImage(TDG_GUI* gui, int row, int column);
-        TDG_Animation* getAnimation(TDG_GUI* gui, int row, AnimationTyp typ);
+        TDG_Animation* getAnimation(TDG_GUI* gui, int row);
 
         int getSpriteMaxRows();
         int getSpriteMaxColumns();
@@ -33,13 +33,18 @@ class TDG_SpriteLoader
     private:
         bool loadSpriteInfo(string path);
 
+        AnimationTyp stringToAnimationTyp(string typ);
+
         vector<string> split(const string& str, char delimiter);
         int nextInt(vector<string>& entries);
+        void nextString(vector<string>& entries, string& input);
 
         string path;
         int imgWidth, imgHight;
         int spriteRows, spriteColumns;
+
         list<int> imgPerRow;
+        list<AnimationTyp> aniAtRow;
 
         SDL_Surface* sprite;
 };

@@ -104,11 +104,12 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     return newImage;
 }
 
-TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, AnimationTyp typ)
+TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row)
 {
     int imagesAtRow;
+    AnimationTyp typ;
 
-    if(!this->imgPerRow.empty())
+    if(!this->imgPerRow.empty() && !this->aniAtRow.empty())
     {
         if((row <= this->spriteRows))
         {
@@ -118,13 +119,21 @@ TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, AnimationTy
                 return NULL;
             }
 
-            list<int>::const_iterator it = this->imgPerRow.begin();
+            //List represents the number of images for each row of the sprite sheet
+            list<int>::const_iterator iar = this->imgPerRow.begin();
 
             //get the iterator in list that equals the number of row
-            advance(it, row-1);
+            advance(iar, row-1);
 
             //get the value of the iterator
-            imagesAtRow = *it;
+            imagesAtRow = *iar;
+
+            //List contains the animation typ which is stored in each row of the sprite sheet
+            list<AnimationTyp>::const_iterator atyp = this->aniAtRow.begin();
+
+            advance(atyp, row-1);
+
+            typ = *atyp;
         }
         else
         {
@@ -134,7 +143,7 @@ TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row, AnimationTy
     }
     else
     {
-        cout << "Spriteloader couldnt correctly load the number of images at a specific row. Error at sprite: " << this->path << endl;
+        cout << "Spriteloader couldnt correctly load the number of images at a specific row or the animation typ. Error at sprite: " << this->path << endl;
         return NULL;
     }
 
@@ -183,7 +192,7 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
                 }
                 else
                 {
-                    cout << "Invalid count of arguments in " << path << " at statement -imgSize-!"<< endl;
+                    cout << "Invalid number of arguments in " << path << " at statement -imgSize-!"<< endl;
                     sprite.close();
                     return false;
                 }
@@ -198,7 +207,7 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
                 }
                 else
                 {
-                    cout << "Invalid count of arguments in " << path << " at statement -spriteSize-!"<< endl;
+                    cout << "Invalid number of arguments in " << path << " at statement -spriteSize-!"<< endl;
                     sprite.close();
                     return false;
                 }
@@ -211,11 +220,57 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
                     this->imgPerRow.push_back(nextInt(entries));
                 }
             }
+            else
+            {
+                int i;
+                for(i = 1; i <= this->spriteRows; i++)
+                {
+
+                    ostringstream ss;
+                    ss << i;
+                    string aniInfo = ss.str() + ":";
+                    if(!entry.compare(aniInfo))
+                    {
+                        entries.erase(entries.begin());
+                        if(!entries.empty() && (entries.size() == 1))
+                        {
+                            string aniTypAtRow;
+                            nextString(entries, aniTypAtRow);
+
+                            this->aniAtRow.push_back(stringToAnimationTyp(aniTypAtRow));
+                        }
+                        else
+                        {
+                            cout << "Invalid number of arguments in " << path << " at statement -" << aniInfo << "-!"<< endl;
+                            sprite.close();
+                            return false;
+                        }
+                    }
+                }
+            }
         }
     }
     sprite.close();
 
     return true;
+}
+
+AnimationTyp TDG_SpriteLoader::stringToAnimationTyp(string typ)
+{
+    if(!typ.compare("stand_north"))
+        return stand_north;
+    else if(!typ.compare("stand_east"))
+        return stand_east;
+    else if(!typ.compare("stand_south"))
+        return stand_south;
+    else if(!typ.compare("move_north"))
+        return move_north;
+    else if(!typ.compare("move_east"))
+        return move_east;
+    else if(!typ.compare("move_south"))
+        return move_south;
+
+    return none;
 }
 
 int TDG_SpriteLoader::getSpriteMaxRows()
@@ -243,6 +298,12 @@ int TDG_SpriteLoader::nextInt(vector<string>& entries)
     int result = atoi(entries.front().c_str());
     entries.erase(entries.begin());
     return result;
+}
+
+void TDG_SpriteLoader::nextString(vector<string>& entries, string& input)
+{
+    input = entries.front();
+    entries.erase(entries.begin());
 }
 
 vector<string> TDG_SpriteLoader::split(const string& str, char delimiter)

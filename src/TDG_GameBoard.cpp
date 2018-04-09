@@ -29,8 +29,8 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     list<Entity>::const_iterator it, e;
     for (it = specs->getRoom()->npc.begin(), e = specs->getRoom()->npc.end(); it != e; it++)
     {
-        if(!this->entityGraphics->isStored(NPC, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, NPC, it->animationID);
+        if(!this->entityGraphics->isStored(Character, it->animationID))
+            this->entityGraphics->loadAndAdd(gui, Character, it->animationID);
     }
 
     //Store all object graphics/animations
@@ -41,8 +41,8 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     }
 
     //Store player graphics/animations
-    if(!this->entityGraphics->isStored(Player, specs->getRoom()->player.animationID))
-        this->entityGraphics->loadAndAdd(gui, Player, specs->getRoom()->player.animationID);
+    if(!this->entityGraphics->isStored(Character, specs->getRoom()->player.animationID))
+        this->entityGraphics->loadAndAdd(gui, Character, specs->getRoom()->player.animationID);
     //*************************************************************************************
 
     //Create background
