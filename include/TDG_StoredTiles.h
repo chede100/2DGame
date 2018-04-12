@@ -1,7 +1,7 @@
 #ifndef TDG_STOREDTILES_H
 #define TDG_STOREDTILES_H
 
-#include "SDL.h"
+#include <SDL.h>
 
 class TDG_StoredTiles
 {

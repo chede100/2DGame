@@ -6,8 +6,6 @@
 #include "TDG_GameSpecs.h"
 #include "TDG_GUI.h"
 #include "TDG_SpriteLoader.h"
-#include <iostream>
-#include <SDL.h>
 
 using namespace std;
 

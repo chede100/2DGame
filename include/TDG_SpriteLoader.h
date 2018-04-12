@@ -3,13 +3,6 @@
 
 #include "TDG_GUI.h"
 #include "TDG_Animation.h"
-#include <string>
-#include <list>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fstream>
-#include <sstream>
-#include <vector>
 
 class TDG_SpriteLoader
 {

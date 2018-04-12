@@ -2,7 +2,6 @@
 #define TDG_ANIMATION_H
 
 #include "TDG_ImageList.h"
-#include <SDL.h>
 
 typedef enum
 {

@@ -5,7 +5,6 @@
 #include "TDG_GameSpecs.h"
 #include "TDG_EventHandler.h"
 #include "TDG_GameBoard.h"
-#include <iostream>
 
 #define SCALING_FAKTOR 2
 

@@ -1,9 +1,7 @@
 #ifndef TDG_GUI_H
 #define TDG_GUI_H
 
-#include <SDL.h>
 #include <SDL_image.h>
-#include <iostream>
 #include "TDG_GameSpecs.h"
 
 using namespace std;
