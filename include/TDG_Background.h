@@ -19,6 +19,13 @@ class TDG_Background
 
         bool renderAtPos(TDG_GUI* gui, int x, int y, int scaleFaktor);
 
+        bool isTileImpassable(int row, int column);
+
+        int getTileWidth();
+        int getTileHight();
+        int getTileRows();
+        int getTileColumns();
+
     protected:
 
     private:

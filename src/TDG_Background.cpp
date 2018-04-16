@@ -168,6 +168,23 @@ bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y, int scaleFaktor)
     return true;
 }
 
+bool TDG_Background::isTileImpassable(int row, int column)
+{
+    if(this->tileArrangement == NULL)
+    {
+        cout << "Error: Tryed to access background which was not created." << endl;
+        return false;
+    }
+
+    if((this->tileRows <= row) || (this->tileColumns <= column))
+    {
+        cout << "Error: Tile access was out of bound." << endl;
+        return false;
+    }
+
+    return this->tileArrangement[row][column]->isImpassable();
+}
+
 SDL_Texture* TDG_Background::getTileImage(int id)
 {
     TDG_StoredTiles* tmp = this->sTiles;
@@ -182,4 +199,24 @@ SDL_Texture* TDG_Background::getTileImage(int id)
     cout << "List of background tile images contains no image with ID: " << id << endl;
 
     return NULL;
+}
+
+int TDG_Background::getTileWidth()
+{
+   return this->tileWidth;
+}
+
+int TDG_Background::getTileHight()
+{
+    return this->tileHight;
+}
+
+int TDG_Background::getTileRows()
+{
+    return this->tileRows;
+}
+
+int TDG_Background::getTileColumns()
+{
+    return this->tileColumns;
 }

@@ -2,12 +2,25 @@
 
 TDG_CollisionBox::TDG_CollisionBox()
 {
-    //ctor
+    this->pos = NULL;
+    this->width = 0;
+    this->hight = 0;
+    this->xCorrection = 0;
+    this->yCorrection = 0;
 }
 
 TDG_CollisionBox::~TDG_CollisionBox()
 {
     //dtor
+}
+
+void TDG_CollisionBox::bindToPosition(TDG_Position* pos, int xCorrection, int yCorrection, int width, int hight)
+{
+    this->pos = pos;
+    this->xCorrection = xCorrection;
+    this->yCorrection = yCorrection;
+    this->width = width;
+    this->hight = hight;
 }
 
 bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box)
@@ -38,8 +51,37 @@ bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box)
     return false;
 }
 
-bool TDG_CollisionBox::collisionWithBackground(TDG_Background* background)
+bool TDG_CollisionBox::collisionWith(TDG_Background* background)
 {
+    //top left corner position
+    int tlX = this->getPosX();
+    int tlY = this->getPosY();
+
+    //bottom right corner position
+    int brX = this->getPosX() + this->width;
+    int brY = this->getPosY() + this->hight;
+
+    int tWidth = background->getTileWidth();
+    int tHight = background->getTileHight();
+
+    int tRows = background->getTileRows();
+    int tColumns = background->getTileColumns();
+
+    int row = tlY/tHight;
+    while((row < tRows) && (row*tHight < brY))
+    {
+        int column = tlX/tWidth;
+        while((column < tColumns) && (column*tWidth < brX))
+        {
+            if(background->isTileImpassable(row, column))
+                return true;
+
+            column++;
+        }
+
+        row++;
+    }
+
     return false;
 }
 
