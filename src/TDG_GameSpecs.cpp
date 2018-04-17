@@ -314,10 +314,20 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 }
 
                 entries.erase(entries.begin());
-                if(!entries.empty() && (entries.size() == 2))
+                if(!entries.empty() && (entries.size() == 3))
                 {
                     this->room->player.posX = nextInt(entries);
                     this->room->player.posY = nextInt(entries);
+
+                    string playerStatus;
+                    nextString(entries, playerStatus);
+                    MovementStatus status = stringToMoveStatus(playerStatus);
+                    if(status == noStatus)
+                    {
+                        cout << "Unable to load player start status." << endl;
+                        return false;
+                    }
+                    this->room->player.firstStatus = status;
 
                     if(!loadEntity(Character, &this->room->player))
                     {
@@ -335,12 +345,22 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             else if(!entry.compare("npc:"))
             {
                 entries.erase(entries.begin());
-                while(!entries.empty() && (entries.size() >= 3))
+                while(!entries.empty() && (entries.size() >= 4))
                 {
                     Entity newNPC;
                     newNPC.id = nextInt(entries);
                     newNPC.posX = nextInt(entries);
                     newNPC.posY = nextInt(entries);
+
+                    string npcStatus;
+                    nextString(entries, npcStatus);
+                    MovementStatus status = stringToMoveStatus(npcStatus);
+                    if(status == noStatus)
+                    {
+                        cout << "Unable to load npc start status." << endl;
+                        return false;
+                    }
+                    newNPC.firstStatus = status;
 
                     if(!loadEntity(Character, &newNPC))
                     {
@@ -354,12 +374,22 @@ bool TDG_GameSpecs::loadRoom(int roomID)
             else if(!entry.compare("obj:"))
             {
                 entries.erase(entries.begin());
-                while(!entries.empty() && (entries.size() >= 3))
+                while(!entries.empty() && (entries.size() >= 4))
                 {
                     Entity newObj;
                     newObj.id = nextInt(entries);
                     newObj.posX = nextInt(entries);
                     newObj.posY = nextInt(entries);
+
+                    string objStatus;
+                    nextString(entries, objStatus);
+                    MovementStatus status = stringToMoveStatus(objStatus);
+                    if(status == noStatus)
+                    {
+                        cout << "Unable to load object start status." << endl;
+                        return false;
+                    }
+                    newObj.firstStatus = status;
 
                     if(!loadEntity(Object, &newObj))
                     {
@@ -514,7 +544,8 @@ SavePoint* TDG_GameSpecs::getSPoint()
 
 bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
 {
-    e->speed = 0;
+    //Objects dont have a speed value so its by default zero
+    e->speed = 0.0;
 
     string path;
     if(typ == Character)
@@ -601,7 +632,7 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
                 entries.erase(entries.begin());
                 if(!entries.empty() && (entries.size() == 1))
                 {
-                    e->speed = nextInt(entries);
+                    e->speed = nextDouble(entries);
                 }
                 else
                 {
@@ -615,6 +646,13 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
     }
 
     return true;
+}
+
+double TDG_GameSpecs::nextDouble(vector<string>& entries)
+{
+    double result = atof(entries.front().c_str());
+    entries.erase(entries.begin());
+    return result;
 }
 
 int TDG_GameSpecs::nextInt(vector<string>& entries)
@@ -636,4 +674,27 @@ vector<string> TDG_GameSpecs::split(const string& str, char delimiter)
     vector<string> result;
     for(string cur; getline(is, cur, delimiter); result.push_back(cur));
     return result;
+}
+
+MovementStatus TDG_GameSpecs::stringToMoveStatus(string& status)
+{
+    if(!status.compare("s_north")) return s_north;
+    else if(!status.compare("s_north_east")) return s_north_east;
+    else if(!status.compare("s_east")) return s_east;
+    else if(!status.compare("s_south_east")) return s_south_east;
+    else if(!status.compare("s_south")) return s_south;
+    else if(!status.compare("s_south_west")) return s_south_west;
+    else if(!status.compare("s_west")) return s_west;
+    else if(!status.compare("s_north_west")) return s_north_west;
+
+    else if(!status.compare("m_north")) return m_north;
+    else if(!status.compare("m_north_east")) return m_north_east;
+    else if(!status.compare("m_east")) return m_east;
+    else if(!status.compare("m_south_east")) return m_south_east;
+    else if(!status.compare("m_south")) return m_south;
+    else if(!status.compare("m_south_west")) return m_south_west;
+    else if(!status.compare("m_west")) return m_west;
+    else if(!status.compare("m_north_west")) return m_north_west;
+
+    return noStatus;
 }

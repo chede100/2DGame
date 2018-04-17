@@ -37,7 +37,8 @@ typedef struct
     string name;
     int animationID;
     int width, hight;
-    int speed;
+    double speed;
+    MovementStatus firstStatus;
 
 }Entity;
 
@@ -82,9 +83,12 @@ class TDG_GameSpecs
 
         bool loadEntity(EntityTyp typ, Entity* e);
 
+        double nextDouble(vector<string>& entries);
         int nextInt(vector<string>& entries);
         void nextString(vector<string>& entries, string& input);
         vector<string> split(const string& str, char delimiter);
+
+        MovementStatus stringToMoveStatus(string& status);
 };
 
 #endif // TDG_GAMESPECS_H

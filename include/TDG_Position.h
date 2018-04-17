@@ -5,19 +5,20 @@
 class TDG_Position
 {
     public:
-        TDG_Position(int x, int y);
+        TDG_Position(double x, double y);
+        TDG_Position();
         virtual ~TDG_Position();
 
-        int getPosX();
-        int getPosY();
+        double getPosX();
+        double getPosY();
 
-        void setPosX(int newX);
-        void setPosY(int newY);
+        void setPosX(double newX);
+        void setPosY(double newY);
 
     protected:
 
     private:
-        int x, y;
+        double x, y;
 };
 
 #endif // TDG_POSITION_H

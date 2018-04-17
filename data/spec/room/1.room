@@ -25,6 +25,6 @@ collision:
 1 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 1
 1 1 1 1 1 1 1 1 1 1
-player: 128 96
-npc: 2 256 128 1 55 200
-obj: 1 180 250
+player: 128 96 s_south
+npc: 2 256 128 s_west 1 55 200 s_east
+obj: 1 180 250 s_south

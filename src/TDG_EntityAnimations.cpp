@@ -43,6 +43,10 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int animationID, EntityT
         return false;
     }
 
+    //Save width and hight of the entity animation images
+    this->image_width = sprite->getImgWidth();
+    this->image_hight = sprite->getImgHight();
+
     //Load all entity animations from sprite sheet and store them.
     int i;
     for(i = 1; i <= sprite->getSpriteMaxRows(); i++)

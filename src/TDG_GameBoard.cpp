@@ -61,7 +61,7 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     this->view->init(viewWidth, viewHight);
 
     // Test position!!!!!!!!!!!!!!!
-    TDG_Position* newPos = new TDG_Position(320, 240);
+    TDG_Position* newPos = new TDG_Position(320.0, 240.0);
 
     //bind the field of view to a specific position on the game board
     if(!this->view->bindTo(newPos))

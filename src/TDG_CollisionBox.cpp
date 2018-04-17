@@ -61,12 +61,15 @@ bool TDG_CollisionBox::collisionWith(TDG_Background* background)
     int brX = this->getPosX() + this->width;
     int brY = this->getPosY() + this->hight;
 
+    //tile width and hight
     int tWidth = background->getTileWidth();
     int tHight = background->getTileHight();
 
+    //tiles per row and column
     int tRows = background->getTileRows();
     int tColumns = background->getTileColumns();
 
+    //check tiles for collision on which the collision box stands
     int row = tlY/tHight;
     while((row < tRows) && (row*tHight < brY))
     {

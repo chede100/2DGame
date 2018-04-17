@@ -26,6 +26,8 @@ class TDG_EntityAnimations
         int animationID;
         EntityTyp typ;
 
+        int image_width, image_hight;
+
         TDG_AnimationList* aniL;
 };
 
