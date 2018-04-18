@@ -36,7 +36,7 @@ typedef struct
 
     string name;
     int animationID;
-    int width, hight;
+    int graphicsWidth, graphicsHight;
     double speed;
     MovementStatus firstStatus;
 

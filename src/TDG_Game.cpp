@@ -37,7 +37,7 @@ bool TDG_Game::init()
 
     //create Window and Renderer
     this->gui = new TDG_GUI();
-    if(!this->gui->init(specs->getOpt()))
+    if(!this->gui->init(specs->getOpt(), SCALING_FAKTOR))
     {
         cout << "Couldnt initialize GUI!" << endl;
         delete specs;
@@ -72,7 +72,7 @@ void TDG_Game::gameloop()
 {
     while(!this->event->quit())
     {
-        if(!this->board->render(this->gui, SCALING_FAKTOR))
+        if(!this->board->render(this->gui))
         {
             cout << "Failed on rendering game board!" << endl;
             break;

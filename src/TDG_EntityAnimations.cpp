@@ -97,6 +97,15 @@ int TDG_EntityAnimations::getID()
     return this->animationID;
 }
 
+int TDG_EntityAnimations::getImagesWidth()
+{
+    return this->image_width;
+}
+int TDG_EntityAnimations::getImagesHight()
+{
+    return this->image_hight;
+}
+
 void TDG_EntityAnimations::add(TDG_Animation* ani)
 {
     if(this->aniL == NULL)

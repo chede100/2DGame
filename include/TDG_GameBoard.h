@@ -16,12 +16,12 @@ class TDG_GameBoard
 
         bool create(TDG_GUI* gui, TDG_GameSpecs* specs);
 
-        bool render(TDG_GUI* gui, int scaleFaktor);
+        bool render(TDG_GUI* gui);
 
     protected:
 
     private:
-        bool renderBackground(TDG_GUI* gui, int scaleFaktor);
+        bool renderBackground(TDG_GUI* gui);
 
         string roomName;
 

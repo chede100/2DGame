@@ -617,8 +617,8 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
                 entries.erase(entries.begin());
                 if(!entries.empty() && (entries.size() == 2))
                 {
-                    e->width = nextInt(entries);
-                    e->hight = nextInt(entries);
+                    e->graphicsWidth = nextInt(entries);
+                    e->graphicsHight = nextInt(entries);
                 }
                 else
                 {
@@ -672,7 +672,12 @@ vector<string> TDG_GameSpecs::split(const string& str, char delimiter)
 {
     istringstream is(str);
     vector<string> result;
-    for(string cur; getline(is, cur, delimiter); result.push_back(cur));
+    for(string cur; getline(is, cur, delimiter); )
+    {
+        //ignore all spaces
+        if(cur.compare(""))
+            result.push_back(cur);
+    }
     return result;
 }
 

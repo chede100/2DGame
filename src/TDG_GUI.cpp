@@ -7,6 +7,7 @@ TDG_GUI::TDG_GUI()
    this->winWidth = 0;
    this->winHight = 0;
    this->fpsCap = 0;
+   this->scaleFactor = 1;
 }
 
 TDG_GUI::~TDG_GUI()
@@ -20,7 +21,7 @@ TDG_GUI::~TDG_GUI()
     SDL_Quit();
 }
 
-bool TDG_GUI::init(Options* opt)
+bool TDG_GUI::init(Options* opt, int scaleFactor)
 {
     this->fpsCap = opt->fpsCap;
     this->winWidth = opt->winWidth;
@@ -63,6 +64,8 @@ bool TDG_GUI::init(Options* opt)
         return false;
     }
 
+    this->scaleFactor = scaleFactor;
+
     return true;
 }
 
@@ -84,4 +87,9 @@ int TDG_GUI::getWinHight()
 int TDG_GUI::getFPSCap()
 {
     return this->fpsCap;
+}
+
+int TDG_GUI::getScaleFactor()
+{
+    return this->scaleFactor;
 }

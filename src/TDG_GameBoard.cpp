@@ -73,11 +73,11 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     return true;
 }
 
-bool TDG_GameBoard::render(TDG_GUI* gui, int scaleFaktor)
+bool TDG_GameBoard::render(TDG_GUI* gui)
 {
     SDL_RenderClear(gui->getRenderer());
 
-    if(!renderBackground(gui, scaleFaktor))
+    if(!renderBackground(gui))
         return false;
 
     SDL_RenderPresent(gui->getRenderer());
@@ -85,7 +85,7 @@ bool TDG_GameBoard::render(TDG_GUI* gui, int scaleFaktor)
     return true;
 }
 
-bool TDG_GameBoard::renderBackground(TDG_GUI* gui, int scaleFaktor)
+bool TDG_GameBoard::renderBackground(TDG_GUI* gui)
 {
     //position of field of view on the game board
     int xPosView = this->view->getPosX();
@@ -95,7 +95,7 @@ bool TDG_GameBoard::renderBackground(TDG_GUI* gui, int scaleFaktor)
     int backgRenderPosX = xPosView*(-1);
     int backgRenderPosY = yPosView*(-1);
 
-    if(!this->backg->renderAtPos(gui, backgRenderPosX, backgRenderPosY, scaleFaktor))
+    if(!this->backg->renderAtPos(gui, backgRenderPosX, backgRenderPosY))
     {
         cout << "Unable to render background at Position X: " << backgRenderPosX << " Y: " << backgRenderPosY << "!" << endl;
         return false;

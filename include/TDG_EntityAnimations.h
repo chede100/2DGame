@@ -17,6 +17,8 @@ class TDG_EntityAnimations
         TDG_Animation* getAnimation(AnimationTyp typ);
         EntityTyp getTyp();
         int getID();
+        int getImagesWidth();
+        int getImagesHight();
 
     protected:
 

@@ -3,14 +3,27 @@
 
 #include "TDG_CollisionBox.h"
 #include "TDG_StoredEntityAnimations.h"
+#include "TDG_View.h"
 
-class TDG_Entity : public TDG_Position
+class TDG_Entity
 {
     public:
         TDG_Entity();
         virtual ~TDG_Entity();
 
-        bool init(Entity entity, EntityTyp typ, bool moveable, TDG_StoredEntityAnimations* storedGraphics);
+        void init(Entity entity, EntityTyp typ, bool moveable);
+        bool assignAnimations(TDG_StoredEntityAnimations* storedGraphics);
+
+        void changeMovementStatus(Direction dir);
+
+        bool updateAnimation();
+
+        void move();
+
+        bool collisionWith(TDG_Entity* entity);
+        bool collisionWith(TDG_Background* background);
+
+        void render(TDG_GUI* gui, TDG_View* view);
 
     protected:
 
@@ -18,12 +31,14 @@ class TDG_Entity : public TDG_Position
 
         string name;
         int id;
+        int animationID;
         EntityTyp typ;
+
+        TDG_Position* pos;
 
         double speed;
         bool moveable;
-        Direction newDir;
-        MovementStatus currStatus;
+        MovementStatus curStatus;
 
         TDG_EntityAnimations* animations;
         TDG_Animation* currentAnimation;

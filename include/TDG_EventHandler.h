@@ -1,6 +1,7 @@
 #ifndef TDG_EVENTHANDLER_H
 #define TDG_EVENTHANDLER_H
 
+#include "TDG_Information.h"
 #include <SDL.h>
 
 class TDG_EventHandler
@@ -10,6 +11,8 @@ class TDG_EventHandler
         virtual ~TDG_EventHandler();
 
         bool quit();
+
+        Direction playerMovement();
 
     protected:
 

@@ -17,7 +17,7 @@ class TDG_Background
 
         bool create(TDG_GUI* gui, Room* room);
 
-        bool renderAtPos(TDG_GUI* gui, int x, int y, int scaleFaktor);
+        bool renderAtPos(TDG_GUI* gui, int x, int y);
 
         bool isTileImpassable(int row, int column);
 
