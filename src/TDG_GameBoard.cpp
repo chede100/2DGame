@@ -5,6 +5,7 @@ TDG_GameBoard::TDG_GameBoard()
     this->backg = NULL;
     this->view = NULL;
     this->entityGraphics = NULL;
+    this->entities = NULL;
 }
 
 TDG_GameBoard::~TDG_GameBoard()
@@ -15,11 +16,21 @@ TDG_GameBoard::~TDG_GameBoard()
         delete this->view;
     if(this->entityGraphics != NULL)
         delete this->entityGraphics;
+    if(this->entities != NULL)
+        delete this->entities;
 }
 
 bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
 {
     this->roomName = specs->getRoom()->roomName;
+
+    //Create background
+    this->backg = new TDG_Background();
+    if(!this->backg->create(gui, specs->getRoom()))
+    {
+        cout << "Unable to create background!" << endl;
+        return false;
+    }
 
     //*************************************************************************************
     //Load and store all necessary entity graphics (animations from Player, NPC, Objects)
@@ -43,15 +54,58 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     //Store player graphics/animations
     if(!this->entityGraphics->isStored(Character, specs->getRoom()->player.animationID))
         this->entityGraphics->loadAndAdd(gui, Character, specs->getRoom()->player.animationID);
-    //*************************************************************************************
 
-    //Create background
-    this->backg = new TDG_Background();
-    if(!this->backg->create(gui, specs->getRoom()))
+    //***************************************************************************************
+    //Create EntityHandler and initialize all entities
+    this->entities = new TDG_EntityHandler();
+    this->entities->enableCollision(this->backg);
+
+    //create all npc
+    for (it = specs->getRoom()->npc.begin(), e = specs->getRoom()->npc.end(); it != e; it++)
     {
-        cout << "Unable to create background!" << endl;
+        TDG_Character* chara = new TDG_Character();
+        chara->init(*it, Character, false);
+        //bind npc animations to the npc
+        if(!chara->assignAnimations(this->entityGraphics))
+        {
+            cout << "Unable to bind animations to npc " << it->name << "!" << endl;
+            return false;
+        }
+
+        //add the npc to the list of all entities
+        this->entities->add(chara);
+    }
+
+    //create all room objects
+    for (it = specs->getRoom()->obj.begin(), e = specs->getRoom()->obj.end(); it != e; it++)
+    {
+        TDG_Object* obj = new TDG_Object();
+        obj->init(*it, Object);
+        //bind object animations to the object
+        if(!obj->assignAnimations(this->entityGraphics))
+        {
+            cout << "Unable to bind animations to obj " << it->name << "!" << endl;
+            return false;
+        }
+
+        //add the object to the list of all entities
+        this->entities->add(obj);
+    }
+
+    //create player
+    this->player = new TDG_Character();
+    this->player->init(specs->getRoom()->player, Character, true);
+    //bind player animations to the players character
+    if(!this->player->assignAnimations(this->entityGraphics))
+    {
+        cout << "Unable to bind animations to player!" << endl;
         return false;
     }
+
+    //add the player character to the list of all entities
+    this->entities->add(this->player);
+
+    //***************************************************************************************
 
     this->view = new TDG_View();
 
@@ -73,12 +127,31 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     return true;
 }
 
+void TDG_GameBoard::userInput(Direction dir)
+{
+    this->player->changeMovementStatus(dir);
+}
+
+void TDG_GameBoard::startTimer()
+{
+    this->entities->startAnimations();
+    this->entities->startMotion();
+}
+
+void TDG_GameBoard::stopTimer()
+{
+    this->entities->stopAnimations();
+    this->entities->stopMotion();
+}
+
 bool TDG_GameBoard::render(TDG_GUI* gui)
 {
     SDL_RenderClear(gui->getRenderer());
 
     if(!renderBackground(gui))
         return false;
+
+    this->entities->render(gui, this->view);
 
     SDL_RenderPresent(gui->getRenderer());
 

@@ -1,12 +1,7 @@
 #ifndef TDG_GAMEBOARD_H
 #define TDG_GAMEBOARD_H
 
-#include "TDG_Background.h"
-#include "TDG_GUI.h"
-#include "TDG_GameSpecs.h"
-#include "TDG_View.h"
-#include "TDG_Position.h"
-#include "TDG_StoredEntityAnimations.h"
+#include "TDG_EntityHandler.h"
 
 class TDG_GameBoard
 {
@@ -17,6 +12,11 @@ class TDG_GameBoard
         bool create(TDG_GUI* gui, TDG_GameSpecs* specs);
 
         bool render(TDG_GUI* gui);
+
+        void userInput(Direction dir);
+
+        void startTimer();
+        void stopTimer();
 
     protected:
 
@@ -29,6 +29,9 @@ class TDG_GameBoard
         TDG_View* view;
 
         TDG_StoredEntityAnimations* entityGraphics;
+
+        TDG_Character* player;
+        TDG_EntityHandler* entities;
 
 };
 

@@ -75,7 +75,8 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     }
 
     //create new image
-    SDL_Surface* image = SDL_CreateRGBSurface(0, this->imgWidth, this->imgHight, 32, 0, 0, 0, 0);
+    SDL_Surface* image = SDL_CreateRGBSurface(0, this->imgWidth, this->imgHight, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    SDL_SetColorKey(image, SDL_TRUE, SDL_MapRGB(image->format, 0xFF, 0xFF, 0xFF));
     if(image == NULL)
     {
         cout << "Couldnt load image from sprite sheet " << this->path << "!" << endl;

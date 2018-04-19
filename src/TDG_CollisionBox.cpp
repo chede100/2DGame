@@ -57,6 +57,10 @@ bool TDG_CollisionBox::collisionWith(TDG_Background* background)
     int tlX = this->getPosX();
     int tlY = this->getPosY();
 
+    //cout << "CBox X: " << tlX << "Y: " << tlY << endl;
+    //cout << "Chara X: " << this->pos->getPosX() << "Y: " << this->pos->getPosY() << endl;
+    //cout << " " << this->yCorrection << endl;
+
     //bottom right corner position
     int brX = this->getPosX() + this->width;
     int brY = this->getPosY() + this->hight;

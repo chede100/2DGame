@@ -11,19 +11,19 @@ class TDG_Entity
         TDG_Entity();
         virtual ~TDG_Entity();
 
-        void init(Entity entity, EntityTyp typ, bool moveable);
+        void init(Entity entity, EntityTyp typ);
         bool assignAnimations(TDG_StoredEntityAnimations* storedGraphics);
 
         void changeMovementStatus(Direction dir);
 
         bool updateAnimation();
 
-        void move();
-
-        bool collisionWith(TDG_Entity* entity);
-        bool collisionWith(TDG_Background* background);
-
         void render(TDG_GUI* gui, TDG_View* view);
+
+        TDG_CollisionBox* getCBox();
+        MovementStatus getMovementStatus();
+        TDG_Position* getPos();
+        EntityTyp getTyp();
 
     protected:
 
@@ -36,8 +36,6 @@ class TDG_Entity
 
         TDG_Position* pos;
 
-        double speed;
-        bool moveable;
         MovementStatus curStatus;
 
         TDG_EntityAnimations* animations;

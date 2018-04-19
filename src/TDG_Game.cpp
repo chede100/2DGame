@@ -9,12 +9,14 @@ TDG_Game::TDG_Game()
 
 TDG_Game::~TDG_Game()
 {
+    this->board->stopTimer();
+
+    if(this->board != NULL)
+        delete this->board;
     if(this->gui != NULL)
         delete this->gui;
     if(this->event != NULL)
         delete this->event;
-    if(this->board != NULL)
-        delete this->board;
 }
 
 bool TDG_Game::init()
@@ -65,6 +67,7 @@ bool TDG_Game::init()
 
 bool TDG_Game::start()
 {
+    this->board->startTimer();
     return true;
 }
 
@@ -72,12 +75,24 @@ void TDG_Game::gameloop()
 {
     while(!this->event->quit())
     {
-        if(!this->board->render(this->gui))
-        {
-            cout << "Failed on rendering game board!" << endl;
-            break;
-        }
+        this->board->userInput(this->event->playerMovement());
 
-        SDL_Delay(100);
+        ///////////// FPS //////////////////////////////////////////////////
+        int before, delay;                                                //
+        before = (int)SDL_GetTicks();                                     //
+        ////////////////////////////////////////////////////////////////////
+                                                                          //
+        if(!this->board->render(this->gui))                               //
+        {                                                                 //
+            cout << "Failed on rendering game board!" << endl;            //
+            break;                                                        //
+        }                                                                 //
+                                                                          //
+        ////////////////////////////////////////////////////////////////////
+        delay = 1000/gui->getFPSCap() - ((int) SDL_GetTicks() - before);  //
+                                                                          //
+        if(delay > 0)                                                     //
+            SDL_Delay(delay);                                             //
+        ////////////////////////////////////////////////////////////////////
     }
 }

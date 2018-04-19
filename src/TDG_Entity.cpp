@@ -5,7 +5,6 @@ TDG_Entity::TDG_Entity()
 {
     this->id = 0;
     this->typ = nothing;
-    this->moveable = false;
     this->curStatus = noStatus;
     this->pos = new TDG_Position();
     this->animations = NULL;
@@ -22,35 +21,20 @@ TDG_Entity::~TDG_Entity()
         delete this->pos;
 }
 
-void TDG_Entity::init(Entity entity, EntityTyp typ, bool moveable)
+void TDG_Entity::init(Entity entity, EntityTyp typ)
 {
     this->name = entity.name;
     this->id = entity.id;
     this->animationID = entity.animationID;
-    this->speed = entity.speed;
 
     this->pos->setPosX((double)entity.posX);
     this->pos->setPosY((double)entity.posY);
 
     this->typ = typ;
     this->curStatus = entity.firstStatus;
-    this->moveable = moveable;
 
     //init collision box
     this->cBox = new TDG_CollisionBox();
-
-    //some pixel of a characters left and right side can overlapp other entities
-    int overlappingEdgePixel;;
-    if(typ == Character)
-        overlappingEdgePixel = 2;
-    else
-        overlappingEdgePixel = 0;
-
-    //the collision box hight is half the entity graphics hight
-    this->cBox->bindToPosition(this->pos, overlappingEdgePixel, (int) (1/2)*entity.graphicsHight,
-                               entity.graphicsWidth - 2*overlappingEdgePixel, entity.graphicsHight - (int) (1/2)*entity.graphicsHight);
-
-
 }
 
 bool TDG_Entity::assignAnimations(TDG_StoredEntityAnimations* storedGraphics)
@@ -100,11 +84,11 @@ void TDG_Entity::render(TDG_GUI* gui, TDG_View* view)
     SDL_Rect rect = {x, y, width, hight};
 
     //flip the animation image because only the move or stand animations for direction east are stored (west animations not stored)
-    if(this->curStatus == m_north_west || this->curStatus == m_west || this->curStatus == m_south_west
-       || this->curStatus == s_north_west || this->curStatus == s_west || this->curStatus == s_south_west)
-       SDL_RenderCopyEx(gui->getRenderer(), this->currentImage->getImg(), NULL, &rect, 0.0, NULL, SDL_FLIP_VERTICAL);
+    if((this->curStatus == m_north_west) || (this->curStatus == m_west) || (this->curStatus == m_south_west)
+       || (this->curStatus == s_north_west) || (this->curStatus == s_west) || (this->curStatus == s_south_west))
+       SDL_RenderCopyEx(gui->getRenderer(), this->currentImage->getImg(), NULL, &rect, 0.0, NULL, SDL_FLIP_HORIZONTAL);
     else
-        SDL_RenderCopyEx(gui->getRenderer(), this->currentImage->getImg(), NULL, &rect, 0.0, NULL, SDL_FLIP_NONE);
+        SDL_RenderCopy(gui->getRenderer(), this->currentImage->getImg(), NULL, &rect);
 }
 
 bool TDG_Entity::updateAnimation()
@@ -162,46 +146,24 @@ void TDG_Entity::changeMovementStatus(Direction dir)
     }
 }
 
-void TDG_Entity::move()
+TDG_CollisionBox* TDG_Entity::getCBox()
 {
-    if(this->curStatus == m_north)
-        this->pos->setPosY(this->pos->getPosY() - this->speed);
-    else if(this->curStatus == m_north_east)
-    {
-        this->pos->setPosY(this->pos->getPosY() - this->speed);
-        this->pos->setPosX(this->pos->getPosX() + this->speed);
-    }
-    else if(this->curStatus == m_east)
-        this->pos->setPosX(this->pos->getPosX() + this->speed);
-    else if(this->curStatus == m_south_east)
-    {
-        this->pos->setPosY(this->pos->getPosY() + this->speed);
-        this->pos->setPosX(this->pos->getPosX() + this->speed);
-    }
-    else if(this->curStatus == m_south)
-        this->pos->setPosY(this->pos->getPosY() + this->speed);
-    else if(this->curStatus == m_south_west)
-    {
-        this->pos->setPosY(this->pos->getPosY() + this->speed);
-        this->pos->setPosX(this->pos->getPosX() - this->speed);
-    }
-    else if(this->curStatus == m_west)
-        this->pos->setPosX(this->pos->getPosX() - this->speed);
-    else if(this->curStatus == m_north_west)
-    {
-        this->pos->setPosY(this->pos->getPosY() - this->speed);
-        this->pos->setPosX(this->pos->getPosX() - this->speed);
-    }
+    return this->cBox;
 }
 
-bool TDG_Entity::collisionWith(TDG_Entity* entity)
+MovementStatus TDG_Entity::getMovementStatus()
 {
-    return false;
+    return this->curStatus;
 }
 
-bool TDG_Entity::collisionWith(TDG_Background* background)
+TDG_Position* TDG_Entity::getPos()
 {
-    return false;
+    return this->pos;
+}
+
+EntityTyp TDG_Entity::getTyp()
+{
+    return this->typ;
 }
 
 AnimationTyp TDG_Entity::convertStatusToAnimationTyp(MovementStatus status)
