@@ -110,15 +110,13 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     this->view = new TDG_View();
 
     // set the field of view to the size of the window
-    int viewWidth = specs->getOpt()->winWidth;
-    int viewHight = specs->getOpt()->winHight;
+    int viewWidth = 320;
+    int viewHight = 320;
     this->view->init(viewWidth, viewHight);
 
-    // Test position!!!!!!!!!!!!!!!
-    TDG_Position* newPos = new TDG_Position(320.0, 240.0);
 
-    //bind the field of view to a specific position on the game board
-    if(!this->view->bindTo(newPos))
+    //bind the field of view to the players character on the game board
+    if(!this->view->bindTo(this->player->getPos()))
     {
         cout << "Unable to bind the field of view to a specific position." << endl;
         return false;

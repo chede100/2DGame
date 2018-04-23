@@ -89,7 +89,7 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     {
         id =  room->tileIDs.front();
 
-        newImage = sprite->getImage(gui, (int) id/sprite->getSpriteMaxColumns() + 1 , (int) id%sprite->getSpriteMaxColumns());
+        newImage = sprite->getImage(gui, (int) (id-1)/sprite->getSpriteMaxColumns() + 1, (int) id%(sprite->getSpriteMaxColumns() + 1));
         if(newImage == NULL)
         {
             cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
