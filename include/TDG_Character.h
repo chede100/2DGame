@@ -2,6 +2,8 @@
 #define TDG_CHARACTER_H
 
 #include "TDG_Entity.h"
+#include "TDG_EntityList.h"
+#include "TDG_Background.h"
 
 class TDG_Character : public TDG_Entity
 {
@@ -11,17 +13,18 @@ class TDG_Character : public TDG_Entity
 
         void init(Entity entity, EntityTyp typ, bool moveable);
 
-        void move();
-        void moveBack();
-
-        bool collisionWith(TDG_Entity* entity);
-        bool collisionWith(TDG_Background* background);
+        //move character and check collision, if collision is detected move back
+        void moveAndCollision(TDG_EntityList* elist, TDG_Background* bground);
 
         bool isMoveable();
 
     protected:
 
     private:
+        bool collisionDetection(TDG_EntityList* eList, TDG_Background* bground);
+        bool collisionWith(TDG_Entity* entity);
+        bool collisionWith(TDG_Background* background);
+
         double speed;
         bool moveable;
 };

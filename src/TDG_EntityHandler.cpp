@@ -206,30 +206,6 @@ bool TDG_EntityHandler::swap(TDG_EntityList* A, TDG_EntityList* B)
     return false;
 }
 
-bool TDG_EntityHandler::collisionDetectionFor(TDG_Character* chara)
-{
-    //check for background (environment) collision
-    if(chara->collisionWith(this->bg))
-        return true;
-    else
-    {
-        //check collision on all other entities
-        TDG_EntityList* col = this->first;
-        while(col != NULL)
-        {
-            //dont check collision on itself
-            if(col->getEntity() != chara)
-            {
-                //move back on collision detection with other entities
-                if(chara->collisionWith(col->getEntity()))
-                    return true;
-            }
-            col = col->getNext();
-        }
-    }
-    return false;
-}
-
 void TDG_EntityHandler::moveEntities()
 {
     TDG_EntityList* tmp = this->first;
@@ -240,11 +216,7 @@ void TDG_EntityHandler::moveEntities()
             TDG_Character* chara = (TDG_Character*) tmp->getEntity();
             if(chara->isMoveable())
             {
-                chara->move();
-
-                //is collision detection enabled and does the character collide with anything?
-                if(this->collisionDetection && collisionDetectionFor(chara))
-                    chara->moveBack();
+                chara->moveAndCollision(this->first, this->bg);
             }
         }
         tmp = tmp->getNext();

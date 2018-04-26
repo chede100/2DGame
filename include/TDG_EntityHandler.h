@@ -21,6 +21,8 @@ class TDG_EntityHandler
         //sorts and renders the entities
         void render(TDG_GUI* gui, TDG_View* view);
 
+        bool collisionDetectionFor(TDG_Character* chara);
+
         void startAnimations();
         void stopAnimations();
 
@@ -33,7 +35,6 @@ class TDG_EntityHandler
     protected:
 
     private:
-        bool collisionDetectionFor(TDG_Character* chara);
         void sort();
         bool swap(TDG_EntityList* A, TDG_EntityList* B);
 
