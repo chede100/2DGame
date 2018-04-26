@@ -1,0 +1,4 @@
+imgSize: 16 16
+spriteSize: 1 5
+imgPerRow: 5
+1: stand_south

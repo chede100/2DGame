@@ -66,7 +66,7 @@ bool TDG_GUI::init(Options* opt, int scaleFactor)
 
     this->scaleFactor = scaleFactor;
 
-    SDL_RenderSetLogicalSize(this->m_renderer, 320, 320);
+    SDL_RenderSetLogicalSize(this->m_renderer, 420, 320);
 
     return true;
 }

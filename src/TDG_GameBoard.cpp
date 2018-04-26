@@ -116,7 +116,7 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     this->view = new TDG_View();
 
     // set the field of view to the size of the window
-    int viewWidth = 320;
+    int viewWidth = 420;
     int viewHight = 320;
     this->view->init(viewWidth, viewHight);
 

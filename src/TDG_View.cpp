@@ -38,13 +38,13 @@ bool TDG_View::bindTo(TDG_Position* pos, int xCorrection, int yCorrection)
 int TDG_View::getPosX()
 {
     int xCentre = this->pos->getPosX() + xCorrection;
-    return xCentre - this->width/2;;
+    return xCentre - this->width/2;
 }
 
 int TDG_View::getPosY()
 {
     int yCentre = this->pos->getPosY() + yCorrection;
-    return yCentre - this->hight/2;;
+    return yCentre - this->hight/2;
 }
 
 int TDG_View::getWidth()
