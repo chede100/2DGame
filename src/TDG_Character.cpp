@@ -18,13 +18,6 @@ void TDG_Character::init(Entity entity, EntityTyp typ, bool moveable)
     this->speed = entity.speed;
 
     this->moveable = moveable;
-
-    //some pixel of a characters left and right side can overlap other entities
-    int overlappingEdgePixel = 2;
-
-    //the collision box hight is half the entity graphics hight
-    this->getCBox()->bindToPosition(this->getPos(), overlappingEdgePixel, (int) entity.graphicsHight/2,
-                               entity.graphicsWidth - 2*overlappingEdgePixel, entity.graphicsHight - (int) entity.graphicsHight/2);
 }
 
 void TDG_Character::move()

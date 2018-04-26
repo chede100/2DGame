@@ -10,10 +10,12 @@ class TDG_CollisionBox
         TDG_CollisionBox();
         virtual ~TDG_CollisionBox();
 
-        void bindToPosition(TDG_Position* pos, int xCorrection, int yCorrection, int width, int hight);
+        void bindToPosition(TDG_Position* pos, int xCorrection, int yCorrection);
 
         bool collisionWith(TDG_CollisionBox* box);
         bool collisionWith(TDG_Background* background);
+
+        void setSize(int width, int hight);
 
         int getWidth();
         int getHight();

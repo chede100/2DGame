@@ -304,6 +304,52 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     }
                 }
             }
+            else if(!entry.compare("flip:"))
+            {
+                if(this->room->tileColumns <= 0 || this->room->tileRows <= 0)
+                {
+                    cout << "Error in " << rPath << " size is not valid!(2)" << endl;
+                    room.close();
+                    return false;
+                }
+
+                int columns = this->room->tileColumns;
+                int rows = this->room->tileRows;
+
+                int** tmp;
+                if((tmp = (int**) malloc(rows*sizeof(int*))) == NULL)
+                {
+                    cout << "Background-Tile-Flip-Array from file" << rPath << " couldnt be initialized!(1)" << endl;
+                    room.close();
+                    return false;
+                }
+                int k;
+                for(k = 0; k < rows; k++)
+                {
+                    if((tmp[k] = (int*) malloc(columns*sizeof(int))) == NULL)
+                    {
+                        cout << "Background-Tile-Flip-Array from file" << rPath << " couldnt be initialized!(2)" << endl;
+                        room.close();
+                        return false;
+                    }
+                }
+                this->room->flipTile = tmp;
+
+                vector<string> flip;
+
+                int i, j;
+                for(i = 0; i < rows; i++)
+                {
+                    getline(room, line);
+                    flip = split(line, ' ');
+
+                    for(j = 0; j < columns; j++)
+                    {
+                        this->room->flipTile[i][j] = atoi(flip.front().c_str());
+                        flip.erase(flip.begin());
+                    }
+                }
+            }
             else if(!entry.compare("player:"))
             {
                 if(this->room->player.id == 0)
@@ -617,8 +663,8 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
                 entries.erase(entries.begin());
                 if(!entries.empty() && (entries.size() == 2))
                 {
-                    e->graphicsWidth = nextInt(entries);
-                    e->graphicsHight = nextInt(entries);
+                    e->width = nextInt(entries);
+                    e->hight = nextInt(entries);
                 }
                 else
                 {

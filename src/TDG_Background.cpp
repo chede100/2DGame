@@ -135,7 +135,8 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         {
             this->tileArrangement[i][j] = new TDG_Tile(room->tileIDArrangement[i][j],
                                                        room->tileRotationDegree[i][j],
-                                                       room->enviromentCollision[i][j]);
+                                                       room->enviromentCollision[i][j],
+                                                       room->flipTile[i][j]);
         }
     }
 
@@ -159,11 +160,11 @@ bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y)
             //get the degree in which the tile should be rotated
             int rotDegree = this->tileArrangement[r][c]->getRotDegree();
 
-            //render tile
+            //render tile on rect
             SDL_Rect rect = {x + c*(this->tileWidth*gui->getScaleFactor()), y + r*(this->tileHight*gui->getScaleFactor()),
                             this->tileWidth*gui->getScaleFactor(), this->tileHight*gui->getScaleFactor()};
 
-            SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, this->tileArrangement[r][c]->flipTile());
         }
     }
 

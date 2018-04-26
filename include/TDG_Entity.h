@@ -13,6 +13,7 @@ class TDG_Entity
 
         void init(Entity entity, EntityTyp typ);
         bool assignAnimations(TDG_StoredEntityAnimations* storedGraphics);
+        void bindCBox();
 
         void changeMovementStatus(Direction dir);
 
@@ -24,6 +25,8 @@ class TDG_Entity
         MovementStatus getMovementStatus();
         TDG_Position* getPos();
         EntityTyp getTyp();
+        int getImageWidth();
+        int getImageHight();
 
     protected:
 

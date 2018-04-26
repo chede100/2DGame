@@ -36,7 +36,7 @@ typedef struct
 
     string name;
     int animationID;
-    int graphicsWidth, graphicsHight;
+    int width, hight;
     double speed;
     MovementStatus firstStatus;
 
@@ -55,6 +55,7 @@ typedef struct
     int** tileIDArrangement;
     int** tileRotationDegree;
     bool** enviromentCollision;
+    int** flipTile;
 
 }Room;
 

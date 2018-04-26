@@ -14,13 +14,11 @@ TDG_CollisionBox::~TDG_CollisionBox()
     //dtor
 }
 
-void TDG_CollisionBox::bindToPosition(TDG_Position* pos, int xCorrection, int yCorrection, int width, int hight)
+void TDG_CollisionBox::bindToPosition(TDG_Position* pos, int xCorrection, int yCorrection)
 {
     this->pos = pos;
     this->xCorrection = xCorrection;
     this->yCorrection = yCorrection;
-    this->width = width;
-    this->hight = hight;
 }
 
 bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box)
@@ -90,6 +88,12 @@ bool TDG_CollisionBox::collisionWith(TDG_Background* background)
     }
 
     return false;
+}
+
+void TDG_CollisionBox::setSize(int width, int hight)
+{
+    this->width = width;
+    this->hight = hight;
 }
 
 int TDG_CollisionBox::getWidth()

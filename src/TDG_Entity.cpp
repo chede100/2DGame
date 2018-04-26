@@ -35,6 +35,24 @@ void TDG_Entity::init(Entity entity, EntityTyp typ)
 
     //init collision box
     this->cBox = new TDG_CollisionBox();
+
+    this->cBox->setSize(entity.width, entity.hight);
+}
+
+void TDG_Entity::bindCBox()
+{
+    if((this->cBox->getHight() == 0) || (this->cBox->getWidth() == 0))
+    {
+        delete this->cBox;
+        this->cBox = NULL;
+    }
+    else
+    {
+        int xCorrection = (this->animations->getImagesWidth() - this->cBox->getWidth())/2;
+        int yCorrection = this->animations->getImagesHight() - this->cBox->getHight();
+        //bind cBox to the position of the entity
+        this->getCBox()->bindToPosition(this->getPos(), xCorrection, yCorrection);
+    }
 }
 
 bool TDG_Entity::assignAnimations(TDG_StoredEntityAnimations* storedGraphics)
@@ -164,6 +182,16 @@ TDG_Position* TDG_Entity::getPos()
 EntityTyp TDG_Entity::getTyp()
 {
     return this->typ;
+}
+
+int TDG_Entity::getImageWidth()
+{
+    return this->animations->getImagesWidth();
+}
+
+int TDG_Entity::getImageHight()
+{
+    return this->animations->getImagesHight();
 }
 
 AnimationTyp TDG_Entity::convertStatusToAnimationTyp(MovementStatus status)

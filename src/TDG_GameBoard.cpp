@@ -71,6 +71,8 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
             cout << "Unable to bind animations to npc " << it->name << "!" << endl;
             return false;
         }
+        //bind cBox to character
+        chara->bindCBox();
 
         //add the npc to the list of all entities
         this->entities->add(chara);
@@ -87,6 +89,8 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
             cout << "Unable to bind animations to obj " << it->name << "!" << endl;
             return false;
         }
+        //bind cBox to object
+        obj->bindCBox();
 
         //add the object to the list of all entities
         this->entities->add(obj);
@@ -101,6 +105,8 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
         cout << "Unable to bind animations to player!" << endl;
         return false;
     }
+    //bind cBox to player character
+    player->bindCBox();
 
     //add the player character to the list of all entities
     this->entities->add(this->player);
@@ -116,7 +122,7 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
 
 
     //bind the field of view to the players character on the game board
-    if(!this->view->bindTo(this->player->getPos()))
+    if(!this->view->bindTo(this->player->getPos(), this->player->getImageWidth()/2, this->player->getImageHight()/2))
     {
         cout << "Unable to bind the field of view to a specific position." << endl;
         return false;

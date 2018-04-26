@@ -15,7 +15,7 @@ class TDG_View
 
         void init(int width, int hight);
 
-        bool bindTo(TDG_Position* pos);
+        bool bindTo(TDG_Position* pos, int xCorrection, int yCorrection);
 
         int getPosX();
         int getPosY();
@@ -27,6 +27,7 @@ class TDG_View
 
     private:
         TDG_Position* pos;
+        int xCorrection, yCorrection;
         int width, hight;
 };
 

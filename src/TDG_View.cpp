@@ -18,29 +18,33 @@ void TDG_View::init(int width, int hight)
     this->hight = hight;
 }
 
-bool TDG_View::bindTo(TDG_Position* pos)
+bool TDG_View::bindTo(TDG_Position* pos, int xCorrection, int yCorrection)
 {
     if(pos == NULL)
     {
-        cout << "TDG_View: tried to bind to unvalid Postion!" << endl;
+        cout << "TDG_View: tried to bind to invalid entity!" << endl;
         return false;
     }
     else
+    {
         this->pos = pos;
+        this->xCorrection = xCorrection;
+        this->yCorrection = yCorrection;
+    }
 
     return true;
 }
 
 int TDG_View::getPosX()
 {
-    int x = this->pos->getPosX() - this->width/2;
-    return x;
+    int xCentre = this->pos->getPosX() + xCorrection;
+    return xCentre - this->width/2;;
 }
 
 int TDG_View::getPosY()
 {
-    int y = this->pos->getPosY() - this->hight/2;
-    return y;
+    int yCentre = this->pos->getPosY() + yCorrection;
+    return yCentre - this->hight/2;;
 }
 
 int TDG_View::getWidth()

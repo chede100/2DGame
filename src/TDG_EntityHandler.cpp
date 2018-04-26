@@ -181,12 +181,26 @@ bool TDG_EntityHandler::swap(TDG_EntityList* A, TDG_EntityList* B)
     TDG_Entity* a = A->getEntity();
     TDG_Entity* b = B->getEntity();
 
-    if(a->getPos()->getPosY() > b->getPos()->getPosY())
-    {
-        A->setEntity(b);
-        B->setEntity(a);
+    int aPosY = a->getPos()->getPosY();
+    int bPosY = b->getPos()->getPosY();
 
-        return true;
+    //check render priority for character position
+    if(aPosY > bPosY)
+    {
+        if(aPosY + a->getImageHight() > bPosY + b->getImageHight())
+        {
+            A->setEntity(b);
+            B->setEntity(a);
+
+            return true;
+        }
+    }
+    else if(aPosY + a->getImageHight() > bPosY + b->getImageHight())
+    {
+            A->setEntity(b);
+            B->setEntity(a);
+
+            return true;
     }
 
     return false;
