@@ -25,77 +25,62 @@ void TDG_Character::moveAndCollision(TDG_EntityList* eList, TDG_Background* bgro
     MovementStatus status = this->getMovementStatus();
     int posX = this->getPos()->getPosX();
     int posY = this->getPos()->getPosY();
+    int speed = this->speed;
 
     if(status == m_north)
     {
-        this->getPos()->setPosY(posY - this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosY(posY + this->speed);
+        if(!collisionDetection(eList, bground, 0, -speed))
+            this->getPos()->setPosY(posY - speed);
     }
     else if(status == m_north_east)
     {
-        this->getPos()->setPosY(posY - this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosY(posY + this->speed);
-
-        this->getPos()->setPosX(posX + this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosX(posX - this->speed);
+        if(!collisionDetection(eList, bground, 0, -speed))
+            this->getPos()->setPosY(posY - speed);
+        if(!collisionDetection(eList, bground, speed, 0))
+                this->getPos()->setPosX(posX + speed);
     }
     else if(status == m_east)
     {
-        this->getPos()->setPosX(posX + this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosX(posX - this->speed);
+        if(!collisionDetection(eList, bground, speed, 0))
+            this->getPos()->setPosX(posX + speed);
     }
     else if(status == m_south_east)
     {
-        this->getPos()->setPosY(posY + this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosY(posY - this->speed);
-
-        this->getPos()->setPosX(posX + this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosX(posX - this->speed);
+        if(!collisionDetection(eList, bground, 0, speed))
+            this->getPos()->setPosY(posY + speed);
+        if(!collisionDetection(eList, bground, speed, 0))
+                this->getPos()->setPosX(posX + speed);
     }
     else if(status == m_south)
     {
-        this->getPos()->setPosY(posY + this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosY(posY - this->speed);
+        if(!collisionDetection(eList, bground, 0, speed))
+            this->getPos()->setPosY(posY + speed);
     }
     else if(status == m_south_west)
     {
-        this->getPos()->setPosY(posY + this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosY(posY - this->speed);
-
-        this->getPos()->setPosX(posX - this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosX(posX + this->speed);
+        if(!collisionDetection(eList, bground, 0, speed))
+            this->getPos()->setPosY(posY + speed);
+        if(!collisionDetection(eList, bground, -speed, 0))
+                this->getPos()->setPosX(posX - speed);
     }
     else if(status == m_west)
     {
-        this->getPos()->setPosX(posX - this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosX(posX + this->speed);
+        if(!collisionDetection(eList, bground, -speed, 0))
+            this->getPos()->setPosX(posX - speed);
     }
     else if(status == m_north_west)
     {
-        this->getPos()->setPosY(posY - this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosY(posY + this->speed);
-
-        this->getPos()->setPosX(posX - this->speed);
-        if(collisionDetection(eList, bground))
-            this->getPos()->setPosX(posX + this->speed);
+        if(!collisionDetection(eList, bground, 0, -speed))
+            this->getPos()->setPosY(posY - speed);
+        if(!collisionDetection(eList, bground, -speed, 0))
+                this->getPos()->setPosX(posX - speed);
     }
 }
 
-bool TDG_Character::collisionDetection(TDG_EntityList* eList, TDG_Background* bground)
+bool TDG_Character::collisionDetection(TDG_EntityList* eList, TDG_Background* bground, int speedX, int speedY)
 {
     //check for background (environment) collision
-    if(this->collisionWith(bground))
+    if(this->collisionWith(bground, speedX, speedY))
         return true;
     else
     {
@@ -107,7 +92,7 @@ bool TDG_Character::collisionDetection(TDG_EntityList* eList, TDG_Background* bg
             if(col->getEntity() != this)
             {
                 //move back on collision detection with other entities
-                if(this->collisionWith(col->getEntity()))
+                if(this->collisionWith(col->getEntity(), speedX, speedY))
                     return true;
             }
             col = col->getNext();
@@ -116,20 +101,20 @@ bool TDG_Character::collisionDetection(TDG_EntityList* eList, TDG_Background* bg
     return false;
 }
 
-bool TDG_Character::collisionWith(TDG_Entity* entity)
+bool TDG_Character::collisionWith(TDG_Entity* entity, int speedX, int speedY)
 {
     if((this->getCBox() == NULL) || (entity->getCBox() == NULL))
         return false;
 
-    return this->getCBox()->collisionWith(entity->getCBox());
+    return this->getCBox()->collisionWith(entity->getCBox(), speedX, speedY);
 }
 
-bool TDG_Character::collisionWith(TDG_Background* background)
+bool TDG_Character::collisionWith(TDG_Background* background, int speedX, int speedY)
 {
     if((this->getCBox() == NULL) || (background == NULL))
         return false;
 
-    return this->getCBox()->collisionWith(background);
+    return this->getCBox()->collisionWith(background, speedX, speedY);
 }
 
 bool TDG_Character::isMoveable()

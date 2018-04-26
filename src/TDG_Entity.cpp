@@ -194,6 +194,11 @@ int TDG_Entity::getImageHight()
     return this->animations->getImagesHight();
 }
 
+TDG_ImageList* TDG_Entity::getCurrentImage()
+{
+    return this->currentImage;
+}
+
 AnimationTyp TDG_Entity::convertStatusToAnimationTyp(MovementStatus status)
 {
     if((status == s_east) || (status == s_north_east) || (status == s_west) || (status == s_north_west) || (status == s_south_east) || (status == s_south_west))

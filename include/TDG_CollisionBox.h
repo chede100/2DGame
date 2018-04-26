@@ -12,8 +12,8 @@ class TDG_CollisionBox
 
         void bindToPosition(TDG_Position* pos, int xCorrection, int yCorrection);
 
-        bool collisionWith(TDG_CollisionBox* box);
-        bool collisionWith(TDG_Background* background);
+        bool collisionWith(TDG_CollisionBox* box, int speedX, int speedY);
+        bool collisionWith(TDG_Background* background, int speedX, int speedY);
 
         void setSize(int width, int hight);
 

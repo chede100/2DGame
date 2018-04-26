@@ -21,7 +21,7 @@ void TDG_CollisionBox::bindToPosition(TDG_Position* pos, int xCorrection, int yC
     this->yCorrection = yCorrection;
 }
 
-bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box)
+bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box, int speedX, int speedY)
 {
     if((box == NULL) || (this->pos == NULL))
     {
@@ -29,8 +29,8 @@ bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box)
         return false;
     }
 
-    int posXBox1 = this->getPosX();
-    int posYBox1 = this->getPosY();
+    int posXBox1 = this->getPosX() + speedX;
+    int posYBox1 = this->getPosY() + speedY;
     int widthBox1 = this->width;
     int hightBox1 =  this->hight;
 
@@ -49,19 +49,15 @@ bool TDG_CollisionBox::collisionWith(TDG_CollisionBox* box)
     return false;
 }
 
-bool TDG_CollisionBox::collisionWith(TDG_Background* background)
+bool TDG_CollisionBox::collisionWith(TDG_Background* background, int speedX, int speedY)
 {
     //top left corner position
-    int tlX = this->getPosX();
-    int tlY = this->getPosY();
-
-    //cout << "CBox X: " << tlX << "Y: " << tlY << endl;
-    //cout << "Chara X: " << this->pos->getPosX() << "Y: " << this->pos->getPosY() << endl;
-    //cout << " " << this->yCorrection << endl;
+    int tlX = this->getPosX() + speedX;
+    int tlY = this->getPosY() + speedY;
 
     //bottom right corner position
-    int brX = this->getPosX() + this->width;
-    int brY = this->getPosY() + this->hight;
+    int brX = this->getPosX() + this->width + speedX;
+    int brY = this->getPosY() + this->hight + speedY;
 
     //tile width and hight
     int tWidth = background->getTileWidth();

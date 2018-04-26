@@ -27,6 +27,7 @@ class TDG_Entity
         EntityTyp getTyp();
         int getImageWidth();
         int getImageHight();
+        TDG_ImageList* getCurrentImage();
 
     protected:
 

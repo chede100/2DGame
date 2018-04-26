@@ -21,9 +21,9 @@ class TDG_Character : public TDG_Entity
     protected:
 
     private:
-        bool collisionDetection(TDG_EntityList* eList, TDG_Background* bground);
-        bool collisionWith(TDG_Entity* entity);
-        bool collisionWith(TDG_Background* background);
+        bool collisionDetection(TDG_EntityList* eList, TDG_Background* bground, int speedX, int speedY);
+        bool collisionWith(TDG_Entity* entity, int speedX, int speedY);
+        bool collisionWith(TDG_Background* background, int speedX, int speedY);
 
         double speed;
         bool moveable;
