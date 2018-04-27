@@ -53,6 +53,13 @@ TDG_GameSpecs::~TDG_GameSpecs()
     if(this->room->tileRotationDegree != NULL)
         free(this->room->tileRotationDegree);
 
+    int n;
+    for(n = 0; n < this->room->tileRows; n++)
+    {
+        free(this->room->flipTile[n]);
+    }
+    if(this->room->flipTile != NULL)
+        free(this->room->flipTile);
 
     delete this->opt;
     delete this->room;

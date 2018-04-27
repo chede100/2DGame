@@ -91,6 +91,8 @@ void TDG_Game::gameloop()
         Gate enterGate = {0, 0, 0, noStatus, 0, 0};
         if(this->board->throughGate(&enterGate))
         {
+            this->board->stopTimer();
+
             TDG_GameSpecs* newRoom = new TDG_GameSpecs();
             newRoom->loadRoom(enterGate.destinationRoomID);
 
@@ -101,6 +103,8 @@ void TDG_Game::gameloop()
             }
 
             delete newRoom;
+
+            this->board->startTimer();
         }
 
         ////////////////////////////////////////////////////////////////////

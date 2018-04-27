@@ -170,8 +170,6 @@ bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Room* newRoom, Gate* enterGate)
         {
             delete this->backg;
 
-            int prevRoomID = this->roomID;
-
             if(!createRoom(gui, newRoom))
             {
                 cout << "Unable to change room. New room cant be created!" << endl;

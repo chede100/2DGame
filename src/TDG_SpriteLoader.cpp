@@ -15,6 +15,7 @@ TDG_SpriteLoader::~TDG_SpriteLoader()
         SDL_FreeSurface(this->sprite);
 
     this->imgPerRow.clear();
+    this->aniAtRow.clear();
 }
 
 bool TDG_SpriteLoader::loadSprite(string pathToFolder, string spriteName)

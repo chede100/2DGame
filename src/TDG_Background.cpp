@@ -12,6 +12,8 @@ TDG_Background::TDG_Background()
 
 TDG_Background::~TDG_Background()
 {
+    this->gates.clear();
+
     if(this->tileArrangement != NULL)
     {
         int i, j;
