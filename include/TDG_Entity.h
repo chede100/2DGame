@@ -29,6 +29,7 @@ class TDG_Entity
         int getImageHight();
         TDG_ImageList* getCurrentImage();
         int getAnimationID();
+        void setMovementStatus(MovementStatus status);
 
     protected:
 

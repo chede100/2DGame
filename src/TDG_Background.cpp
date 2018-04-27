@@ -206,20 +206,6 @@ bool TDG_Background::isGate(int row, int column)
     return false;
 }
 
-int TDG_Background::gateDestination(int row, int column)
-{
-    for(list<Gate>::const_iterator it = this->gates.begin(), end = this->gates.end(); it != end; it++)
-    {
-        if(it->row == row)
-        {
-            if(it->column == column)
-                return it->destination;
-        }
-    }
-
-    return 0;
-}
-
 SDL_Texture* TDG_Background::getTileImage(int id)
 {
     TDG_StoredTiles* tmp = this->sTiles;
@@ -254,4 +240,16 @@ int TDG_Background::getTileRows()
 int TDG_Background::getTileColumns()
 {
     return this->tileColumns;
+}
+
+void TDG_Background::getGate(Gate* gate, int row, int column)
+{
+    for(list<Gate>::const_iterator it = this->gates.begin(), end = this->gates.end(); it != end; it++)
+    {
+        if(it->row == row)
+        {
+            if(it->column == column)
+                *gate = *it;
+        }
+    }
 }

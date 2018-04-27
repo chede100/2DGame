@@ -85,6 +85,6 @@ flip:
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-player: 128 96 s_south
 npc:
 obj: 2 160 64 s_south 2 300 45 s_south 2 460 36 s_south 2 230 180 s_south 3 62 64 s_south 3 65 70 s_south 3 58 75 s_south 3 60 85 s_south
+gates: 1 1 1 s_south 1 1

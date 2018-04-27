@@ -21,12 +21,12 @@ class TDG_Background
 
         bool isTileImpassable(int row, int column);
         bool isGate(int row, int column);
-        int gateDestination(int row, int column);
 
         int getTileWidth();
         int getTileHight();
         int getTileRows();
         int getTileColumns();
+        void getGate(Gate* gate, int row, int column);
 
     protected:
 

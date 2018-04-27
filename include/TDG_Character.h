@@ -16,6 +16,8 @@ class TDG_Character : public TDG_Entity
         //move character and check collision, if collision is detected move back
         void moveAndCollision(TDG_EntityList* elist, TDG_Background* bground);
 
+        void adjust(int posX, int posY, MovementStatus status);
+
         bool isMoveable();
 
     protected:

@@ -1,0 +1,2 @@
+npc/obj: entityID posX posY startAnimation
+gates: gateID row column arrivalDirection destinationRoomID destinationGateID

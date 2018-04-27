@@ -115,6 +115,38 @@ bool TDG_StoredEntityAnimations::remove(EntityTyp typ, int animationID)
     return false;
 }
 
+bool TDG_StoredEntityAnimations::removeAllExcept(EntityTyp typ, int animationID)
+{
+    TDG_EntityAnimationsList* tmp = this->eAniL;
+    while(tmp != NULL)
+    {
+        if((tmp->getEntityAnimations()->getTyp() == typ) && (tmp->getEntityAnimations()->getID() == animationID))
+        {
+            //save the exception by deleting the reference on it from the list
+            TDG_EntityAnimations* expt = tmp->getEntityAnimations();
+            tmp->setEntityAnimations(NULL);
+
+            //delete whole list
+            TDG_EntityAnimationsList* del = this->eAniL;
+            TDG_EntityAnimationsList* next;
+            while(del != NULL)
+            {
+                next = del->getNext();
+                delete del;
+                del = next;
+            }
+
+            this->eAniL = new TDG_EntityAnimationsList();
+            this->eAniL->setEntityAnimations(expt);
+
+            return true;
+        }
+        tmp = tmp->getNext();
+    }
+
+    return false;
+}
+
 bool TDG_StoredEntityAnimations::isStored(EntityTyp typ, int animationID)
 {
     TDG_EntityAnimationsList* tmp = this->eAniL;

@@ -101,6 +101,13 @@ bool TDG_Character::collisionDetection(TDG_EntityList* eList, TDG_Background* bg
     return false;
 }
 
+void TDG_Character::adjust(int posX, int posY, MovementStatus status)
+{
+    this->getPos()->setPosX((double)posX);
+    this->getPos()->setPosY((double)posY);
+    this->setMovementStatus(status);
+}
+
 bool TDG_Character::collisionWith(TDG_Entity* entity, int speedX, int speedY)
 {
     if((this->getCBox() == NULL) || (entity->getCBox() == NULL))

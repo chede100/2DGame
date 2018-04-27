@@ -46,11 +46,9 @@ bool TDG_Game::init()
         return false;
     }
 
-    //SDL_RenderSetLogicalSize(gui->getRenderer(), 640, 480);
-
     //create game board (load background, entity animation images etc.)
     this->board = new TDG_GameBoard();
-    if(!this->board->create(this->gui, specs))
+    if(!this->board->init(this->gui, specs))
     {
         cout << "Unable to create game board!" << endl;
         delete specs;
@@ -73,7 +71,8 @@ bool TDG_Game::start()
 
 void TDG_Game::gameloop()
 {
-    while(!this->event->quit())
+    bool quit = false;
+    while(!this->event->quit() && !quit)
     {
         this->board->userInput(this->event->playerMovement());
 
@@ -88,13 +87,20 @@ void TDG_Game::gameloop()
             break;
         }
 
-        int destination = 0;
-        if(this->board->throughGate(&destination))
+        //change room on gate collision
+        Gate enterGate = {0, 0, 0, noStatus, 0, 0};
+        if(this->board->throughGate(&enterGate))
         {
             TDG_GameSpecs* newRoom = new TDG_GameSpecs();
-            newRoom->loadRoom(destination);
+            newRoom->loadRoom(enterGate.destinationRoomID);
 
-            this->board->changeRoom(newRoom);
+            if(!this->board->changeRoom(this->gui, newRoom->getRoom(), &enterGate))
+            {
+                cout << "Failed to change room." << endl;
+                quit = true;
+            }
+
+            delete newRoom;
         }
 
         ////////////////////////////////////////////////////////////////////

@@ -204,6 +204,11 @@ int TDG_Entity::getAnimationID()
     return this->animationID;
 }
 
+void TDG_Entity::setMovementStatus(MovementStatus status)
+{
+    this->curStatus = status;
+}
+
 AnimationTyp TDG_Entity::convertStatusToAnimationTyp(MovementStatus status)
 {
     if((status == s_east) || (status == s_north_east) || (status == s_west) || (status == s_north_west) || (status == s_south_east) || (status == s_south_west))

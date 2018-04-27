@@ -20,81 +20,21 @@ TDG_GameBoard::~TDG_GameBoard()
         delete this->entities;
 }
 
-bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
+bool TDG_GameBoard::init(TDG_GUI* gui, TDG_GameSpecs* specs)
 {
-    this->roomName = specs->getRoom()->roomName;
-
-    //Create background
-    this->backg = new TDG_Background();
-    if(!this->backg->create(gui, specs->getRoom()))
-    {
-        cout << "Unable to create background!" << endl;
-        return false;
-    }
-
-    //*************************************************************************************
-    //Load and store all necessary entity graphics (animations from Player, NPC, Objects)
     this->entityGraphics = new TDG_StoredEntityAnimations();
 
-    //Store all npc graphics/animations
-    list<Entity>::const_iterator it, e;
-    for (it = specs->getRoom()->npc.begin(), e = specs->getRoom()->npc.end(); it != e; it++)
-    {
-        if(!this->entityGraphics->isStored(Character, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, Character, it->animationID);
-    }
+    this->entities = new TDG_EntityHandler();
 
-    //Store all object graphics/animations
-    for (it = specs->getRoom()->obj.begin(), e = specs->getRoom()->obj.end(); it != e; it++)
+    //create the room and init all entities
+    if(!createRoom(gui, specs->getRoom()))
     {
-        if(!this->entityGraphics->isStored(Object, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, Object, it->animationID);
+        cout << "Unable to create room." << endl;
+        return false;
     }
-
     //Store player graphics/animations
     if(!this->entityGraphics->isStored(Character, specs->getSPoint()->player.animationID))
         this->entityGraphics->loadAndAdd(gui, Character, specs->getSPoint()->player.animationID);
-
-    //***************************************************************************************
-    //Create EntityHandler and initialize all entities
-    this->entities = new TDG_EntityHandler();
-    this->entities->enableCollision(this->backg);
-
-    //create all npc
-    for (it = specs->getRoom()->npc.begin(), e = specs->getRoom()->npc.end(); it != e; it++)
-    {
-        TDG_Character* chara = new TDG_Character();
-        chara->init(*it, Character, false);
-        //bind npc animations to the npc
-        if(!chara->assignAnimations(this->entityGraphics))
-        {
-            cout << "Unable to bind animations to npc " << it->name << "!" << endl;
-            return false;
-        }
-        //bind cBox to character
-        chara->bindCBox();
-
-        //add the npc to the list of all entities
-        this->entities->add(chara);
-    }
-
-    //create all room objects
-    for (it = specs->getRoom()->obj.begin(), e = specs->getRoom()->obj.end(); it != e; it++)
-    {
-        TDG_Object* obj = new TDG_Object();
-        obj->init(*it, Object);
-        //bind object animations to the object
-        if(!obj->assignAnimations(this->entityGraphics))
-        {
-            cout << "Unable to bind animations to obj " << it->name << "!" << endl;
-            return false;
-        }
-        //bind cBox to object
-        obj->bindCBox();
-
-        //add the object to the list of all entities
-        this->entities->add(obj);
-    }
 
     //create player
     this->player = new TDG_Character();
@@ -131,34 +71,150 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     return true;
 }
 
+bool TDG_GameBoard::createRoom(TDG_GUI* gui, Room* room)
+{
+    this->roomName = room->roomName;
+    this->roomID = room->roomID;
+
+    //Create background
+    this->backg = new TDG_Background();
+    if(!this->backg->create(gui, room))
+    {
+        cout << "Unable to create background!" << endl;
+        return false;
+    }
+
+    //collision enabled
+    this->entities->enableCollision(this->backg);
+
+    //*************************************************************************************
+    //Load and store all necessary entity graphics (animations from Player, NPC, Objects)
+    //Store all npc graphics/animations
+    list<Entity>::const_iterator it, e;
+    for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
+    {
+        if(!this->entityGraphics->isStored(Character, it->animationID))
+            this->entityGraphics->loadAndAdd(gui, Character, it->animationID);
+    }
+
+    //Store all object graphics/animations
+    for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
+    {
+        if(!this->entityGraphics->isStored(Object, it->animationID))
+            this->entityGraphics->loadAndAdd(gui, Object, it->animationID);
+    }
+    //***************************************************************************************
+    //create all npc
+    for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
+    {
+        TDG_Character* chara = new TDG_Character();
+        chara->init(*it, Character, false);
+        //bind npc animations to the npc
+        if(!chara->assignAnimations(this->entityGraphics))
+        {
+            cout << "Unable to bind animations to npc " << it->name << "!" << endl;
+            return false;
+        }
+        //bind cBox to character
+        chara->bindCBox();
+
+        //add the npc to the list of all entities
+        this->entities->add(chara);
+    }
+
+    //create all room objects
+    for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
+    {
+        TDG_Object* obj = new TDG_Object();
+        obj->init(*it, Object);
+        //bind object animations to the object
+        if(!obj->assignAnimations(this->entityGraphics))
+        {
+            cout << "Unable to bind animations to obj " << it->name << "!" << endl;
+            return false;
+        }
+        //bind cBox to object
+        obj->bindCBox();
+
+        //add the object to the list of all entities
+        this->entities->add(obj);
+    }
+
+    return true;
+}
+
 void TDG_GameBoard::userInput(Direction dir)
 {
     this->player->changeMovementStatus(dir);
 }
 
-bool TDG_GameBoard::throughGate(int* destination)
+bool TDG_GameBoard::throughGate(Gate* enterGate)
 {
     //get the tiles position (row, column) on which the center, of the player, stands
     int playerRow = (this->player->getCBox()->getPosY() + this->player->getCBox()->getHight()/2)/this->backg->getTileHight();
     int playerColumn = (this->player->getCBox()->getPosX() + this->player->getCBox()->getWidth()/2)/this->backg->getTileWidth();
     if(this->backg->isGate(playerRow, playerColumn))
     {
-        *destination = this->backg->gateDestination(playerRow, playerColumn);
-        if(*destination == 0)
-        {
-            cout << "Invalid gate destination!" << endl;
-            return false;
-        }
+        this->backg->getGate(enterGate, playerRow, playerColumn);
         return true;
     }
 
     return false;
 }
 
-void TDG_GameBoard::changeRoom(Room* newRoom)
+bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Room* newRoom, Gate* enterGate)
 {
-    this->entities->deleteAllExcept(this->player):
-    this->entityGraphics->deleteAllExcept(this->player->getAnimationID());
+    if(this->entities->removeAllExcept(this->player))
+    {
+        if(this->entityGraphics->removeAllExcept(Character, this->player->getAnimationID()))
+        {
+            delete this->backg;
+
+            int prevRoomID = this->roomID;
+
+            if(!createRoom(gui, newRoom))
+            {
+                cout << "Unable to change room. New room cant be created!" << endl;
+                return false;
+            }
+
+            //search arrival gate
+            for(list<Gate>::const_iterator it = newRoom->gates.begin(), end = newRoom->gates.end(); it != end; it++)
+            {
+                if(it->id == enterGate->destinationGateID)
+                {
+                    int posXGate = it->column*this->backg->getTileHight();
+                    int posYGate = it->row*this->backg->getTileWidth();
+                    int tileWidth = this->backg->getTileWidth();
+                    int tileHight = this->backg->getTileHight();
+                    //place player above the arrival gate
+                    if(it->arriveStatus == s_north)
+                        this->player->adjust(posXGate + tileWidth/2 - this->player->getImageWidth()/2, posYGate - this->player->getImageHight() - 1, s_north);
+                    //place the player right next to the arrival gate
+                    else if(it->arriveStatus == s_east)
+                        this->player->adjust(posXGate + tileWidth + 1, posYGate + tileHight/2 - this->player->getImageHight()/2 , s_east);
+                    //place the player below the arrival gate
+                    else if(it->arriveStatus == s_south)
+                        this->player->adjust(posXGate + tileWidth/2 - this->player->getImageWidth()/2, posYGate + tileHight + 1, s_south);
+                    //place the player left next to the arrival gate
+                    else if(it->arriveStatus == s_west)
+                        this->player->adjust(posXGate - this->player->getImageWidth() - 1, posYGate + tileHight/2 - this->player->getImageHight()/2, s_west);
+                }
+            }
+        }
+        else
+        {
+            cout << "Unable to change room. Entity animation unsuccessfully removed." << endl;
+            return false;
+        }
+    }
+    else
+    {
+        cout << "Unable to change room. Entities unsuccessfully removed." << endl;
+        return false;
+    }
+
+    return true;
 }
 
 void TDG_GameBoard::startTimer()

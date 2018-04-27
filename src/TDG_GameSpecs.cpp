@@ -106,6 +106,8 @@ bool TDG_GameSpecs::loadRoom(int roomID)
         return false;
     }
 
+    this->room->roomID = roomID;
+
     string rPath = "./data/spec/room/";
     ostringstream ss;
     ss << roomID;
@@ -419,9 +421,23 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                 while(!entries.empty() && (entries.size() >= 3))
                 {
                     Gate newGate;
+                    newGate.id = nextInt(entries);
                     newGate.row = nextInt(entries);
                     newGate.column = nextInt(entries);
-                    newGate.destination = nextInt(entries);
+
+                    string arriveGateDir;
+                    nextString(entries, arriveGateDir);
+                    MovementStatus status = stringToMoveStatus(arriveGateDir);
+                    if(status == noStatus)
+                    {
+                        cout << "Unable to load gate arrive direction." << endl;
+                        room.close();
+                        return false;
+                    }
+                    newGate.arriveStatus = status;
+
+                    newGate.destinationRoomID = nextInt(entries);
+                    newGate.destinationGateID = nextInt(entries);
 
                     this->room->gates.push_back(newGate);
                 }

@@ -38,9 +38,12 @@ typedef struct
 
 typedef struct
 {
+    int id;
     int row;
     int column;
-    int destination;
+    MovementStatus arriveStatus;
+    int destinationRoomID;
+    int destinationGateID;
 }Gate;
 
 typedef struct
@@ -52,6 +55,7 @@ typedef struct
 typedef struct
 {
     string roomName;
+    int roomID;
     list<Entity> npc;
     list<Entity> obj;
 

@@ -35,4 +35,4 @@ flip:
 0 0 0 0 0 0 0 0 0 0 0
 npc: 2 250 65 s_west   1 62 90 s_east
 obj: 1 275 120 s_south
-gates: 1 5 2    3 1 2
+gates: 1 1 5 s_south 2 1   2 3 1 s_east 2 1
