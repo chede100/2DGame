@@ -20,6 +20,8 @@ class TDG_Background
         bool renderAtPos(TDG_GUI* gui, int x, int y);
 
         bool isTileImpassable(int row, int column);
+        bool isGate(int row, int column);
+        int gateDestination(int row, int column);
 
         int getTileWidth();
         int getTileHight();
@@ -35,8 +37,9 @@ class TDG_Background
         int tileWidth, tileHight;
 
         TDG_StoredTiles* sTiles;
-
         TDG_Tile*** tileArrangement;
+
+        list<Gate> gates;
 };
 
 #endif // TDG_BACKGROUND_H

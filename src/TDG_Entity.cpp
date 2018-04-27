@@ -199,6 +199,11 @@ TDG_ImageList* TDG_Entity::getCurrentImage()
     return this->currentImage;
 }
 
+int TDG_Entity::getAnimationID()
+{
+    return this->animationID;
+}
+
 AnimationTyp TDG_Entity::convertStatusToAnimationTyp(MovementStatus status)
 {
     if((status == s_east) || (status == s_north_east) || (status == s_west) || (status == s_north_west) || (status == s_south_east) || (status == s_south_west))

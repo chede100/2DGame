@@ -140,6 +140,10 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         }
     }
 
+    //************************************************************************
+    //save gates
+    this->gates = room->gates;
+
     return true;
 }
 
@@ -186,6 +190,34 @@ bool TDG_Background::isTileImpassable(int row, int column)
     }
 
     return this->tileArrangement[row][column]->isImpassable();
+}
+
+bool TDG_Background::isGate(int row, int column)
+{
+    for(list<Gate>::const_iterator it = this->gates.begin(), end = this->gates.end(); it != end; it++)
+    {
+        if(it->row == row)
+        {
+            if(it->column == column)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+int TDG_Background::gateDestination(int row, int column)
+{
+    for(list<Gate>::const_iterator it = this->gates.begin(), end = this->gates.end(); it != end; it++)
+    {
+        if(it->row == row)
+        {
+            if(it->column == column)
+                return it->destination;
+        }
+    }
+
+    return 0;
 }
 
 SDL_Texture* TDG_Background::getTileImage(int id)

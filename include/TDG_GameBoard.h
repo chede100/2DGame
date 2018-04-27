@@ -15,6 +15,9 @@ class TDG_GameBoard
 
         void userInput(Direction dir);
 
+        bool throughGate(int* destination);
+        void changeRoom(Room* newRoom);
+
         void startTimer();
         void stopTimer();
 

@@ -81,13 +81,22 @@ void TDG_Game::gameloop()
         int before, delay;                                                //
         before = (int)SDL_GetTicks();                                     //
         ////////////////////////////////////////////////////////////////////
-                                                                          //
-        if(!this->board->render(this->gui))                               //
-        {                                                                 //
-            cout << "Failed on rendering game board!" << endl;            //
-            break;                                                        //
-        }                                                                 //
-                                                                          //
+
+        if(!this->board->render(this->gui))
+        {
+            cout << "Failed on rendering game board!" << endl;
+            break;
+        }
+
+        int destination = 0;
+        if(this->board->throughGate(&destination))
+        {
+            TDG_GameSpecs* newRoom = new TDG_GameSpecs();
+            newRoom->loadRoom(destination);
+
+            this->board->changeRoom(newRoom);
+        }
+
         ////////////////////////////////////////////////////////////////////
         delay = 1000/gui->getFPSCap() - ((int) SDL_GetTicks() - before);  //
                                                                           //

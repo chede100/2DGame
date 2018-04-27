@@ -28,6 +28,7 @@ class TDG_Entity
         int getImageWidth();
         int getImageHight();
         TDG_ImageList* getCurrentImage();
+        int getAnimationID();
 
     protected:
 

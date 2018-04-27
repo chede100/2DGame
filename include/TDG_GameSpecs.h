@@ -25,29 +25,37 @@ typedef struct
 
 typedef struct
 {
-    int roomID;
-}SavePoint;
-
-typedef struct
-{
     int id;
     int posX;
     int posY;
+    MovementStatus firstStatus;
 
     string name;
     int animationID;
     int width, hight;
     double speed;
-    MovementStatus firstStatus;
-
 }Entity;
 
 typedef struct
 {
-    string roomName;
+    int row;
+    int column;
+    int destination;
+}Gate;
+
+typedef struct
+{
+    int roomID;
     Entity player;
+}SavePoint;
+
+typedef struct
+{
+    string roomName;
     list<Entity> npc;
     list<Entity> obj;
+
+    list<Gate> gates;
 
     list<int> tileIDs;
     int tileRows;
@@ -66,6 +74,7 @@ class TDG_GameSpecs
         virtual ~TDG_GameSpecs();
 
         bool load();
+        bool loadRoom(int roomID);
 
         Room* getRoom();
         Options* getOpt();
@@ -74,7 +83,6 @@ class TDG_GameSpecs
     protected:
 
     private:
-        bool loadRoom(int roomID);
         bool loadSPoint();
         bool loadOpt();
 

@@ -6,6 +6,11 @@ TDG_GameSpecs::TDG_GameSpecs()
     this->room = new Room();
     this->sPoint = new SavePoint();
 
+    this->sPoint->roomID = 0;
+    this->sPoint->player.id = 0;
+    this->sPoint->player.posX = 0;
+    this->sPoint->player.posY = 0;
+
     this->opt->fpsCap = 0;
     this->opt->fullscreen = false;
     this->opt->winHight = 0;
@@ -13,13 +18,8 @@ TDG_GameSpecs::TDG_GameSpecs()
 
     this->room->enviromentCollision = NULL;
     this->room->tileIDArrangement = NULL;
-    this->room->player.id = 0;
-    this->room->player.posX = 0;
-    this->room->player.posY = 0;
     this->room->tileColumns = 0;
     this->room->tileRows = 0;
-
-    this->sPoint->roomID = 0;
 }
 
 TDG_GameSpecs::~TDG_GameSpecs()
@@ -27,6 +27,7 @@ TDG_GameSpecs::~TDG_GameSpecs()
     this->room->npc.clear();
     this->room->obj.clear();
     this->room->tileIDs.clear();
+    this->room->gates.clear();
 
     int k;
     for(k = 0; k < this->room->tileRows; k++)
@@ -68,7 +69,7 @@ bool TDG_GameSpecs::load()
             {
                 if(!loadRoom(this->sPoint->roomID))
                 {
-                    cout << "Error while loading room file!" << endl;
+                    cout << "Error while loading room file!(ID: " << this->sPoint->roomID << ")" << endl;
                     return false;
                 }
             }
@@ -77,7 +78,7 @@ bool TDG_GameSpecs::load()
             {
                 if(!loadRoom(1))
                 {
-                    cout << "Error while loading room file!" << endl;
+                    cout << "Error while loading default room file! (ID: 1)" << endl;
                     return false;
                 }
             }
@@ -114,7 +115,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
     room.open(rPath.c_str(), ios::out);
     if(!room.is_open())
     {
-        cout << "Path " << rPath << " to Room-spezification-file is unvalid!" << endl;
+        cout << "Path " << rPath << " to Room-specification-file is invalid!" << endl;
         return false;
     }
     else
@@ -350,44 +351,6 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     }
                 }
             }
-            else if(!entry.compare("player:"))
-            {
-                if(this->room->player.id == 0)
-                {
-                    cout << "Invalid player ID! ID: 0" << endl;
-                    room.close();
-                    return false;
-                }
-
-                entries.erase(entries.begin());
-                if(!entries.empty() && (entries.size() == 3))
-                {
-                    this->room->player.posX = nextInt(entries);
-                    this->room->player.posY = nextInt(entries);
-
-                    string playerStatus;
-                    nextString(entries, playerStatus);
-                    MovementStatus status = stringToMoveStatus(playerStatus);
-                    if(status == noStatus)
-                    {
-                        cout << "Unable to load player start status." << endl;
-                        return false;
-                    }
-                    this->room->player.firstStatus = status;
-
-                    if(!loadEntity(Character, &this->room->player))
-                    {
-                        cout << "Unable to load player specifications! ID: " << this->room->player.id << endl;
-                        return false;
-                    }
-                }
-                else
-                {
-                    cout << "Invalid count of arguments in " << rPath << " at statement -player-!"<< endl;
-                    room.close();
-                    return false;
-                }
-            }
             else if(!entry.compare("npc:"))
             {
                 entries.erase(entries.begin());
@@ -404,6 +367,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     if(status == noStatus)
                     {
                         cout << "Unable to load npc start status." << endl;
+                        room.close();
                         return false;
                     }
                     newNPC.firstStatus = status;
@@ -411,6 +375,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     if(!loadEntity(Character, &newNPC))
                     {
                         cout << "Unable to load npc specifications! ID: " << newNPC.id << endl;
+                        room.close();
                         return false;
                     }
 
@@ -433,6 +398,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     if(status == noStatus)
                     {
                         cout << "Unable to load object start status." << endl;
+                        room.close();
                         return false;
                     }
                     newObj.firstStatus = status;
@@ -440,10 +406,24 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     if(!loadEntity(Object, &newObj))
                     {
                         cout << "Unable to load object specifications! ID: " << newObj.id << endl;
+                        room.close();
                         return false;
                     }
 
                     this->room->obj.push_back(newObj);
+                }
+            }
+            else if(!entry.compare("gates:"))
+            {
+                entries.erase(entries.begin());
+                while(!entries.empty() && (entries.size() >= 3))
+                {
+                    Gate newGate;
+                    newGate.row = nextInt(entries);
+                    newGate.column = nextInt(entries);
+                    newGate.destination = nextInt(entries);
+
+                    this->room->gates.push_back(newGate);
                 }
             }
         }
@@ -470,21 +450,7 @@ bool TDG_GameSpecs::loadSPoint()
             vector<string> entries = split(line, ' ');
             string entry =  entries.front();
 
-            if(!entry.compare("playerCharacterID:"))
-            {
-                entries.erase(entries.begin());
-                if(!entries.empty() && (entries.size() == 1))
-                {
-                    this->room->player.id = nextInt(entries);
-                }
-                else
-                {
-                    cout << "Invalid count of arguments in " << spPath << " at statement -playerCharacterID-!"<< endl;
-                    saveP.close();
-                    return false;
-                }
-            }
-            else if(!entry.compare("roomID:"))
+            if(!entry.compare("roomID:"))
             {
                 entries.erase(entries.begin());
                 if(!entries.empty() && (entries.size() == 1))
@@ -494,6 +460,40 @@ bool TDG_GameSpecs::loadSPoint()
                 else
                 {
                     cout << "Invalid count of arguments in " << spPath << " at statement -roomID-!"<< endl;
+                    saveP.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("player:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() >= 4))
+                {
+                    this->sPoint->player.id = nextInt(entries);
+                    this->sPoint->player.posX = nextInt(entries);
+                    this->sPoint->player.posY = nextInt(entries);
+
+                    string playerStatus;
+                    nextString(entries, playerStatus);
+                    MovementStatus status = stringToMoveStatus(playerStatus);
+                    if(status == noStatus)
+                    {
+                        cout << "Unable to load player start status." << endl;
+                        saveP.close();
+                        return false;
+                    }
+                    this->sPoint->player.firstStatus = status;
+
+                    if(!loadEntity(Character, &this->sPoint->player))
+                    {
+                        cout << "Unable to load player specifications! ID: " << this->sPoint->player.id << endl;
+                        saveP.close();
+                        return false;
+                    }
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << spPath << " at statement -player-!"<< endl;
                     saveP.close();
                     return false;
                 }

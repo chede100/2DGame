@@ -52,8 +52,8 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
     }
 
     //Store player graphics/animations
-    if(!this->entityGraphics->isStored(Character, specs->getRoom()->player.animationID))
-        this->entityGraphics->loadAndAdd(gui, Character, specs->getRoom()->player.animationID);
+    if(!this->entityGraphics->isStored(Character, specs->getSPoint()->player.animationID))
+        this->entityGraphics->loadAndAdd(gui, Character, specs->getSPoint()->player.animationID);
 
     //***************************************************************************************
     //Create EntityHandler and initialize all entities
@@ -98,7 +98,7 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
 
     //create player
     this->player = new TDG_Character();
-    this->player->init(specs->getRoom()->player, Character, true);
+    this->player->init(specs->getSPoint()->player, Character, true);
     //bind player animations to the players character
     if(!this->player->assignAnimations(this->entityGraphics))
     {
@@ -134,6 +134,31 @@ bool TDG_GameBoard::create(TDG_GUI* gui, TDG_GameSpecs* specs)
 void TDG_GameBoard::userInput(Direction dir)
 {
     this->player->changeMovementStatus(dir);
+}
+
+bool TDG_GameBoard::throughGate(int* destination)
+{
+    //get the tiles position (row, column) on which the center, of the player, stands
+    int playerRow = (this->player->getCBox()->getPosY() + this->player->getCBox()->getHight()/2)/this->backg->getTileHight();
+    int playerColumn = (this->player->getCBox()->getPosX() + this->player->getCBox()->getWidth()/2)/this->backg->getTileWidth();
+    if(this->backg->isGate(playerRow, playerColumn))
+    {
+        *destination = this->backg->gateDestination(playerRow, playerColumn);
+        if(*destination == 0)
+        {
+            cout << "Invalid gate destination!" << endl;
+            return false;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+void TDG_GameBoard::changeRoom(Room* newRoom)
+{
+    this->entities->deleteAllExcept(this->player):
+    this->entityGraphics->deleteAllExcept(this->player->getAnimationID());
 }
 
 void TDG_GameBoard::startTimer()
