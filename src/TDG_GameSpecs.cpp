@@ -710,6 +710,20 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
                     return false;
                 }
             }
+            else if(!entry.compare("scale:"))
+            {
+               entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
+                {
+                    e->scale = nextDouble(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -scale-!"<< endl;
+                    entity.close();
+                    return false;
+                }
+            }
         }
         entity.close();
     }

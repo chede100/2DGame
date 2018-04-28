@@ -26,6 +26,7 @@ void TDG_Entity::init(Entity entity, EntityTyp typ)
     this->name = entity.name;
     this->id = entity.id;
     this->animationID = entity.animationID;
+    this->scale = entity.scale;
 
     this->pos->setPosX((double)entity.posX);
     this->pos->setPosY((double)entity.posY);
@@ -48,8 +49,8 @@ void TDG_Entity::bindCBox()
     }
     else
     {
-        int xCorrection = (this->animations->getImagesWidth() - this->cBox->getWidth())/2;
-        int yCorrection = this->animations->getImagesHight() - this->cBox->getHight();
+        int xCorrection = (this->animations->getImagesWidth()*this->scale - this->cBox->getWidth())/2;
+        int yCorrection = this->animations->getImagesHight()*this->scale - this->cBox->getHight();
         //bind cBox to the position of the entity
         this->getCBox()->bindToPosition(this->getPos(), xCorrection, yCorrection);
     }
@@ -96,8 +97,8 @@ void TDG_Entity::render(TDG_GUI* gui, TDG_View* view)
 {
     int x = this->pos->getPosX() - view->getPosX();
     int y = this->pos->getPosY() - view->getPosY();
-    int width = this->animations->getImagesWidth()*gui->getScaleFactor();
-    int hight = this->animations->getImagesHight()*gui->getScaleFactor();
+    int width = this->animations->getImagesWidth()*this->scale;
+    int hight = this->animations->getImagesHight()*this->scale;
 
     SDL_Rect rect = {x, y, width, hight};
 
@@ -186,12 +187,12 @@ EntityTyp TDG_Entity::getTyp()
 
 int TDG_Entity::getImageWidth()
 {
-    return this->animations->getImagesWidth();
+    return this->animations->getImagesWidth()*this->scale;
 }
 
 int TDG_Entity::getImageHight()
 {
-    return this->animations->getImagesHight();
+    return this->animations->getImagesHight()*this->scale;
 }
 
 TDG_ImageList* TDG_Entity::getCurrentImage()

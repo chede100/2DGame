@@ -32,6 +32,7 @@ typedef struct
 
     string name;
     int animationID;
+    double scale;
     int width, hight;
     double speed;
 }Entity;

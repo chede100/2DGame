@@ -38,6 +38,7 @@ class TDG_Entity
         string name;
         int id;
         int animationID;
+        double scale;
         EntityTyp typ;
 
         TDG_Position* pos;
