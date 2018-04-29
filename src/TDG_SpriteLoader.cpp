@@ -81,6 +81,7 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     if(image == NULL)
     {
         cout << "Couldnt load image from sprite sheet " << this->path << "!" << endl;
+        SDL_FreeSurface(image);
         return NULL;
     }
     SDL_Rect imageRect = {0, 0, this->imgWidth, this->imgHight};
@@ -92,6 +93,7 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     if(SDL_BlitSurface(this->sprite, &spriteRect, image, &imageRect) != 0)
     {
         cout << "Could not copy one image from sprite sheet " << this->path << " into a new image!" << endl;
+        SDL_FreeSurface(image);
         return NULL;
     }
 
@@ -100,8 +102,11 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     if(newImage == NULL)
     {
         cout << "Unable to create Texture from Surface!" << endl;
+        SDL_FreeSurface(image);
         return NULL;
     }
+
+    SDL_FreeSurface(image);
 
     return newImage;
 }

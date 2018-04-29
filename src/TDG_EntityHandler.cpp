@@ -90,7 +90,7 @@ bool TDG_EntityHandler::remove(TDG_Entity* entity)
     return false;
 }
 
-bool TDG_EntityHandler::removeAllExcept(TDG_Entity* expt)
+void TDG_EntityHandler::removeAllExcept(TDG_Entity* expt)
 {
     TDG_EntityList* tmp = this->first;
     while(tmp != NULL)
@@ -98,28 +98,25 @@ bool TDG_EntityHandler::removeAllExcept(TDG_Entity* expt)
         if(tmp->getEntity() == expt)
         {
             tmp->setEntity(NULL);
-
-            //if exception is found delete the list
-            TDG_EntityList* del = this->first;
-            TDG_EntityList* next;
-
-            while(del != NULL)
-            {
-                next = del->getNext();
-                delete del;
-                del = next;
-            }
-
-            //add the entity to the new list
-            this->first = new TDG_EntityList();
-            this->first->setEntity(expt);
-
-            return true;
+            break;
         }
+
         tmp = tmp->getNext();
     }
 
-    return false;
+    //delete the list
+    TDG_EntityList* del = this->first;
+    TDG_EntityList* next;
+    while(del != NULL)
+    {
+        next = del->getNext();
+        delete del;
+        del = next;
+    }
+
+    //add the entity to the new list
+    this->first = new TDG_EntityList();
+    this->first->setEntity(expt);
 }
 
 void TDG_EntityHandler::render(TDG_GUI* gui, TDG_View* view)

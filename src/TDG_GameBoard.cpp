@@ -164,52 +164,39 @@ bool TDG_GameBoard::throughGate(Gate* enterGate)
 
 bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Room* newRoom, Gate* enterGate)
 {
-    if(this->entities->removeAllExcept(this->player))
-    {
-        if(this->entityGraphics->removeAllExcept(Character, this->player->getAnimationID()))
-        {
-            delete this->backg;
+    this->entityGraphics->removeAllExcept(Character, this->player->getAnimationID());
+    this->entities->removeAllExcept(this->player);
 
-            if(!createRoom(gui, newRoom))
-            {
-                cout << "Unable to change room. New room cant be created!" << endl;
-                return false;
-            }
+    delete this->backg;
 
-            //search arrival gate
-            for(list<Gate>::const_iterator it = newRoom->gates.begin(), end = newRoom->gates.end(); it != end; it++)
-            {
-                if(it->id == enterGate->destinationGateID)
-                {
-                    int posXGate = it->column*this->backg->getTileHight();
-                    int posYGate = it->row*this->backg->getTileWidth();
-                    int tileWidth = this->backg->getTileWidth();
-                    int tileHight = this->backg->getTileHight();
-                    //place player above the arrival gate
-                    if(it->arriveStatus == s_north)
-                        this->player->adjust(posXGate + tileWidth/2 - this->player->getImageWidth()/2, posYGate - this->player->getImageHight() - 1, s_north);
-                    //place the player right next to the arrival gate
-                    else if(it->arriveStatus == s_east)
-                        this->player->adjust(posXGate + tileWidth + 1, posYGate + tileHight/2 - this->player->getImageHight()/2 , s_east);
-                    //place the player below the arrival gate
-                    else if(it->arriveStatus == s_south)
-                        this->player->adjust(posXGate + tileWidth/2 - this->player->getImageWidth()/2, posYGate + tileHight + 1, s_south);
-                    //place the player left next to the arrival gate
-                    else if(it->arriveStatus == s_west)
-                        this->player->adjust(posXGate - this->player->getImageWidth() - 1, posYGate + tileHight/2 - this->player->getImageHight()/2, s_west);
-                }
-            }
-        }
-        else
-        {
-            cout << "Unable to change room. Entity animation unsuccessfully removed." << endl;
-            return false;
-        }
-    }
-    else
+    if(!createRoom(gui, newRoom))
     {
-        cout << "Unable to change room. Entities unsuccessfully removed." << endl;
+        cout << "Unable to change room. New room cant be created!" << endl;
         return false;
+    }
+
+    //search arrival gate
+    for(list<Gate>::const_iterator it = newRoom->gates.begin(), end = newRoom->gates.end(); it != end; it++)
+    {
+        if(it->id == enterGate->destinationGateID)
+        {
+            int posXGate = it->column*this->backg->getTileHight();
+            int posYGate = it->row*this->backg->getTileWidth();
+            int tileWidth = this->backg->getTileWidth();
+            int tileHight = this->backg->getTileHight();
+            //place player above the arrival gate
+            if(it->arriveStatus == s_north)
+                this->player->adjust(posXGate + tileWidth/2 - this->player->getImageWidth()/2, posYGate - this->player->getImageHight() - 1, s_north);
+            //place the player right next to the arrival gate
+            else if(it->arriveStatus == s_east)
+                this->player->adjust(posXGate + tileWidth + 1, posYGate + tileHight/2 - this->player->getImageHight()/2 , s_east);
+            //place the player below the arrival gate
+            else if(it->arriveStatus == s_south)
+                this->player->adjust(posXGate + tileWidth/2 - this->player->getImageWidth()/2, posYGate + tileHight + 1, s_south);
+            //place the player left next to the arrival gate
+            else if(it->arriveStatus == s_west)
+                this->player->adjust(posXGate - this->player->getImageWidth() - 1, posYGate + tileHight/2 - this->player->getImageHight()/2, s_west);
+        }
     }
 
     return true;

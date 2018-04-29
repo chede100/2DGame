@@ -93,6 +93,7 @@ void TDG_Game::gameloop()
         {
             this->board->stopTimer();
 
+
             TDG_GameSpecs* newRoom = new TDG_GameSpecs();
             newRoom->loadRoom(enterGate.destinationRoomID);
 
