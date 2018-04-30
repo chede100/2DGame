@@ -162,21 +162,25 @@ bool TDG_GameBoard::throughGate(Gate* enterGate)
     return false;
 }
 
-bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Room* newRoom, Gate* enterGate)
+bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Gate* enterGate)
 {
+    TDG_GameSpecs* newRoom = new TDG_GameSpecs();
+    newRoom->loadRoom(enterGate->destinationRoomID);
+
     this->entityGraphics->removeAllExcept(Character, this->player->getAnimationID());
     this->entities->removeAllExcept(this->player);
 
     delete this->backg;
+    this->backg = NULL;
 
-    if(!createRoom(gui, newRoom))
+    if(!createRoom(gui, newRoom->getRoom()))
     {
         cout << "Unable to change room. New room cant be created!" << endl;
         return false;
     }
 
     //search arrival gate
-    for(list<Gate>::const_iterator it = newRoom->gates.begin(), end = newRoom->gates.end(); it != end; it++)
+    for(list<Gate>::const_iterator it = newRoom->getRoom()->gates.begin(), end = newRoom->getRoom()->gates.end(); it != end; it++)
     {
         if(it->id == enterGate->destinationGateID)
         {
@@ -198,6 +202,8 @@ bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Room* newRoom, Gate* enterGate)
                 this->player->adjust(posXGate - this->player->getImageWidth() - 1, posYGate + tileHight/2 - this->player->getImageHight()/2, s_west);
         }
     }
+
+    delete newRoom;
 
     return true;
 }

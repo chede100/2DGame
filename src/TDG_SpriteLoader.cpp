@@ -256,8 +256,8 @@ bool TDG_SpriteLoader::loadSpriteInfo(string path)
                 }
             }
         }
+        sprite.close();
     }
-    sprite.close();
 
     return true;
 }

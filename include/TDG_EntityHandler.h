@@ -17,7 +17,7 @@ class TDG_EntityHandler
 
         void add(TDG_Entity* newEntity);
         bool remove(TDG_Entity* entity);
-        bool removeAllExcept(TDG_Entity* expt);
+        void removeAllExcept(TDG_Entity* expt);
 
         //sorts and renders the entities
         void render(TDG_GUI* gui, TDG_View* view);

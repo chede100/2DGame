@@ -37,7 +37,7 @@ class TDG_Background
         int tileWidth, tileHight;
 
         TDG_StoredTiles* sTiles;
-        TDG_Tile*** tileArrangement;
+        TDG_Tile** tileArrangement;
 
         list<Gate> gates;
 };

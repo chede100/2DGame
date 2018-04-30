@@ -2,68 +2,59 @@
 
 TDG_GameSpecs::TDG_GameSpecs()
 {
-    this->opt = new Options();
-    this->room = new Room();
-    this->sPoint = new SavePoint();
-
-    this->sPoint->roomID = 0;
-    this->sPoint->player.id = 0;
-    this->sPoint->player.posX = 0;
-    this->sPoint->player.posY = 0;
-
-    this->opt->fpsCap = 0;
-    this->opt->fullscreen = false;
-    this->opt->winHight = 0;
-    this->opt->winWidth = 0;
-
-    this->room->enviromentCollision = NULL;
-    this->room->tileIDArrangement = NULL;
-    this->room->tileColumns = 0;
-    this->room->tileRows = 0;
+    this->opt = NULL;
+    this->sPoint = NULL;
+    this->room = NULL;
 }
 
 TDG_GameSpecs::~TDG_GameSpecs()
 {
-    this->room->npc.clear();
-    this->room->obj.clear();
-    this->room->tileIDs.clear();
-    this->room->gates.clear();
-
-    int k;
-    for(k = 0; k < this->room->tileRows; k++)
+    if(this->room != NULL)
     {
-        free(this->room->tileIDArrangement[k]);
-    }
-    if(this->room->tileIDArrangement != NULL)
-        free(this->room->tileIDArrangement);
+        this->room->npc.clear();
+        this->room->obj.clear();
+        this->room->tileIDs.clear();
+        this->room->gates.clear();
 
-    int l;
-    for(l = 0; l < this->room->tileRows; l++)
-    {
-        free(this->room->enviromentCollision[l]);
-    }
-    if(this->room->enviromentCollision != NULL)
-        free(this->room->enviromentCollision);
+        int k;
+        for(k = 0; k < this->room->tileRows; k++)
+        {
+            free(this->room->tileIDArrangement[k]);
+        }
+        if(this->room->tileIDArrangement != NULL)
+            free(this->room->tileIDArrangement);
 
-    int m;
-    for(m = 0; m < this->room->tileRows; m++)
-    {
-        free(this->room->tileRotationDegree[m]);
-    }
-    if(this->room->tileRotationDegree != NULL)
-        free(this->room->tileRotationDegree);
+        int l;
+        for(l = 0; l < this->room->tileRows; l++)
+        {
+            free(this->room->enviromentCollision[l]);
+        }
+        if(this->room->enviromentCollision != NULL)
+            free(this->room->enviromentCollision);
 
-    int n;
-    for(n = 0; n < this->room->tileRows; n++)
-    {
-        free(this->room->flipTile[n]);
-    }
-    if(this->room->flipTile != NULL)
-        free(this->room->flipTile);
+        int m;
+        for(m = 0; m < this->room->tileRows; m++)
+        {
+            free(this->room->tileRotationDegree[m]);
+        }
+        if(this->room->tileRotationDegree != NULL)
+            free(this->room->tileRotationDegree);
 
-    delete this->opt;
-    delete this->room;
-    delete this->sPoint;
+        int n;
+        for(n = 0; n < this->room->tileRows; n++)
+        {
+            free(this->room->flipTile[n]);
+        }
+        if(this->room->flipTile != NULL)
+            free(this->room->flipTile);
+
+        delete this->room;
+    }
+
+    if(this->opt != NULL)
+        delete this->opt;
+    if(this->sPoint != NULL)
+        delete this->sPoint;
 }
 
 bool TDG_GameSpecs::load()
@@ -107,6 +98,12 @@ bool TDG_GameSpecs::load()
 
 bool TDG_GameSpecs::loadRoom(int roomID)
 {
+    this->room = new Room();
+    this->room->enviromentCollision = NULL;
+    this->room->tileIDArrangement = NULL;
+    this->room->tileColumns = 0;
+    this->room->tileRows = 0;
+
     if(roomID <= 0)
     {
         cout << "Room ID not valid. Couldnt load room!" << endl;
@@ -457,6 +454,12 @@ bool TDG_GameSpecs::loadRoom(int roomID)
 
 bool TDG_GameSpecs::loadSPoint()
 {
+    this->sPoint = new SavePoint();
+    this->sPoint->roomID = 0;
+    this->sPoint->player.id = 0;
+    this->sPoint->player.posX = 0;
+    this->sPoint->player.posY = 0;
+
     string spPath = "./game.savepoint";
     ifstream saveP;
     saveP.open(spPath.c_str(), ios::out);
@@ -529,6 +532,12 @@ bool TDG_GameSpecs::loadSPoint()
 
 bool TDG_GameSpecs::loadOpt()
 {
+    this->opt = new Options();
+    this->opt->fpsCap = 0;
+    this->opt->fullscreen = false;
+    this->opt->winHight = 0;
+    this->opt->winWidth = 0;
+
     string oPath = "./game.options";
     ifstream opt;
     opt.open(oPath.c_str(), ios::out);

@@ -16,7 +16,7 @@ class TDG_GameBoard
         void userInput(Direction dir);
 
         bool throughGate(Gate* enterGate);
-        bool changeRoom(TDG_GUI* gui, Room* newRoom, Gate* enterGate);
+        bool changeRoom(TDG_GUI* gui, Gate* enterGate);
 
         void startTimer();
         void stopTimer();

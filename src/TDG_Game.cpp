@@ -93,17 +93,11 @@ void TDG_Game::gameloop()
         {
             this->board->stopTimer();
 
-
-            TDG_GameSpecs* newRoom = new TDG_GameSpecs();
-            newRoom->loadRoom(enterGate.destinationRoomID);
-
-            if(!this->board->changeRoom(this->gui, newRoom->getRoom(), &enterGate))
+            if(!this->board->changeRoom(this->gui, &enterGate))
             {
                 cout << "Failed to change room." << endl;
                 quit = true;
             }
-
-            delete newRoom;
 
             this->board->startTimer();
         }

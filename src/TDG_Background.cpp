@@ -16,31 +16,17 @@ TDG_Background::~TDG_Background()
 
     if(this->tileArrangement != NULL)
     {
-        int i, j;
-        for(i = 0; i < this->tileRows; i++)
-        {
-            for(j = 0; j < this->tileColumns; j++)
-            {
-                if(this->tileArrangement[i][j] != NULL)
-                    delete this->tileArrangement[i][j];
-            }
-        }
+        for(int k = 0; k < this->tileRows; k++)
+            delete [] this->tileArrangement[k];
 
-        int k;
-        for(k = 0; k < this->tileRows; k++)
-        {
-            if(this->tileArrangement[k] != NULL)
-                free(this->tileArrangement[k]);
-        }
-        if(this->tileArrangement != NULL)
-            free(this->tileArrangement);
+        delete [] this->tileArrangement;
     }
 
     if(this->sTiles != NULL)
     {
         TDG_StoredTiles* tmp = this->sTiles;
-        TDG_StoredTiles* next = NULL;
-        while(tmp->getNext() != NULL)
+        TDG_StoredTiles* next;
+        while(tmp != NULL)
         {
             next = tmp->getNext();
             delete tmp;
@@ -111,23 +97,9 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
 
     //**************************************************************************************************************/
     //create tile array (contains information about the background)
-
-    TDG_Tile*** tmp;
-    if((tmp = (TDG_Tile***) malloc(this->tileRows*sizeof(TDG_Tile**))) == NULL)
-    {
-        cout << "Tile arrangement array couldnt be created!" << endl;
-        return false;
-    }
-    int k;
-    for(k = 0; k < this->tileRows; k++)
-    {
-        if((tmp[k] = (TDG_Tile**) malloc(this->tileColumns*sizeof(TDG_Tile*))) == NULL)
-        {
-            cout << "Tile arrangement array couldnt be created!" << endl;
-            return false;
-        }
-    }
-    this->tileArrangement = tmp;
+    this->tileArrangement = new TDG_Tile*[this->tileRows];
+    for(int u = 0; u < this->tileRows; u++)
+        this->tileArrangement[u] = new TDG_Tile[this->tileColumns];
 
     //fill array
     int i, j;
@@ -135,10 +107,10 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     {
         for(j = 0; j < this->tileColumns; j++)
         {
-            this->tileArrangement[i][j] = new TDG_Tile(room->tileIDArrangement[i][j],
-                                                       room->tileRotationDegree[i][j],
-                                                       room->enviromentCollision[i][j],
-                                                       room->flipTile[i][j]);
+            this->tileArrangement[i][j].init(room->tileIDArrangement[i][j],
+                                             room->tileRotationDegree[i][j],
+                                             room->enviromentCollision[i][j],
+                                             room->flipTile[i][j]);
         }
     }
 
@@ -157,20 +129,20 @@ bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y)
         for(c = 0; c < this->tileColumns; c++)
         {
             //get image from stored background tiles
-            SDL_Texture* tileImg = getTileImage(this->tileArrangement[r][c]->getID());
+            SDL_Texture* tileImg = getTileImage(this->tileArrangement[r][c].getID());
             if(tileImg == NULL)
             {
                 cout << "Unable to find tile image in the list of stored ones!" << endl;
                 return false;
             }
             //get the degree in which the tile should be rotated
-            int rotDegree = this->tileArrangement[r][c]->getRotDegree();
+            int rotDegree = this->tileArrangement[r][c].getRotDegree();
 
             //render tile on rect
             SDL_Rect rect = {x + c*(this->tileWidth*gui->getScaleFactor()), y + r*(this->tileHight*gui->getScaleFactor()),
                             this->tileWidth*gui->getScaleFactor(), this->tileHight*gui->getScaleFactor()};
 
-            SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, this->tileArrangement[r][c]->flipTile());
+            SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, this->tileArrangement[r][c].flipTile());
         }
     }
 
@@ -191,7 +163,7 @@ bool TDG_Background::isTileImpassable(int row, int column)
         return false;
     }
 
-    return this->tileArrangement[row][column]->isImpassable();
+    return this->tileArrangement[row][column].isImpassable();
 }
 
 bool TDG_Background::isGate(int row, int column)

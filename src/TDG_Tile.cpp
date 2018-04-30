@@ -1,6 +1,16 @@
 #include "TDG_Tile.h"
 
-TDG_Tile::TDG_Tile(int id, int rotationDegree, bool impassable, int flip)
+TDG_Tile::TDG_Tile()
+{
+
+}
+
+TDG_Tile::~TDG_Tile()
+{
+    //dtor
+}
+
+void TDG_Tile::init(int id, int rotationDegree, bool impassable, int flip)
 {
     this->id = id;
     this->rotDegree = rotationDegree;
@@ -11,11 +21,6 @@ TDG_Tile::TDG_Tile(int id, int rotationDegree, bool impassable, int flip)
         this->flip = SDL_FLIP_HORIZONTAL;
     else
         this->flip = SDL_FLIP_NONE;
-}
-
-TDG_Tile::~TDG_Tile()
-{
-    //dtor
 }
 
 int TDG_Tile::getID()

@@ -6,8 +6,10 @@
 class TDG_Tile
 {
     public:
-        TDG_Tile(int id, int rotationDegree, bool impassable, int flip);
+        TDG_Tile();
         virtual ~TDG_Tile();
+
+        void init(int id, int rotationDegree, bool impassable, int flip);
 
         int getID();
         int getRotDegree();
