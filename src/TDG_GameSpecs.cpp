@@ -146,15 +146,6 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     return false;
                 }
             }
-            else if(!entry.compare("tileIDs:"))
-            {
-                entries.erase(entries.begin());
-                while(!entries.empty())
-                {
-                    int tileID = nextInt(entries);
-                    this->room->tileIDs.push_back(tileID);
-                }
-            }
             else if(!entry.compare("size:"))
             {
                 entries.erase(entries.begin());
@@ -213,6 +204,10 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     {
                         this->room->tileIDArrangement[i][j] = atoi(tileIDs.front().c_str());
                         tileIDs.erase(tileIDs.begin());
+
+                        //add id to list of tiles which images should be loaded and stored
+                        if(!tileIMGLoaded(this->room->tileIDArrangement[i][j]))
+                            this->room->tileIDs.push_back(this->room->tileIDArrangement[i][j]);
                     }
                 }
             }
@@ -771,6 +766,17 @@ vector<string> TDG_GameSpecs::split(const string& str, char delimiter)
             result.push_back(cur);
     }
     return result;
+}
+
+bool TDG_GameSpecs::tileIMGLoaded(int id)
+{
+    for(list<int>::const_iterator it = this->room->tileIDs.begin(), end = this->room->tileIDs.end(); it != end; it++)
+    {
+        if(*it == id)
+            return true;
+    }
+
+    return false;
 }
 
 MovementStatus TDG_GameSpecs::stringToMoveStatus(string& status)

@@ -103,6 +103,7 @@ class TDG_GameSpecs
         vector<string> split(const string& str, char delimiter);
 
         MovementStatus stringToMoveStatus(string& status);
+        bool tileIMGLoaded(int id);
 };
 
 #endif // TDG_GAMESPECS_H
