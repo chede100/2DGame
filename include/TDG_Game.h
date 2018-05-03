@@ -6,8 +6,6 @@
 #include "TDG_EventHandler.h"
 #include "TDG_GameBoard.h"
 
-#define SCALING_FAKTOR 1
-
 using namespace std;
 
 class TDG_Game

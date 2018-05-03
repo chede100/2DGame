@@ -139,8 +139,8 @@ bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y)
             int rotDegree = this->tileArrangement[r][c].getRotDegree();
 
             //render tile on rect
-            SDL_Rect rect = {x + c*(this->tileWidth*gui->getScaleFactor()), y + r*(this->tileHight*gui->getScaleFactor()),
-                            this->tileWidth*gui->getScaleFactor(), this->tileHight*gui->getScaleFactor()};
+            SDL_Rect rect = {x + c*this->tileWidth, y + r*this->tileHight,
+                            this->tileWidth, this->tileHight};
 
             SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, this->tileArrangement[r][c].flipTile());
         }

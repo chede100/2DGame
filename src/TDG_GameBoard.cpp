@@ -58,7 +58,9 @@ bool TDG_GameBoard::init(TDG_GUI* gui, TDG_GameSpecs* specs)
     // set the field of view to the size of the window
     int viewWidth = 420;
     int viewHight = 320;
-    this->view->init(viewWidth, viewHight);
+    int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
+    int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
+    this->view->init(viewWidth, viewHight, bgWidth, bgHight);
 
 
     //bind the field of view to the players character on the game board
@@ -178,6 +180,11 @@ bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Gate* enterGate)
         cout << "Unable to change room. New room cant be created!" << endl;
         return false;
     }
+
+    //new field of view collision with background
+    int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
+    int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
+    this->view->updateMovementInterval(bgWidth, bgHight);
 
     //search arrival gate
     for(list<Gate>::const_iterator it = newRoom->getRoom()->gates.begin(), end = newRoom->getRoom()->gates.end(); it != end; it++)

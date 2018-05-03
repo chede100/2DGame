@@ -12,7 +12,7 @@ class TDG_GUI
         TDG_GUI();
         virtual ~TDG_GUI();
 
-        bool init(Options* opt, int scaleFactor);
+        bool init(Options* opt);
 
         SDL_Renderer* getRenderer();
 
@@ -20,7 +20,6 @@ class TDG_GUI
         int getWinHight();
 
         int getFPSCap();
-        int getScaleFactor();
 
     protected:
 
@@ -29,7 +28,6 @@ class TDG_GUI
         SDL_Renderer* m_renderer;
         int winWidth, winHight;
         int fpsCap;
-        int scaleFactor;
 };
 
 #endif // TDG_GUI_H

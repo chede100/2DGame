@@ -39,7 +39,7 @@ bool TDG_Game::init()
 
     //create Window and Renderer
     this->gui = new TDG_GUI();
-    if(!this->gui->init(specs->getOpt(), SCALING_FAKTOR))
+    if(!this->gui->init(specs->getOpt()))
     {
         cout << "Couldnt initialize GUI!" << endl;
         delete specs;
