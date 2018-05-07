@@ -25,6 +25,8 @@ class TDG_GameBoard
 
     private:
         bool createRoom(TDG_GUI* gui, Room* room);
+        bool createPlayer(TDG_GUI* gui, SavePoint* sp);
+
         bool renderBackground(TDG_GUI* gui);
 
         string roomName;

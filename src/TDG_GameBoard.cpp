@@ -32,24 +32,12 @@ bool TDG_GameBoard::init(TDG_GUI* gui, TDG_GameSpecs* specs)
         cout << "Unable to create room." << endl;
         return false;
     }
-    //Store player graphics/animations
-    if(!this->entityGraphics->isStored(Character, specs->getSPoint()->player.animationID))
-        this->entityGraphics->loadAndAdd(gui, Character, specs->getSPoint()->player.animationID);
 
-    //create player
-    this->player = new TDG_Character();
-    this->player->init(specs->getSPoint()->player, Character, true);
-    //bind player animations to the players character
-    if(!this->player->assignAnimations(this->entityGraphics))
+    if(!createPlayer(gui, specs->getSPoint()))
     {
-        cout << "Unable to bind animations to player!" << endl;
+        cout << "Unable to create player character!" << endl;
         return false;
     }
-    //bind cBox to player character
-    player->bindCBox();
-
-    //add the player character to the list of all entities
-    this->entities->add(this->player);
 
     //***************************************************************************************
 
@@ -141,6 +129,32 @@ bool TDG_GameBoard::createRoom(TDG_GUI* gui, Room* room)
         //add the object to the list of all entities
         this->entities->add(obj);
     }
+
+    return true;
+}
+
+bool TDG_GameBoard::createPlayer(TDG_GUI* gui, SavePoint* sp)
+{
+    //Store player graphics/animations
+    if(!this->entityGraphics->isStored(Character, sp->player.animationID))
+        this->entityGraphics->loadAndAdd(gui, Character, sp->player.animationID);
+
+    //create player
+    this->player = new TDG_Character();
+    this->player->init(sp->player, Character, true);
+
+    //bind player animations to the players character
+    if(!this->player->assignAnimations(this->entityGraphics))
+    {
+        cout << "Unable to bind animations to player!" << endl;
+        return false;
+    }
+
+    //bind cBox to player character
+    player->bindCBox();
+
+    //add the player character to the list of all entities
+    this->entities->add(this->player);
 
     return true;
 }
