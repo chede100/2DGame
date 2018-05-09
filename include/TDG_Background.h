@@ -3,7 +3,6 @@
 
 #include "TDG_StoredTiles.h"
 #include "TDG_Tile.h"
-#include "TDG_GameSpecs.h"
 #include "TDG_GUI.h"
 #include "TDG_SpriteLoader.h"
 

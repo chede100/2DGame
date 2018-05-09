@@ -2,7 +2,7 @@
 #define TDG_GUI_H
 
 #include <SDL_image.h>
-#include "TDG_GameSpecs.h"
+#include "TDG_FileHandler.h"
 
 using namespace std;
 

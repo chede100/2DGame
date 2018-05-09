@@ -1,5 +1,5 @@
-#ifndef TDG_GAMESPECS_H
-#define TDG_GAMESPECS_H
+#ifndef TDG_FILEHANDLER_H
+#define TDG_FILEHANDLER_H
 
 #include "TDG_Information.h"
 #include <cstddef>
@@ -72,11 +72,11 @@ typedef struct
 
 }Room;
 
-class TDG_GameSpecs
+class TDG_FileHandler
 {
     public:
-        TDG_GameSpecs();
-        virtual ~TDG_GameSpecs();
+        TDG_FileHandler();
+        virtual ~TDG_FileHandler();
 
         bool load();
         bool loadRoom(int roomID);
@@ -96,6 +96,8 @@ class TDG_GameSpecs
         Options* opt;
 
         bool loadEntity(EntityTyp typ, Entity* e);
+        bool loadNPCs(string path);
+        bool loadOBJs(string path);
 
         double nextDouble(vector<string>& entries);
         int nextInt(vector<string>& entries);
@@ -106,4 +108,4 @@ class TDG_GameSpecs
         bool tileIMGLoaded(int id);
 };
 
-#endif // TDG_GAMESPECS_H
+#endif // TDG_FILEHANDLER_H

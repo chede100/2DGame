@@ -15,8 +15,6 @@ class TDG_Entity
         bool assignAnimations(TDG_StoredEntityAnimations* storedGraphics);
         void bindCBox();
 
-        void changeMovementStatus(Direction dir);
-
         bool updateAnimation();
 
         void render(TDG_GUI* gui, TDG_View* view);

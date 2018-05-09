@@ -1,13 +1,13 @@
-#include "TDG_GameSpecs.h"
+#include "TDG_FileHandler.h"
 
-TDG_GameSpecs::TDG_GameSpecs()
+TDG_FileHandler::TDG_FileHandler()
 {
     this->opt = NULL;
     this->sPoint = NULL;
     this->room = NULL;
 }
 
-TDG_GameSpecs::~TDG_GameSpecs()
+TDG_FileHandler::~TDG_FileHandler()
 {
     if(this->room != NULL)
     {
@@ -57,7 +57,7 @@ TDG_GameSpecs::~TDG_GameSpecs()
         delete this->sPoint;
 }
 
-bool TDG_GameSpecs::load()
+bool TDG_FileHandler::load()
 {
     if(loadOpt())
     {
@@ -96,7 +96,7 @@ bool TDG_GameSpecs::load()
     return true;
 }
 
-bool TDG_GameSpecs::loadRoom(int roomID)
+bool TDG_FileHandler::loadRoom(int roomID)
 {
     this->room = new Room();
     this->room->enviromentCollision = NULL;
@@ -112,11 +112,26 @@ bool TDG_GameSpecs::loadRoom(int roomID)
 
     this->room->roomID = roomID;
 
-    string rPath = "./data/spec/room/";
+    string path = "./data/spec/room/";
     ostringstream ss;
     ss << roomID;
-    rPath += ss.str() + ".room";
+    path += ss.str() + "/" + ss.str();
 
+    string npcPath = path + ".npcs";
+    if(!loadNPCs(npcPath))
+    {
+        cout << "Unable to load npc file! Path: " << npcPath << endl;
+        return false;
+    }
+
+    string objPath = path + ".objects";
+    if(!loadOBJs(objPath))
+    {
+        cout << "Unable to load object file! Path: " << objPath << endl;
+        return false;
+    }
+
+    string rPath = path + ".room";
     ifstream room;
     room.open(rPath.c_str(), ios::out);
     if(!room.is_open())
@@ -129,6 +144,15 @@ bool TDG_GameSpecs::loadRoom(int roomID)
         string line;
         while(getline(room, line))
         {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
             vector<string> entries = split(line, ' ');
             string entry = entries.front();
 
@@ -352,68 +376,6 @@ bool TDG_GameSpecs::loadRoom(int roomID)
                     }
                 }
             }
-            else if(!entry.compare("npc:"))
-            {
-                entries.erase(entries.begin());
-                while(!entries.empty() && (entries.size() >= 4))
-                {
-                    Entity newNPC;
-                    newNPC.id = nextInt(entries);
-                    newNPC.posX = nextInt(entries);
-                    newNPC.posY = nextInt(entries);
-
-                    string npcStatus;
-                    nextString(entries, npcStatus);
-                    MovementStatus status = stringToMoveStatus(npcStatus);
-                    if(status == noStatus)
-                    {
-                        cout << "Unable to load npc start status." << endl;
-                        room.close();
-                        return false;
-                    }
-                    newNPC.firstStatus = status;
-
-                    if(!loadEntity(Character, &newNPC))
-                    {
-                        cout << "Unable to load npc specifications! ID: " << newNPC.id << endl;
-                        room.close();
-                        return false;
-                    }
-
-                    this->room->npc.push_back(newNPC);
-                }
-            }
-            else if(!entry.compare("obj:"))
-            {
-                entries.erase(entries.begin());
-                while(!entries.empty() && (entries.size() >= 4))
-                {
-                    Entity newObj;
-                    newObj.id = nextInt(entries);
-                    newObj.posX = nextInt(entries);
-                    newObj.posY = nextInt(entries);
-
-                    string objStatus;
-                    nextString(entries, objStatus);
-                    MovementStatus status = stringToMoveStatus(objStatus);
-                    if(status == noStatus)
-                    {
-                        cout << "Unable to load object start status." << endl;
-                        room.close();
-                        return false;
-                    }
-                    newObj.firstStatus = status;
-
-                    if(!loadEntity(Object, &newObj))
-                    {
-                        cout << "Unable to load object specifications! ID: " << newObj.id << endl;
-                        room.close();
-                        return false;
-                    }
-
-                    this->room->obj.push_back(newObj);
-                }
-            }
             else if(!entry.compare("gates:"))
             {
                 entries.erase(entries.begin());
@@ -447,7 +409,7 @@ bool TDG_GameSpecs::loadRoom(int roomID)
     return true;
 }
 
-bool TDG_GameSpecs::loadSPoint()
+bool TDG_FileHandler::loadSPoint()
 {
     this->sPoint = new SavePoint();
     this->sPoint->roomID = 0;
@@ -468,6 +430,15 @@ bool TDG_GameSpecs::loadSPoint()
         string line;
         while(getline(saveP, line))
         {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
             vector<string> entries = split(line, ' ');
             string entry =  entries.front();
 
@@ -525,7 +496,7 @@ bool TDG_GameSpecs::loadSPoint()
     return true;
 }
 
-bool TDG_GameSpecs::loadOpt()
+bool TDG_FileHandler::loadOpt()
 {
     this->opt = new Options();
     this->opt->fpsCap = 0;
@@ -546,6 +517,15 @@ bool TDG_GameSpecs::loadOpt()
         string line;
         while(getline(opt, line))
         {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
             vector<string> entries = split(line, ' ');
             string entry = entries.front();
 
@@ -602,20 +582,139 @@ bool TDG_GameSpecs::loadOpt()
     return true;
 }
 
-Room* TDG_GameSpecs::getRoom()
+Room* TDG_FileHandler::getRoom()
 {
     return this->room;
 }
-Options* TDG_GameSpecs::getOpt()
+Options* TDG_FileHandler::getOpt()
 {
     return this->opt;
 }
-SavePoint* TDG_GameSpecs::getSPoint()
+SavePoint* TDG_FileHandler::getSPoint()
 {
     return this->sPoint;
 }
 
-bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
+bool TDG_FileHandler::loadOBJs(string path)
+{
+    ifstream obj;
+    obj.open(path.c_str(), ios::out);
+    if(!obj.is_open())
+    {
+        cout << "Path " << path << " to Obj-specification-file is invalid!" << endl;
+        return false;
+    }
+    else
+    {
+        string line;
+        while(getline(obj, line))
+        {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
+            vector<string> entries = split(line, ' ');
+            string entry = entries.front();
+
+            while(!entries.empty() && (entries.size() >= 4))
+            {
+                Entity newObj;
+                newObj.id = nextInt(entries);
+                newObj.posX = nextInt(entries);
+                newObj.posY = nextInt(entries);
+
+                string objStatus;
+                nextString(entries, objStatus);
+                MovementStatus status = stringToMoveStatus(objStatus);
+                if(status == noStatus)
+                {
+                    cout << "Unable to load object start status." << endl;
+                    obj.close();
+                    return false;
+                }
+                newObj.firstStatus = status;
+
+                if(!loadEntity(Object, &newObj))
+                {
+                    cout << "Unable to load object specifications! ID: " << newObj.id << endl;
+                    obj.close();
+                    return false;
+                }
+
+                this->room->obj.push_back(newObj);
+            }
+        }
+        obj.close();
+    }
+
+    return true;
+}
+
+bool TDG_FileHandler::loadNPCs(string path)
+{
+    ifstream npcs;
+    npcs.open(path.c_str(), ios::out);
+    if(!npcs.is_open())
+    {
+        cout << "Path " << path << " to NPC-specification-file is invalid!" << endl;
+        return false;
+    }
+    else
+    {
+        string line;
+        while(getline(npcs, line))
+        {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
+            vector<string> entries = split(line, ' ');
+            string entry = entries.front();
+
+            while(!entries.empty() && (entries.size() >= 4))
+            {
+                Entity newNPC;
+                newNPC.id = nextInt(entries);
+                newNPC.posX = nextInt(entries);
+                newNPC.posY = nextInt(entries);
+
+                string npcStatus;
+                nextString(entries, npcStatus);
+                MovementStatus status = stringToMoveStatus(npcStatus);
+                if(status == noStatus)
+                {
+                    cout << "Unable to load npc start status." << endl;
+                    npcs.close();
+                    return false;
+                }
+                newNPC.firstStatus = status;
+
+                if(!loadEntity(Character, &newNPC))
+                {
+                    cout << "Unable to load npc specifications! ID: " << newNPC.id << endl;
+                    npcs.close();
+                    return false;
+                }
+                this->room->npc.push_back(newNPC);
+            }
+        }
+        npcs.close();
+    }
+
+    return true;
+}
+
+bool TDG_FileHandler::loadEntity(EntityTyp typ, Entity* e)
 {
     //Objects dont have a speed value so its by default zero
     e->speed = 0.0;
@@ -654,6 +753,15 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
         string line;
         while(getline(entity, line))
         {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
             vector<string> entries = split(line, ' ');
             string entry = entries.front();
 
@@ -735,27 +843,27 @@ bool TDG_GameSpecs::loadEntity(EntityTyp typ, Entity* e)
     return true;
 }
 
-double TDG_GameSpecs::nextDouble(vector<string>& entries)
+double TDG_FileHandler::nextDouble(vector<string>& entries)
 {
     double result = atof(entries.front().c_str());
     entries.erase(entries.begin());
     return result;
 }
 
-int TDG_GameSpecs::nextInt(vector<string>& entries)
+int TDG_FileHandler::nextInt(vector<string>& entries)
 {
     int result = atoi(entries.front().c_str());
     entries.erase(entries.begin());
     return result;
 }
 
-void TDG_GameSpecs::nextString(vector<string>& entries, string& input)
+void TDG_FileHandler::nextString(vector<string>& entries, string& input)
 {
     input = entries.front();
     entries.erase(entries.begin());
 }
 
-vector<string> TDG_GameSpecs::split(const string& str, char delimiter)
+vector<string> TDG_FileHandler::split(const string& str, char delimiter)
 {
     istringstream is(str);
     vector<string> result;
@@ -768,7 +876,7 @@ vector<string> TDG_GameSpecs::split(const string& str, char delimiter)
     return result;
 }
 
-bool TDG_GameSpecs::tileIMGLoaded(int id)
+bool TDG_FileHandler::tileIMGLoaded(int id)
 {
     for(list<int>::const_iterator it = this->room->tileIDs.begin(), end = this->room->tileIDs.end(); it != end; it++)
     {
@@ -779,7 +887,7 @@ bool TDG_GameSpecs::tileIMGLoaded(int id)
     return false;
 }
 
-MovementStatus TDG_GameSpecs::stringToMoveStatus(string& status)
+MovementStatus TDG_FileHandler::stringToMoveStatus(string& status)
 {
     if(!status.compare("s_north")) return s_north;
     else if(!status.compare("s_north_east")) return s_north_east;

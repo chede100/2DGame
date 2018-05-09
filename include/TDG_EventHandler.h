@@ -14,6 +14,8 @@ class TDG_EventHandler
 
         Direction playerMovement();
 
+        SDL_Event* getEvent();
+
     protected:
 
     private:

@@ -139,32 +139,6 @@ bool TDG_Entity::updateAnimation()
     return true;
 }
 
-void TDG_Entity::changeMovementStatus(Direction dir)
-{
-    if(dir == noDirection)
-    {
-        if(this->curStatus == m_north) this->curStatus = s_north;
-        else if(this->curStatus == m_north_east) this->curStatus = s_north_east;
-        else if(this->curStatus == m_east) this->curStatus = s_east;
-        else if(this->curStatus == m_south_east) this->curStatus = s_south_east;
-        else if(this->curStatus == m_south) this->curStatus = s_south;
-        else if(this->curStatus == m_south_west) this->curStatus = s_south_west;
-        else if(this->curStatus == m_west) this->curStatus = s_west;
-        else if(this->curStatus == m_north_west) this->curStatus = s_north_west;
-    }
-    else
-    {
-        if(dir == north) this->curStatus = m_north;
-        else if(dir == north_east) this->curStatus = m_north_east;
-        else if(dir == east) this->curStatus = m_east;
-        else if(dir == south_east) this->curStatus = m_south_east;
-        else if(dir == south) this->curStatus = m_south;
-        else if(dir == south_west) this->curStatus = m_south_west;
-        else if(dir == west) this->curStatus = m_west;
-        else if(dir == north_west) this->curStatus = m_north_west;
-    }
-}
-
 TDG_CollisionBox* TDG_Entity::getCBox()
 {
     return this->cBox;

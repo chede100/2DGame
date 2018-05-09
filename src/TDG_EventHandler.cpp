@@ -96,3 +96,8 @@ Direction TDG_EventHandler::playerMovement()
 
     return dir;
 }
+
+SDL_Event* TDG_EventHandler::getEvent()
+{
+    return &this->event;
+}

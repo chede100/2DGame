@@ -22,7 +22,7 @@ TDG_Game::~TDG_Game()
 bool TDG_Game::init()
 {
     //Obj to store temporally all game relevant information
-    TDG_GameSpecs* specs = new TDG_GameSpecs();
+    TDG_FileHandler* specs = new TDG_FileHandler();
     if(specs == NULL)
     {
         cout << "Couldnt create game specification object!" << endl;
@@ -74,7 +74,7 @@ void TDG_Game::gameloop()
     bool quit = false;
     while(!this->event->quit() && !quit)
     {
-        this->board->userInput(this->event->playerMovement());
+        this->board->userInput(this->event);
 
         ///////////// FPS //////////////////////////////////////////////////
         int before, delay;                                                //

@@ -2,7 +2,6 @@
 #define TDG_GAME_H
 
 #include "TDG_GUI.h"
-#include "TDG_GameSpecs.h"
 #include "TDG_EventHandler.h"
 #include "TDG_GameBoard.h"
 

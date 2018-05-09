@@ -2,6 +2,7 @@
 #define TDG_GAMEBOARD_H
 
 #include "TDG_EntityHandler.h"
+#include "TDG_Player.h"
 
 class TDG_GameBoard
 {
@@ -9,11 +10,11 @@ class TDG_GameBoard
         TDG_GameBoard();
         virtual ~TDG_GameBoard();
 
-        bool init(TDG_GUI* gui, TDG_GameSpecs* specs);
+        bool init(TDG_GUI* gui, TDG_FileHandler* specs);
 
         bool render(TDG_GUI* gui);
 
-        void userInput(Direction dir);
+        void userInput(TDG_EventHandler* event);
 
         bool throughGate(Gate* enterGate);
         bool changeRoom(TDG_GUI* gui, Gate* enterGate);
@@ -37,7 +38,7 @@ class TDG_GameBoard
 
         TDG_StoredEntityAnimations* entityGraphics;
 
-        TDG_Character* player;
+        TDG_Player* player;
         TDG_EntityHandler* entities;
 
 };

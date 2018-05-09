@@ -20,7 +20,7 @@ TDG_GameBoard::~TDG_GameBoard()
         delete this->entities;
 }
 
-bool TDG_GameBoard::init(TDG_GUI* gui, TDG_GameSpecs* specs)
+bool TDG_GameBoard::init(TDG_GUI* gui, TDG_FileHandler* specs)
 {
     this->entityGraphics = new TDG_StoredEntityAnimations();
 
@@ -140,7 +140,7 @@ bool TDG_GameBoard::createPlayer(TDG_GUI* gui, SavePoint* sp)
         this->entityGraphics->loadAndAdd(gui, Character, sp->player.animationID);
 
     //create player
-    this->player = new TDG_Character();
+    this->player = new TDG_Player();
     this->player->init(sp->player, Character, true);
 
     //bind player animations to the players character
@@ -159,9 +159,9 @@ bool TDG_GameBoard::createPlayer(TDG_GUI* gui, SavePoint* sp)
     return true;
 }
 
-void TDG_GameBoard::userInput(Direction dir)
+void TDG_GameBoard::userInput(TDG_EventHandler* event)
 {
-    this->player->changeMovementStatus(dir);
+    this->player->handlePlayerEvents(event);
 }
 
 bool TDG_GameBoard::throughGate(Gate* enterGate)
@@ -180,7 +180,7 @@ bool TDG_GameBoard::throughGate(Gate* enterGate)
 
 bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Gate* enterGate)
 {
-    TDG_GameSpecs* newRoom = new TDG_GameSpecs();
+    TDG_FileHandler* newRoom = new TDG_FileHandler();
     newRoom->loadRoom(enterGate->destinationRoomID);
 
     this->entityGraphics->removeAllExcept(Character, this->player->getAnimationID());

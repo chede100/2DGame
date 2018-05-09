@@ -84,6 +84,4 @@ flip:
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-npc:
-obj: 2 160 64 s_south 2 300 45 s_south 2 460 36 s_south 2 230 160 s_south 3 240 445 s_south 3 244 449 s_south 3 236 446 s_south 3 240 454 s_south 4 234 400 s_south 4 236 399 s_south 4 240 400 s_south 4 244 399 s_south
 gates: 1 12 9 s_south 1 1
