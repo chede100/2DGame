@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
         else
             cout << "Initialization Error!" << endl;
 
+        game->save();
+
         delete game;
     }
     else if(startEditor)

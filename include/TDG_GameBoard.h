@@ -22,6 +22,8 @@ class TDG_GameBoard
         void startTimer();
         void stopTimer();
 
+        void save();
+
     protected:
 
     private:

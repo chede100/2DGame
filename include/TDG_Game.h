@@ -16,6 +16,7 @@ class TDG_Game
         bool init();
         bool start();
         void gameloop();
+        void save();
 
     protected:
 

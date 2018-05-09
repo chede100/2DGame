@@ -273,3 +273,32 @@ bool TDG_GameBoard::renderBackground(TDG_GUI* gui)
 
     return true;
 }
+
+void TDG_GameBoard::save()
+{
+    ofstream savePoint;
+    savePoint.open("./game.savepoint");
+
+    savePoint << "roomID: " << this->roomID << endl;
+
+    string startAnimation;
+    if(this->player->getMovementStatus() == s_north) startAnimation = "s_north";
+    else if(this->player->getMovementStatus() == s_north_east) startAnimation = "s_north_east";
+    else if(this->player->getMovementStatus() == s_east) startAnimation = "s_east";
+    else if(this->player->getMovementStatus() == s_south_east) startAnimation = "s_south_east";
+    else if(this->player->getMovementStatus() == s_south) startAnimation = "s_south";
+    else if(this->player->getMovementStatus() == s_south_west) startAnimation = "s_south_west";
+    else if(this->player->getMovementStatus() == s_west) startAnimation = "s_west";
+    else if(this->player->getMovementStatus() == s_north_west) startAnimation = "s_north_west";
+    else if(this->player->getMovementStatus() == m_north) startAnimation = "s_north";
+    else if(this->player->getMovementStatus() == m_north_east) startAnimation = "s_north_east";
+    else if(this->player->getMovementStatus() == m_east) startAnimation = "s_east";
+    else if(this->player->getMovementStatus() == m_south_east) startAnimation = "s_south_east";
+    else if(this->player->getMovementStatus() == m_south) startAnimation = "s_south";
+    else if(this->player->getMovementStatus() == m_south_west) startAnimation = "s_south_west";
+    else if(this->player->getMovementStatus() == m_west) startAnimation = "s_west";
+    else if(this->player->getMovementStatus() == m_north_west) startAnimation = "s_north_west";
+    else startAnimation = "s_south";
+
+    savePoint << "player: " << this->player->getID() << " " << this->player->getPos()->getPosX() << " " << this->player->getPos()->getPosY() << " " << startAnimation << endl;
+}

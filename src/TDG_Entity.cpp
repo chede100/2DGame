@@ -179,6 +179,11 @@ int TDG_Entity::getAnimationID()
     return this->animationID;
 }
 
+int TDG_Entity::getID()
+{
+    return this->id;
+}
+
 void TDG_Entity::setMovementStatus(MovementStatus status)
 {
     this->curStatus = status;
