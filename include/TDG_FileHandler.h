@@ -80,6 +80,8 @@ class TDG_FileHandler
 
         bool load();
         bool loadRoom(int roomID);
+        bool loadOpt();
+        bool loadSPoint();
 
         Room* getRoom();
         Options* getOpt();
@@ -88,9 +90,6 @@ class TDG_FileHandler
     protected:
 
     private:
-        bool loadSPoint();
-        bool loadOpt();
-
         Room* room;
         SavePoint* sPoint;
         Options* opt;

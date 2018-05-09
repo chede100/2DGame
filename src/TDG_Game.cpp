@@ -25,7 +25,7 @@ bool TDG_Game::init()
     TDG_FileHandler* specs = new TDG_FileHandler();
     if(specs == NULL)
     {
-        cout << "Couldnt create game specification object!" << endl;
+        cout << "Couldnt create file handler!" << endl;
         return false;
     }
 
