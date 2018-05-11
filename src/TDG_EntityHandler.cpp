@@ -177,6 +177,33 @@ void TDG_EntityHandler::disableCollision()
     this->collisionDetection = false;
 }
 
+TDG_Entity* TDG_EntityHandler::getEntity(int posX, int posY)
+{
+    TDG_EntityList* tmp = this->first;
+    TDG_EntityList* next;
+
+    while(tmp != NULL)
+    {
+        next = tmp->getNext();
+
+        int ePosX = tmp->getEntity()->getPos()->getPosX();
+        int eWidth = tmp->getEntity()->getImageWidth();
+
+        if((ePosX <= posX) && (ePosX + eWidth >= posX))
+        {
+            int ePosY = tmp->getEntity()->getPos()->getPosY();
+            int eHight = tmp->getEntity()->getImageHight();
+
+            if((ePosY <= posY) && (ePosY + eHight >= posY))
+                return tmp->getEntity();
+        }
+
+        tmp = next;
+    }
+
+    return NULL;
+}
+
 void TDG_EntityHandler::sort()
 {
     TDG_EntityList* A = this->first;

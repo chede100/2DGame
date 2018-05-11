@@ -73,6 +73,10 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
 
     //continuously load all tile images from sprite sheet
     TDG_StoredTiles* sTiles = this->sTiles;
+
+    //store tile image 1 by default (transparent image)
+    room->tileIDs.push_back(1);
+
     while(!room->tileIDs.empty())
     {
         id =  room->tileIDs.front();
@@ -107,7 +111,7 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     {
         for(j = 0; j < this->tileColumns; j++)
         {
-            this->tileArrangement[i][j].init(room->tileIDArrangement[i][j],
+            this->tileArrangement[i][j].set(room->tileIDArrangement[i][j],
                                              room->tileRotationDegree[i][j],
                                              room->enviromentCollision[i][j],
                                              room->flipTile[i][j]);
@@ -178,6 +182,23 @@ bool TDG_Background::isGate(int row, int column)
     }
 
     return false;
+}
+
+TDG_Tile* TDG_Background::getTile(int row, int column)
+{
+    if(this->tileArrangement == NULL)
+    {
+        cout << "Error: Tryed to access background which was not created." << endl;
+        return NULL;
+    }
+
+    if((this->tileRows <= row) || (this->tileColumns <= column))
+    {
+        cout << "Error: Tile access was out of bound." << endl;
+        return NULL;
+    }
+
+    return &this->tileArrangement[row][column];
 }
 
 SDL_Texture* TDG_Background::getTileImage(int id)

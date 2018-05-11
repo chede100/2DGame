@@ -54,7 +54,15 @@ int main(int argc, char *argv[])
     else if(startEditor)
     {
         TDG_RoomEditor* editor = new TDG_RoomEditor();
-
+        if(editor->init())
+        {
+            if(editor->start())
+                editor->programLoop();
+            else
+                cout << "Editor couldnt be started!" << endl;
+        }
+        else
+            cout << "Initialization Error!" << endl;
 
 
         delete editor;

@@ -39,64 +39,6 @@ bool TDG_EventHandler::quit()
     return false;
 }
 
-Direction TDG_EventHandler::playerMovement()
-{
-    Direction dir = noDirection;
-    int keysPressed = 0;
-    bool up = false;
-    bool down = false;
-    bool left = false;
-    bool right = false;
-
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-
-    if(state[SDL_SCANCODE_UP])
-    {
-        up = true;
-        keysPressed++;
-    }
-    if(state[SDL_SCANCODE_DOWN])
-    {
-        down = true;
-        keysPressed++;
-    }
-    if(state[SDL_SCANCODE_LEFT])
-    {
-        left = true;
-        keysPressed++;
-    }
-    if(state[SDL_SCANCODE_RIGHT])
-    {
-        right =  true;
-        keysPressed++;
-    }
-
-    if(keysPressed == 1)
-    {
-        if(up)
-            dir = north;
-        else if(down)
-            dir = south;
-        else if(right)
-            dir = east;
-        else if(left)
-            dir = west;
-    }
-    else if(keysPressed == 2)
-    {
-        if(up && left)
-            dir = north_west;
-        else if(up && right)
-            dir = north_east;
-        else if(down && left)
-            dir = south_west;
-        else if(down && right)
-            dir = south_east;
-    }
-
-    return dir;
-}
-
 SDL_Event* TDG_EventHandler::getEvent()
 {
     return &this->event;

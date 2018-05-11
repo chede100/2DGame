@@ -10,7 +10,7 @@ TDG_Tile::~TDG_Tile()
     //dtor
 }
 
-void TDG_Tile::init(int id, int rotationDegree, bool impassable, int flip)
+void TDG_Tile::set(int id, int rotationDegree, bool impassable, int flip)
 {
     this->id = id;
     this->rotDegree = rotationDegree;

@@ -12,8 +12,6 @@ class TDG_EventHandler
 
         bool quit();
 
-        Direction playerMovement();
-
         SDL_Event* getEvent();
 
     protected:

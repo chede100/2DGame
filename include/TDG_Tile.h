@@ -9,7 +9,7 @@ class TDG_Tile
         TDG_Tile();
         virtual ~TDG_Tile();
 
-        void init(int id, int rotationDegree, bool impassable, int flip);
+        void set(int id, int rotationDegree, bool impassable, int flip);
 
         int getID();
         int getRotDegree();

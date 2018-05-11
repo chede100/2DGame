@@ -1,8 +1,10 @@
 #ifndef TDG_EDITORBOARD_H
 #define TDG_EDITORBOARD_H
 
+#include <windows.h>
 #include "TDG_EntityHandler.h"
 #include "TDG_Player.h"
+#include "TDG_Mouse.h"
 
 class TDG_EditorBoard
 {
@@ -12,20 +14,18 @@ class TDG_EditorBoard
 
         bool init();
 
-        void start();
+        bool render(TDG_GUI* gui);
 
-        void handleUserInput(TDG_EventHandler* event);
+        void handleInput(TDG_EventHandler* event);
+
+        bool createRoom(int id, int width, int hight);
+        bool loadRoom(TDG_GUI* gui, Room* room);
+        bool saveRoom();
 
     protected:
 
     private:
-        static Uint32 console_timer(Uint32 intervall, void* param);
-        void handleConsoleInput();
-        bool consoleTimerRunning;
-        SDL_TimerID consoleTimer;
-
-        bool load, create;
-        int newRoomID;
+        bool renderBackground(TDG_GUI* gui);
 
         string roomName;
         int roomID;
@@ -33,14 +33,14 @@ class TDG_EditorBoard
         TDG_Position* viewPos;
         TDG_View* view;
 
+        TDG_Mouse* mouse;
+
         TDG_Background* backg;
 
         TDG_StoredEntityAnimations* entityGraphics;
 
         TDG_Player* player;
         TDG_EntityHandler* entities;
-
-        vector<string> split(const string& str, char delimiter);
 };
 
 #endif // TDG_EDITORBOARD_H

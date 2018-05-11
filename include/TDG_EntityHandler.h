@@ -33,6 +33,8 @@ class TDG_EntityHandler
         void enableCollision(TDG_Background* bg);
         void disableCollision();
 
+        TDG_Entity* getEntity(int posX, int posY);
+
     protected:
 
     private:
