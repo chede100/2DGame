@@ -20,6 +20,7 @@ typedef struct
     int rotDegree;
     bool impassable;
     int flip;
+    int w, h;
 }SelectedTile;
 
 typedef enum
@@ -34,6 +35,8 @@ class TDG_Mouse
         virtual ~TDG_Mouse();
 
         void handleEvent(SDL_Event* event, TDG_EntityHandler* eh, TDG_Background* bg, TDG_View* view);
+
+        void renderSelRect(TDG_GUI* gui, TDG_View* view);
 
     protected:
 

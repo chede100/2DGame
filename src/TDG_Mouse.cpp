@@ -15,6 +15,29 @@ TDG_Mouse::~TDG_Mouse()
     }
 }
 
+void TDG_Mouse::renderSelRect(TDG_GUI* gui, TDG_View* view)
+{
+    int x, y;
+    if(this->typ == TILE)
+    {
+        SelectedTile* sT = (SelectedTile*) this->sel;
+        x = sT->c*sT->w - view->getPosX();
+        y = sT->r*sT->h - view->getPosY();
+        SDL_Rect rect = {x, y, sT->w, sT->h};
+        if(SDL_RenderDrawRect(gui->getRenderer(), &rect))
+            cout << "Failed to render mouse selection marking." << endl;
+    }
+    else if(this->typ == ENTITY)
+    {
+        TDG_Entity* ent = (TDG_Entity*) this->sel;
+        x = ent->getPos()->getPosX() - view->getPosX();
+        y = ent->getPos()->getPosY() - view->getPosY();
+        SDL_Rect rect = {x, y, ent->getImageWidth(), ent->getImageHight()};
+        if(SDL_RenderDrawRect(gui->getRenderer(), &rect))
+            cout << "Failed to render mouse selection marking." << endl;
+    }
+}
+
 void TDG_Mouse::handleEvent(SDL_Event* event, TDG_EntityHandler* eh, TDG_Background* bg, TDG_View* view)
 {
     if((eh == NULL) || (bg == NULL));
@@ -167,6 +190,8 @@ bool TDG_Mouse::selectTile(TDG_Background* bg, int posX, int posY)
             sTile->id = t->getID();
             sTile->rotDegree = t->getRotDegree();
             sTile->impassable = t->isImpassable();
+            sTile->w = tWidth;
+            sTile->h = tHight;
             if(t->flipTile() == SDL_FLIP_HORIZONTAL)
                 sTile->flip = 2;
             else if(t->flipTile() == SDL_FLIP_VERTICAL)

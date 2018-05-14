@@ -67,6 +67,11 @@ bool TDG_EditorBoard::render(TDG_GUI* gui)
         this->entities->render(gui, this->view);
     }
 
+    if(this->mouse != NULL)
+    {
+        this->mouse->renderSelRect(gui, this->view);
+    }
+
     SDL_RenderPresent(gui->getRenderer());
 
     return true;
