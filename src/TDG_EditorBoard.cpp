@@ -96,22 +96,55 @@ bool TDG_EditorBoard::renderBackground(TDG_GUI* gui)
     return true;
 }
 
-bool TDG_EditorBoard::createRoom(int id, int width, int hight)
+bool TDG_EditorBoard::createRoom(TDG_GUI* gui, string& name, int id, int rows, int columns)
 {
+    if(this->entityGraphics != NULL)
+        delete this->entityGraphics;
+    if(this->entities != NULL)
+        delete this->entities;
+    if(this->backg != NULL)
+        delete this->backg;
+
+    this->entityGraphics = new TDG_StoredEntityAnimations();
+    this->entities = new TDG_EntityHandler();
+
+    this->roomName = name;
+    this->roomID = id;
+
+    this->backg = new TDG_Background();
+    if(!this->backg->createEmpty(gui, rows, columns))
+    {
+        cout << "Unable to create background!" << endl;
+        return false;
+    }
+
+    //collision enabled
+    this->entities->enableCollision(this->backg);
+
+    //new field of view collision with background
+    int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
+    int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
+    this->view->updateMovementInterval(bgWidth, bgHight);
+
+    double bgCenterX = bgWidth/2;
+    double bgCenterY = bgHight/2;
+    this->viewPos->setPosX(bgCenterX);
+    this->viewPos->setPosY(bgCenterY);
+
     return true;
 }
 
 bool TDG_EditorBoard::loadRoom(TDG_GUI* gui, Room* room)
 {
-    if(this->entities == NULL)
-        this->entities = new TDG_EntityHandler();
-    else
-    {
-        this->entities->stopAnimations();
-    }
+    if(this->entityGraphics != NULL)
+        delete this->entityGraphics;
+    if(this->entities != NULL)
+        delete this->entities;
+    if(this->backg != NULL)
+        delete this->backg;
 
-    if(this->entityGraphics == NULL)
-        this->entityGraphics = new TDG_StoredEntityAnimations();
+    this->entities = new TDG_EntityHandler();
+    this->entityGraphics = new TDG_StoredEntityAnimations();
 
     this->roomName = room->roomName;
     this->roomID = room->roomID;
@@ -180,18 +213,90 @@ bool TDG_EditorBoard::loadRoom(TDG_GUI* gui, Room* room)
         this->entities->add(obj);
     }
 
+    //new field of view collision with background
+    int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
+    int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
+    this->view->updateMovementInterval(bgWidth, bgHight);
 
-    this->entities->startAnimations();
+    double bgCenterX = bgWidth/2;
+    double bgCenterY = bgHight/2;
+    this->viewPos->setPosX(bgCenterX);
+    this->viewPos->setPosY(bgCenterY);
 
     return true;
 }
 
 bool TDG_EditorBoard::saveRoom()
 {
+    string path = "./data/spec/room/";
+    ostringstream ss;
+    ss << this->roomID;
+    path += ss.str() + "/";
+
+    //check if directory exists
+    bool dirExists = false;
+    DWORD ftyp = GetFileAttributesA(path.c_str());
+    if (ftyp == INVALID_FILE_ATTRIBUTES)
+        dirExists = false;
+
+    if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+        dirExists = true;
+
+    if(CreateDirectory(path.c_str(), NULL));
+    else
+    {
+        if(!dirExists)
+        {
+            cout << "Invalid path. Unable to save room" << endl;
+            return false;
+        }
+    }
+
+    //Create npc file
+    string npc = path + ss.str() + ".npcs";
+    ofstream onpc;
+    onpc.open(npc.c_str(), ios::out);
+    this->entities->print(Character, &onpc);
+    onpc.close();
+
+    //create object file
+    string obj = path + ss.str() + ".objects";
+    ofstream oobj;
+    oobj.open(obj.c_str(), ios::out);
+    this->entities->print(Object, &oobj);
+    oobj.close();
+
+    //create room file
+    string room = path + ss.str() + ".room";
+    ofstream oroom;
+    oroom.open(room.c_str(), ios::out);
+    oroom << "name: " << this->roomName << endl;
+    this->backg->print(&oroom);
+    oroom.close();
+
     return true;
+}
+
+void TDG_EditorBoard::startTimer()
+{
+    if(this->entities != NULL)
+        this->entities->startAnimations();
+}
+
+void TDG_EditorBoard::stopTimer()
+{
+    if(this->entities != NULL)
+        this->entities->stopAnimations();
 }
 
 void TDG_EditorBoard::handleInput(TDG_EventHandler* event)
 {
     this->mouse->handleEvent(event->getEvent(), this->entities, this->backg, this->view);
+}
+
+bool TDG_EditorBoard::roomStored()
+{
+    if(this->roomID != 0)
+        return true;
+    return false;
 }

@@ -10,8 +10,9 @@ TDG_RoomEditor::TDG_RoomEditor()
     this->cStatus.load = false;
     this->cStatus.save = false;
     this->cStatus.roomID = 0;
-    this->cStatus.w = 0;
-    this->cStatus.h = 0;
+    this->cStatus.rName = "";
+    this->cStatus.rows = 0;
+    this->cStatus.columns = 0;
 
     this->consoleInputRunning = false;
 }
@@ -78,35 +79,44 @@ bool TDG_RoomEditor::start()
     }
     return false;
 }
+void TDG_RoomEditor::stop()
+{
+    if(this->consoleInputRunning)
+    {
+        this->consoleInputRunning = false;
+        SDL_DetachThread(this->consoleInput);
+    }
+}
 
 void TDG_RoomEditor::input()
 {
     this->board->handleInput(this->event);
 
-    if(this->cStatus.create)
+    if(this->cStatus.create && (this->cStatus.roomID != 0) && (this->cStatus.rows != 0) && (this->cStatus.columns != 0))
     {
-        string path = "./data/spec/room/";
-        ostringstream ss;
-        ss << this->cStatus.roomID;
-        path += ss.str() + "/";
+        this->board->stopTimer();
 
-        if(roomExists(path.c_str()))
+        if(this->cStatus.save)
         {
-            cout << "Room does already exist!" << endl;
+            if(!this->board->saveRoom())
+                cout << "Unable to save room!" << endl;
         }
-        else
-        {
-            if(!this->board->createRoom(this->cStatus.roomID, this->cStatus.w, this->cStatus.h))
-                cout << "Unable to create Room!" << endl;
-        }
+
+        if(!this->board->createRoom(this->gui, this->cStatus.rName, this->cStatus.roomID, this->cStatus.rows, this->cStatus.columns))
+            cout << "Unable to create Room!" << endl;
 
         this->cStatus.create = false;
         this->cStatus.roomID = 0;
-        this->cStatus.w = 0;
-        this->cStatus.h = 0;
+        this->cStatus.rName = "";
+        this->cStatus.rows = 0;
+        this->cStatus.columns = 0;
+
+        this->board->startTimer();
     }
     else if(this->cStatus.load && (this->cStatus.roomID != 0))
     {
+        this->board->stopTimer();
+
         string path = "./data/spec/room/";
         ostringstream ss;
         ss << this->cStatus.roomID;
@@ -118,7 +128,7 @@ void TDG_RoomEditor::input()
             fh->loadRoom(this->cStatus.roomID);
 
             if(!this->board->loadRoom(this->gui, fh->getRoom()))
-            cout << "Unable to load room!" << endl;
+                cout << "Unable to load room!" << endl;
 
             delete fh;
         }
@@ -129,6 +139,8 @@ void TDG_RoomEditor::input()
 
         this->cStatus.load = false;
         this->cStatus.roomID = 0;
+
+        this->board->startTimer();
     }
     else if(this->cStatus.save)
     {
@@ -174,10 +186,10 @@ void TDG_RoomEditor::handleConsoleInput()
         if(!inst.front().compare("help"))
         {
             cout << "List of instructions:" << endl;
-            cout << "1) help                 : Shows help massage." << endl;
-            cout << "2) load [id]            : Load the requested room." << endl;
-            cout << "3) save                 : Save the current room." << endl;
-            cout << "4) create [id] [w] [h]  : Create a new room with id, width and hight." << endl;
+            cout << "1) help                       : Shows help massage." << endl;
+            cout << "2) load [id]                  : Load the requested room." << endl;
+            cout << "3) save                       : Save the current room." << endl;
+            cout << "4) create [name] [id] [r] [c] : Create a new room with name, id, rows and columns." << endl;
         }
         else if(!inst.front().compare("load"))
         {
@@ -197,14 +209,33 @@ void TDG_RoomEditor::handleConsoleInput()
         else if(!inst.front().compare("create"))
         {
             inst.erase(inst.begin());
-            if(inst.size() != 3)
-                cout << "Invalid count of arguments for [create]. Please use the format: create [id] [width] [hight]" << endl;
+            if(inst.size() != 4)
+                cout << "Invalid count of arguments for [create]. Please use the format: create [name] [id] [r] [c]" << endl;
             else
             {
-                this->cStatus.roomID = nextInt(inst);
-                this->cStatus.w = nextInt(inst);
-                this->cStatus.h = nextInt(inst);
-                this->cStatus.create = true;
+                string rName = inst.front();
+                inst.erase(inst.begin());
+                int roomID = nextInt(inst);
+                int rows = nextInt(inst);
+                int columns = nextInt(inst);
+
+                string path = "./data/spec/room/";
+                ostringstream ss;
+                ss << roomID;
+                path += ss.str() + "/";
+
+                if(roomExists(path.c_str()))
+                {
+                    cout << "Room does already exist!" << endl;
+                }
+                else
+                {
+                    this->cStatus.rName = rName;
+                    this->cStatus.roomID = roomID;
+                    this->cStatus.rows = rows;
+                    this->cStatus.columns = columns;
+                    this->cStatus.create = true;
+                }
             }
         }
         else
@@ -212,7 +243,6 @@ void TDG_RoomEditor::handleConsoleInput()
             cout << "Write help for information." << endl;
         }
 
-        in = "";
         inst.clear();
     }
 }

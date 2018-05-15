@@ -127,7 +127,8 @@ void TDG_EntityHandler::render(TDG_GUI* gui, TDG_View* view)
     TDG_EntityList* tmp = this->first;
     while(tmp != NULL)
     {
-        tmp->getEntity()->render(gui, view);
+        if(tmp->getEntity() != NULL)
+            tmp->getEntity()->render(gui, view);
         tmp = tmp->getNext();
     }
 }
@@ -177,6 +178,36 @@ void TDG_EntityHandler::disableCollision()
     this->collisionDetection = false;
 }
 
+void TDG_EntityHandler::print(EntityTyp typ, ofstream* out)
+{
+    TDG_EntityList* tmp = this->first;
+
+    while(tmp != NULL)
+    {
+        if(tmp->getEntity() != NULL)
+        {
+            if(tmp->getEntity()->getTyp() == typ)
+            {
+                int id = tmp->getEntity()->getID();
+                int x = tmp->getEntity()->getPos()->getPosX();
+                int y = tmp->getEntity()->getPos()->getPosY();
+                string status = "s_south";
+                MovementStatus s = tmp->getEntity()->getMovementStatus();
+                if(s == s_south) status = "s_south";
+                else if(s == s_south_west) status = "s_south_west";
+                else if(s == s_west) status = "s_west";
+                else if(s == s_north_west) status = "s_north_west";
+                else if(s == s_north) status = "s_north";
+                else if(s == s_north_east) status = "s_north_east";
+                else if(s == s_east) status = "s_east";
+                else if(s == s_south_east) status = "s_south_east";
+                *out << id << " " << x << " " << y << " " << status << " ";
+            }
+        }
+        tmp = tmp->getNext();
+    }
+}
+
 TDG_Entity* TDG_EntityHandler::getEntity(int posX, int posY)
 {
     TDG_EntityList* tmp = this->first;
@@ -186,16 +217,19 @@ TDG_Entity* TDG_EntityHandler::getEntity(int posX, int posY)
     {
         next = tmp->getNext();
 
-        int ePosX = tmp->getEntity()->getPos()->getPosX();
-        int eWidth = tmp->getEntity()->getImageWidth();
-
-        if((ePosX <= posX) && (ePosX + eWidth >= posX))
+        if(tmp->getEntity() != NULL)
         {
-            int ePosY = tmp->getEntity()->getPos()->getPosY();
-            int eHight = tmp->getEntity()->getImageHight();
+            int ePosX = tmp->getEntity()->getPos()->getPosX();
+            int eWidth = tmp->getEntity()->getImageWidth();
 
-            if((ePosY <= posY) && (ePosY + eHight >= posY))
-                return tmp->getEntity();
+            if((ePosX <= posX) && (ePosX + eWidth >= posX))
+            {
+                int ePosY = tmp->getEntity()->getPos()->getPosY();
+                int eHight = tmp->getEntity()->getImageHight();
+
+                if((ePosY <= posY) && (ePosY + eHight >= posY))
+                    return tmp->getEntity();
+            }
         }
 
         tmp = next;
@@ -237,6 +271,9 @@ bool TDG_EntityHandler::swap(TDG_EntityList* A, TDG_EntityList* B)
     TDG_Entity* a = A->getEntity();
     TDG_Entity* b = B->getEntity();
 
+    if(a == NULL || b == NULL)
+        return false;
+
     int aPosY = a->getPos()->getPosY();
     int bPosY = b->getPos()->getPosY();
 
@@ -267,12 +304,15 @@ void TDG_EntityHandler::moveEntities()
     TDG_EntityList* tmp = this->first;
     while(tmp != NULL)
     {
-        if(tmp->getEntity()->getTyp() == Character)
+        if(tmp->getEntity() != NULL)
         {
-            TDG_Character* chara = (TDG_Character*) tmp->getEntity();
-            if(chara->isMoveable())
+            if(tmp->getEntity()->getTyp() == Character)
             {
-                chara->moveAndCollision(this->first, this->bg);
+                TDG_Character* chara = (TDG_Character*) tmp->getEntity();
+                if(chara->isMoveable())
+                {
+                    chara->moveAndCollision(this->first, this->bg);
+                }
             }
         }
         tmp = tmp->getNext();
@@ -290,7 +330,8 @@ void TDG_EntityHandler::updateAllAnimations()
     TDG_EntityList* tmp = this->first;
     while(tmp != NULL)
     {
-        tmp->getEntity()->updateAnimation();
+        if(tmp->getEntity() != NULL)
+            tmp->getEntity()->updateAnimation();
 
         tmp = tmp->getNext();
     }

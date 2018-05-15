@@ -37,13 +37,15 @@ TDG_Background::~TDG_Background()
 
 bool TDG_Background::create(TDG_GUI* gui, Room* room)
 {
-    this->tileRows = room->tileRows;
-    this->tileColumns = room->tileColumns;
-
     //********************************************************************************************************/
     //Load needed images from sprite and save them in the TDG_StoredTiles list
+    if(!this->initRoom(gui, room->tileRows, room->tileColumns))
+    {
+        cout << "Unable to initialize room!" << endl;
+        return false;
+    }
 
-    //Load sprite sheet and all important information from a file.
+    //Load sprite sheet for loading all tile images except the default one
     TDG_SpriteLoader* sprite = new TDG_SpriteLoader();
     if(!sprite->loadSprite("./data/img/room/", "room"))
     {
@@ -51,60 +53,33 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         return false;
     }
 
-    this->tileWidth = sprite->getImgWidth();
-    this->tileHight = sprite->getImgHight();
-
-    //Get the tile id.
-    int id = room->tileIDs.front();
-
-    //Adjust the tile ID to the location of the image on the sprite sheet (row, column)
-    //Load first image from sprite sheet and init StoredTiles list
-    SDL_Texture* newImage = sprite->getImage(gui, (int) id/sprite->getSpriteMaxColumns() + 1 , (int) id%sprite->getSpriteMaxColumns());
-    if(newImage == NULL)
-    {
-        cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
-        delete sprite;
-        return false;
-    }
-    room->tileIDs.erase(room->tileIDs.begin());
-    this->sTiles = new TDG_StoredTiles(newImage, id);
-
-    cout << "Stored tile image with ID: " << id << endl;
-
-    //continuously load all tile images from sprite sheet
     TDG_StoredTiles* sTiles = this->sTiles;
-
-    //store tile image 1 by default (transparent image)
-    room->tileIDs.push_back(1);
 
     while(!room->tileIDs.empty())
     {
-        id =  room->tileIDs.front();
-
-        newImage = sprite->getImage(gui, (int) (id-1)/sprite->getSpriteMaxColumns() + 1, (int) id%(sprite->getSpriteMaxColumns() + 1));
-        if(newImage == NULL)
+        int id =  room->tileIDs.front();
+        if(id != 1)
         {
-            cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
-            delete sprite;
-            return false;
+            SDL_Texture* newImage = sprite->getImage(gui, (int) (id-1)/sprite->getSpriteMaxColumns() + 1, (int) id%(sprite->getSpriteMaxColumns() + 1));
+            if(newImage == NULL)
+            {
+                cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
+                delete sprite;
+                return false;
+            }
+
+            TDG_StoredTiles* newTileImg = new TDG_StoredTiles(newImage, id);
+            sTiles->setNext(newTileImg);
+            sTiles = newTileImg;
+
+            cout << "Stored tile image with ID: " << id << endl;
         }
         room->tileIDs.erase(room->tileIDs.begin());
-
-        TDG_StoredTiles* newTileImg = new TDG_StoredTiles(newImage, id);
-        sTiles->setNext(newTileImg);
-        sTiles = newTileImg;
-
-        cout << "Stored tile image with ID: " << id << endl;
     }
 
     delete sprite;
 
-    //**************************************************************************************************************/
-    //create tile array (contains information about the background)
-    this->tileArrangement = new TDG_Tile*[this->tileRows];
-    for(int u = 0; u < this->tileRows; u++)
-        this->tileArrangement[u] = new TDG_Tile[this->tileColumns];
-
+    //**************************************************************************************************************
     //fill array
     int i, j;
     for(i = 0; i < this->tileRows; i++)
@@ -121,6 +96,66 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     //************************************************************************
     //save gates
     this->gates = room->gates;
+
+    return true;
+}
+
+bool TDG_Background::createEmpty(TDG_GUI* gui, int rows, int columns)
+{
+    if(!this->initRoom(gui, rows, columns))
+    {
+        cout << "Unable to initialize room!" << endl;
+        return false;
+    }
+
+    //fill tile information array with default settings
+    int i, j;
+    for(i = 0; i < this->tileRows; i++)
+    {
+        for(j = 0; j < this->tileColumns; j++)
+        {
+            this->tileArrangement[i][j].set(1, 0, false, 0);
+        }
+    }
+    return true;
+}
+
+bool TDG_Background::initRoom(TDG_GUI* gui, int rows, int columns)
+{
+    this->tileRows = rows;
+    this->tileColumns = columns;
+
+    //Load sprite sheet and all important information from a file.
+    TDG_SpriteLoader* sprite = new TDG_SpriteLoader();
+    if(!sprite->loadSprite("./data/img/room/", "room"))
+    {
+        cout << "Unable to load background sprite!" << endl;
+        return false;
+    }
+
+    this->tileWidth = sprite->getImgWidth();
+    this->tileHight = sprite->getImgHight();
+
+    //Load the default tile image
+    int id = 1;
+    //Adjust the tile ID to the location of the image on the sprite sheet (row, column)
+    //Store tile image 1 by default (transparent image) from sprite sheet and init StoredTiles list
+    SDL_Texture* newImage = sprite->getImage(gui, (int) id/sprite->getSpriteMaxColumns() + 1 , (int) id%sprite->getSpriteMaxColumns());
+    if(newImage == NULL)
+    {
+        cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
+        delete sprite;
+        return false;
+    }
+    this->sTiles = new TDG_StoredTiles(newImage, id);
+    cout << "Stored tile image with ID: " << id << endl;
+
+    delete sprite;
+
+     //create tile array (contains information about the background)
+    this->tileArrangement = new TDG_Tile*[this->tileRows];
+    for(int u = 0; u < this->tileRows; u++)
+        this->tileArrangement[u] = new TDG_Tile[this->tileColumns];
 
     return true;
 }
@@ -182,6 +217,71 @@ bool TDG_Background::isGate(int row, int column)
     }
 
     return false;
+}
+
+void TDG_Background::print(ofstream* out)
+{
+    *out << "size: " << this->tileColumns << " " << this->tileRows << endl;
+
+    *out << "background:" << endl;
+    for(int i = 0; i < this->tileRows; i++)
+    {
+        for(int j = 0; j < this->tileColumns; j++)
+        {
+            *out << this->tileArrangement[i][j].getID() << " ";
+        }
+        *out << endl;
+    }
+
+    *out << "rotation:" << endl;
+    for(int i = 0; i < this->tileRows; i++)
+    {
+        for(int j = 0; j < this->tileColumns; j++)
+        {
+            *out << this->tileArrangement[i][j].getRotDegree() << " ";
+        }
+        *out << endl;
+    }
+
+    *out << "collision:" << endl;
+    for(int i = 0; i < this->tileRows; i++)
+    {
+        for(int j = 0; j < this->tileColumns; j++)
+        {
+            *out << this->tileArrangement[i][j].isImpassable() << " ";
+        }
+        *out << endl;
+    }
+
+    *out << "flip:" << endl;
+    for(int i = 0; i < this->tileRows; i++)
+    {
+        for(int j = 0; j < this->tileColumns; j++)
+        {
+            if(this->tileArrangement[i][j].flipTile() == SDL_FLIP_HORIZONTAL)
+                *out << "2" << " ";
+            else if(this->tileArrangement[i][j].flipTile() == SDL_FLIP_VERTICAL)
+                *out << "1" << " ";
+            else if(this->tileArrangement[i][j].flipTile() == SDL_FLIP_NONE)
+                *out << "0" << " ";
+        }
+        *out << endl;
+    }
+
+    *out << "gates: ";
+    for(list<Gate>::const_iterator it = this->gates.begin(), end = this->gates.end(); it != end; it++)
+    {
+        string arrivalDir = "s_south";
+        if(it->arriveStatus == s_south) arrivalDir = "s_south";
+        else if(it->arriveStatus  == s_south_west) arrivalDir = "s_south_west";
+        else if(it->arriveStatus  == s_west) arrivalDir = "s_west";
+        else if(it->arriveStatus  == s_north_west) arrivalDir = "s_north_west";
+        else if(it->arriveStatus  == s_north) arrivalDir = "s_north";
+        else if(it->arriveStatus  == s_north_east) arrivalDir = "s_north_east";
+        else if(it->arriveStatus  == s_east) arrivalDir = "s_east";
+        else if(it->arriveStatus  == s_south_east) arrivalDir = "s_south_east";
+        *out << it->id << " " << it->row << " " << it->column << " " << arrivalDir << " " << it->destinationRoomID << " " << it->destinationGateID << " ";
+    }
 }
 
 TDG_Tile* TDG_Background::getTile(int row, int column)

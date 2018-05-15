@@ -3,7 +3,7 @@
 
 #include <windows.h>
 #include "TDG_EntityHandler.h"
-#include "TDG_Player.h"
+#include "TDG_EventHandler.h"
 #include "TDG_Mouse.h"
 
 class TDG_EditorBoard
@@ -18,9 +18,14 @@ class TDG_EditorBoard
 
         void handleInput(TDG_EventHandler* event);
 
-        bool createRoom(int id, int width, int hight);
+        bool createRoom(TDG_GUI* gui, string& name, int id, int rows, int columns);
         bool loadRoom(TDG_GUI* gui, Room* room);
         bool saveRoom();
+
+        void startTimer();
+        void stopTimer();
+
+        bool roomStored();
 
     protected:
 
@@ -39,7 +44,6 @@ class TDG_EditorBoard
 
         TDG_StoredEntityAnimations* entityGraphics;
 
-        TDG_Player* player;
         TDG_EntityHandler* entities;
 };
 

@@ -9,7 +9,8 @@ typedef struct
 {
     bool load, create, save;
     int roomID;
-    int w, h;
+    string rName;
+    int rows, columns;
 
 }ConsoleStatus;
 
@@ -22,6 +23,7 @@ class TDG_RoomEditor
         bool init();
 
         bool start();
+        void stop();
 
         void programLoop();
 
