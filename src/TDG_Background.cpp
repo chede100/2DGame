@@ -35,11 +35,11 @@ TDG_Background::~TDG_Background()
     }
 }
 
-bool TDG_Background::create(TDG_GUI* gui, Room* room)
+bool TDG_Background::create(TDG_Window* win, Room* room)
 {
     //********************************************************************************************************/
     //Load needed images from sprite and save them in the TDG_StoredTiles list
-    if(!this->initRoom(gui, room->tileRows, room->tileColumns))
+    if(!this->initRoom(win, room->tileRows, room->tileColumns))
     {
         cout << "Unable to initialize room!" << endl;
         return false;
@@ -53,27 +53,14 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
         return false;
     }
 
-    TDG_StoredTiles* sTiles = this->sTiles;
-
     while(!room->tileIDs.empty())
     {
         int id =  room->tileIDs.front();
-        if(id != 1)
-        {
-            SDL_Texture* newImage = sprite->getImage(gui, (int) (id-1)/sprite->getSpriteMaxColumns() + 1, (int) id%(sprite->getSpriteMaxColumns() + 1));
-            if(newImage == NULL)
-            {
-                cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
-                delete sprite;
-                return false;
-            }
 
-            TDG_StoredTiles* newTileImg = new TDG_StoredTiles(newImage, id);
-            sTiles->setNext(newTileImg);
-            sTiles = newTileImg;
-
+        //load all tile images and skip the tile images which are already stored
+        if(addImage(win, sprite, id))
             cout << "Stored tile image with ID: " << id << endl;
-        }
+
         room->tileIDs.erase(room->tileIDs.begin());
     }
 
@@ -100,9 +87,9 @@ bool TDG_Background::create(TDG_GUI* gui, Room* room)
     return true;
 }
 
-bool TDG_Background::createEmpty(TDG_GUI* gui, int rows, int columns)
+bool TDG_Background::createEmpty(TDG_Window* win, int rows, int columns)
 {
-    if(!this->initRoom(gui, rows, columns))
+    if(!this->initRoom(win, rows, columns))
     {
         cout << "Unable to initialize room!" << endl;
         return false;
@@ -120,7 +107,7 @@ bool TDG_Background::createEmpty(TDG_GUI* gui, int rows, int columns)
     return true;
 }
 
-bool TDG_Background::initRoom(TDG_GUI* gui, int rows, int columns)
+bool TDG_Background::initRoom(TDG_Window* win, int rows, int columns)
 {
     this->tileRows = rows;
     this->tileColumns = columns;
@@ -136,19 +123,9 @@ bool TDG_Background::initRoom(TDG_GUI* gui, int rows, int columns)
     this->tileWidth = sprite->getImgWidth();
     this->tileHight = sprite->getImgHight();
 
-    //Load the default tile image
-    int id = 1;
-    //Adjust the tile ID to the location of the image on the sprite sheet (row, column)
-    //Store tile image 1 by default (transparent image) from sprite sheet and init StoredTiles list
-    SDL_Texture* newImage = sprite->getImage(gui, (int) id/sprite->getSpriteMaxColumns() + 1 , (int) id%sprite->getSpriteMaxColumns());
-    if(newImage == NULL)
-    {
-        cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
-        delete sprite;
-        return false;
-    }
-    this->sTiles = new TDG_StoredTiles(newImage, id);
-    cout << "Stored tile image with ID: " << id << endl;
+    //Load the default tile image: 1
+    if(addImage(win, sprite, 1))
+        cout << "Stored tile image with ID: " << "1" << endl;
 
     delete sprite;
 
@@ -160,7 +137,7 @@ bool TDG_Background::initRoom(TDG_GUI* gui, int rows, int columns)
     return true;
 }
 
-bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y)
+bool TDG_Background::renderAtPos(TDG_Window* win, int x, int y)
 {
     int r, c;
     for(r = 0; r < this->tileRows; r++)
@@ -181,11 +158,101 @@ bool TDG_Background::renderAtPos(TDG_GUI* gui, int x, int y)
             SDL_Rect rect = {x + c*this->tileWidth, y + r*this->tileHight,
                             this->tileWidth, this->tileHight};
 
-            SDL_RenderCopyEx(gui->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, this->tileArrangement[r][c].flipTile());
+            SDL_RenderCopyEx(win->getRenderer(), tileImg, NULL, &rect, rotDegree, NULL, this->tileArrangement[r][c].flipTile());
         }
     }
 
     return true;
+}
+
+bool TDG_Background::addImage(TDG_Window* win, TDG_SpriteLoader* sprite, int id)
+{
+    if(this->isTileImgStored(id))
+        return false;
+
+    SDL_Texture* newImage = sprite->getImage(win, (int) (id-1)/sprite->getSpriteMaxColumns() + 1, (int) id%(sprite->getSpriteMaxColumns() + 1));
+    if(newImage == NULL)
+    {
+        cout << "Unable to load image " << id << " of sprite sheet ./data/img/room/room.png" << endl;
+        delete sprite;
+        return false;
+    }
+
+    if(this->sTiles != NULL)
+    {
+        TDG_StoredTiles* newTileImg = new TDG_StoredTiles(newImage, id);
+        newTileImg->setNext(this->sTiles->getNext());
+        this->sTiles->setNext(newTileImg);
+    }
+    else
+        this->sTiles = new TDG_StoredTiles(newImage, id);
+
+    return true;
+}
+
+bool TDG_Background::isTileImgStored(int id)
+{
+    TDG_StoredTiles*  tmp = this->sTiles;
+    while(tmp != NULL)
+    {
+        if(tmp->getTileID() == id)
+            return true;
+        tmp = tmp->getNext();
+    }
+    return false;
+}
+
+void TDG_Background::removeUnusedImages()
+{
+    list<int> usedT;
+    for(int i = 0; i < this->tileRows; i++)
+    {
+        for(int j = 0; j < this->tileColumns; j++)
+        {
+            bool alreadyStored = false;
+            for(list<int>::const_iterator it = usedT.begin(), end = usedT.end(); it != end; it++)
+            {
+                if(*it == this->tileArrangement[i][j].getID())
+                {
+                    alreadyStored = true;
+                    it = usedT.end();
+                }
+            }
+            if(!alreadyStored)
+                usedT.push_back(this->tileArrangement[i][j].getID());
+        }
+    }
+
+    TDG_StoredTiles* allT = this->sTiles;
+    TDG_StoredTiles* prevT = NULL;
+    while(allT != NULL)
+    {
+        bool inUse = false;
+        for(list<int>::const_iterator it = usedT.begin(), end = usedT.end(); it != end; it++)
+        {
+            if(*it == allT->getTileID())
+            {
+                inUse = true;
+                it = usedT.end();
+            }
+        }
+        if(!inUse)
+        {
+            if(prevT == NULL)
+            {
+                TDG_StoredTiles* next = this->sTiles->getNext();
+                delete this->sTiles;
+                this->sTiles = next;
+            }
+            else
+            {
+                prevT->setNext(allT->getNext());
+                delete allT;
+            }
+        }
+        prevT = allT;
+        allT = allT->getNext();
+    }
 }
 
 bool TDG_Background::isTileImpassable(int row, int column)

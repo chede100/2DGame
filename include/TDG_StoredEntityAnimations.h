@@ -9,7 +9,7 @@ class TDG_StoredEntityAnimations
         TDG_StoredEntityAnimations();
         virtual ~TDG_StoredEntityAnimations();
 
-        bool loadAndAdd(TDG_GUI* gui, EntityTyp typ, int animationID);
+        bool loadAndAdd(TDG_Window* win, EntityTyp typ, int animationID);
         bool remove(EntityTyp typ, int animationID);
         void removeAllExcept(EntityTyp typ, int animationID);
 

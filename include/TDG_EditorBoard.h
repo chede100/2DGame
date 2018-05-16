@@ -2,6 +2,7 @@
 #define TDG_EDITORBOARD_H
 
 #include <windows.h>
+#include "TDG_GUI.h"
 #include "TDG_EntityHandler.h"
 #include "TDG_EventHandler.h"
 #include "TDG_Mouse.h"
@@ -12,15 +13,18 @@ class TDG_EditorBoard
         TDG_EditorBoard();
         virtual ~TDG_EditorBoard();
 
-        bool init();
+        bool init(TDG_Window* win);
 
-        bool render(TDG_GUI* gui);
+        bool render(TDG_Window* win);
 
         void handleInput(TDG_EventHandler* event);
 
-        bool createRoom(TDG_GUI* gui, string& name, int id, int rows, int columns);
-        bool loadRoom(TDG_GUI* gui, Room* room);
+        bool createRoom(TDG_Window* win, string& name, int id, int rows, int columns);
+        bool loadRoom(TDG_Window* win, Room* room);
         bool saveRoom();
+
+        void addTile(int id);
+        void addEntity(EntityTyp typ, int id);
 
         void startTimer();
         void stopTimer();
@@ -30,13 +34,13 @@ class TDG_EditorBoard
     protected:
 
     private:
-        bool renderBackground(TDG_GUI* gui);
+        bool renderBackground(TDG_Window* win);
 
         string roomName;
         int roomID;
 
-        TDG_Position* viewPos;
-        TDG_View* view;
+        TDG_Position* guiPos;
+        TDG_GUI* gui;
 
         TDG_Mouse* mouse;
 

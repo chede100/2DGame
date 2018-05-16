@@ -1,7 +1,7 @@
 #ifndef TDG_SPRITELOADER_H
 #define TDG_SPRITELOADER_H
 
-#include "TDG_GUI.h"
+#include "TDG_Window.h"
 #include "TDG_Animation.h"
 
 class TDG_SpriteLoader
@@ -12,8 +12,8 @@ class TDG_SpriteLoader
 
         bool loadSprite(string pathToFolder, string spriteName);
 
-        SDL_Texture* getImage(TDG_GUI* gui, int row, int column);
-        TDG_Animation* getAnimation(TDG_GUI* gui, int row);
+        SDL_Texture* getImage(TDG_Window* win, int row, int column);
+        TDG_Animation* getAnimation(TDG_Window* win, int row);
 
         int getSpriteMaxRows();
         int getSpriteMaxColumns();

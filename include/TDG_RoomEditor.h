@@ -1,7 +1,7 @@
 #ifndef TDG_ROOMEDITOR_H
 #define TDG_ROOMEDITOR_H
 
-#include "TDG_GUI.h"
+#include "TDG_Window.h"
 #include "TDG_EventHandler.h"
 #include "TDG_EditorBoard.h"
 
@@ -39,7 +39,7 @@ class TDG_RoomEditor
 
         ConsoleStatus cStatus;
 
-        TDG_GUI* gui;
+        TDG_Window* win;
         TDG_EventHandler* event;
 
         TDG_EditorBoard* board;

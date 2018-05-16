@@ -17,7 +17,7 @@ class TDG_Entity
 
         bool updateAnimation();
 
-        void render(TDG_GUI* gui, TDG_View* view);
+        void render(TDG_Window* win, TDG_View* view);
 
         TDG_CollisionBox* getCBox();
         MovementStatus getMovementStatus();

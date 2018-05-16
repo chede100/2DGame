@@ -36,7 +36,9 @@ class TDG_Mouse
 
         void handleEvent(SDL_Event* event, TDG_EntityHandler* eh, TDG_Background* bg, TDG_View* view);
 
-        void renderSelRect(TDG_GUI* gui, TDG_View* view);
+        void renderSelRect(TDG_Window* win, TDG_View* view);
+
+        bool selectedSomething();
 
     protected:
 

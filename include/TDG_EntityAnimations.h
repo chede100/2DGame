@@ -2,7 +2,7 @@
 #define TDG_ENTITYANIMATIONS_H
 
 #include "TDG_AnimationList.h"
-#include "TDG_GUI.h"
+#include "TDG_Window.h"
 #include "TDG_SpriteLoader.h"
 #include "TDG_Information.h"
 
@@ -12,7 +12,7 @@ class TDG_EntityAnimations
         TDG_EntityAnimations();
         virtual ~TDG_EntityAnimations();
 
-        bool loadAnimations(TDG_GUI* gui, int animationID, EntityTyp typ);
+        bool loadAnimations(TDG_Window* win, int animationID, EntityTyp typ);
 
         TDG_Animation* getAnimation(AnimationTyp typ);
         EntityTyp getTyp();

@@ -119,7 +119,7 @@ void TDG_EntityHandler::removeAllExcept(TDG_Entity* expt)
     this->first->setEntity(expt);
 }
 
-void TDG_EntityHandler::render(TDG_GUI* gui, TDG_View* view)
+void TDG_EntityHandler::render(TDG_Window* win, TDG_View* view)
 {
     //sort before rendering
     sort();
@@ -128,7 +128,7 @@ void TDG_EntityHandler::render(TDG_GUI* gui, TDG_View* view)
     while(tmp != NULL)
     {
         if(tmp->getEntity() != NULL)
-            tmp->getEntity()->render(gui, view);
+            tmp->getEntity()->render(win, view);
         tmp = tmp->getNext();
     }
 }

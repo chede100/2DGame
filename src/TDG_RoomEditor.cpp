@@ -3,7 +3,7 @@
 TDG_RoomEditor::TDG_RoomEditor()
 {
     this->event = NULL;
-    this->gui = NULL;
+    this->win = NULL;
     this->board = NULL;
 
     this->cStatus.create = false;
@@ -25,8 +25,8 @@ TDG_RoomEditor::~TDG_RoomEditor()
         SDL_DetachThread(this->consoleInput);
     }
 
-    if(this->gui != NULL)
-        delete this->gui;
+    if(this->win != NULL)
+        delete this->win;
     if(this->event != NULL)
         delete this->event;
     if(this->board != NULL)
@@ -44,10 +44,10 @@ bool TDG_RoomEditor::init()
         return false;
     }
 
-    this->gui = new TDG_GUI();
-    if(!this->gui->init(specs->getOpt()))
+    this->win = new TDG_Window();
+    if(!this->win->init(specs->getOpt()))
     {
-        cout << "Unable to initialize GUI!" << endl;
+        cout << "Unable to initialize window!" << endl;
         delete specs;
         return false;
     }
@@ -55,7 +55,7 @@ bool TDG_RoomEditor::init()
     delete specs;
 
     this->board = new TDG_EditorBoard();
-    if(!this->board->init())
+    if(!this->board->init(this->win))
     {
         cout << "Unable to initialize editor board!" << endl;
         return false;
@@ -102,7 +102,7 @@ void TDG_RoomEditor::input()
                 cout << "Unable to save room!" << endl;
         }
 
-        if(!this->board->createRoom(this->gui, this->cStatus.rName, this->cStatus.roomID, this->cStatus.rows, this->cStatus.columns))
+        if(!this->board->createRoom(this->win, this->cStatus.rName, this->cStatus.roomID, this->cStatus.rows, this->cStatus.columns))
             cout << "Unable to create Room!" << endl;
 
         this->cStatus.create = false;
@@ -127,7 +127,7 @@ void TDG_RoomEditor::input()
             TDG_FileHandler* fh = new TDG_FileHandler();
             fh->loadRoom(this->cStatus.roomID);
 
-            if(!this->board->loadRoom(this->gui, fh->getRoom()))
+            if(!this->board->loadRoom(this->win, fh->getRoom()))
                 cout << "Unable to load room!" << endl;
 
             delete fh;
@@ -162,10 +162,10 @@ void TDG_RoomEditor::programLoop()
         before = (int)SDL_GetTicks();                                     //
         ////////////////////////////////////////////////////////////////////
 
-        this->board->render(this->gui);
+        this->board->render(this->win);
 
         ////////////////////////////////////////////////////////////////////
-        delay = 1000/gui->getFPSCap() - ((int) SDL_GetTicks() - before);  //
+        delay = 1000/win->getFPSCap() - ((int) SDL_GetTicks() - before);  //
                                                                           //
         if(delay > 0)                                                     //
             SDL_Delay(delay);                                             //
@@ -235,6 +235,29 @@ void TDG_RoomEditor::handleConsoleInput()
                     this->cStatus.rows = rows;
                     this->cStatus.columns = columns;
                     this->cStatus.create = true;
+                }
+            }
+        }
+        else if(this->board != NULL)
+        {
+            if(this->board->roomStored())
+            {
+                if(!inst.front().compare("add"))
+                {
+                    inst.erase(inst.begin());
+                    if(!inst.front().compare("o"))
+                    {
+                        //int id = nextInt(inst);
+
+                    }
+                    else if(!inst.front().compare("c"))
+                    {
+                        //int id = nextInt(inst);
+                    }
+                    else if(!inst.front().compare("t"))
+                    {
+                        //int id = nextInt(inst);
+                    }
                 }
             }
         }

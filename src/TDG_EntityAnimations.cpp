@@ -19,7 +19,7 @@ TDG_EntityAnimations::~TDG_EntityAnimations()
     }
 }
 
-bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int animationID, EntityTyp typ)
+bool TDG_EntityAnimations::loadAnimations(TDG_Window* win, int animationID, EntityTyp typ)
 {
     this->animationID = animationID;
     this->typ = typ;
@@ -51,7 +51,7 @@ bool TDG_EntityAnimations::loadAnimations(TDG_GUI* gui, int animationID, EntityT
     int i;
     for(i = 1; i <= sprite->getSpriteMaxRows(); i++)
     {
-        TDG_Animation* newAni = sprite->getAnimation(gui, i);
+        TDG_Animation* newAni = sprite->getAnimation(win, i);
         if(newAni == NULL)
         {
             cout << "Unable to load animation. Row: " << i << " Sprite sheet: " << folderPath << sName << endl;

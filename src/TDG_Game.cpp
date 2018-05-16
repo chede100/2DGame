@@ -4,7 +4,7 @@ TDG_Game::TDG_Game()
 {
     this->board = NULL;
     this->event = NULL;
-    this->gui = NULL;
+    this->win = NULL;
 }
 
 TDG_Game::~TDG_Game()
@@ -13,8 +13,8 @@ TDG_Game::~TDG_Game()
 
     if(this->board != NULL)
         delete this->board;
-    if(this->gui != NULL)
-        delete this->gui;
+    if(this->win != NULL)
+        delete this->win;
     if(this->event != NULL)
         delete this->event;
 }
@@ -38,17 +38,17 @@ bool TDG_Game::init()
     }
 
     //create Window and Renderer
-    this->gui = new TDG_GUI();
-    if(!this->gui->init(specs->getOpt()))
+    this->win = new TDG_Window();
+    if(!this->win->init(specs->getOpt()))
     {
-        cout << "Couldnt initialize GUI!" << endl;
+        cout << "Couldnt initialize Window!" << endl;
         delete specs;
         return false;
     }
 
     //create game board (load background, entity animation images etc.)
     this->board = new TDG_GameBoard();
-    if(!this->board->init(this->gui, specs))
+    if(!this->board->init(this->win, specs))
     {
         cout << "Unable to create game board!" << endl;
         delete specs;
@@ -81,7 +81,7 @@ void TDG_Game::gameloop()
         before = (int)SDL_GetTicks();                                     //
         ////////////////////////////////////////////////////////////////////
 
-        if(!this->board->render(this->gui))
+        if(!this->board->render(this->win))
         {
             cout << "Failed on rendering game board!" << endl;
             break;
@@ -93,7 +93,7 @@ void TDG_Game::gameloop()
         {
             this->board->stopTimer();
 
-            if(!this->board->changeRoom(this->gui, &enterGate))
+            if(!this->board->changeRoom(this->win, &enterGate))
             {
                 cout << "Failed to change room." << endl;
                 quit = true;
@@ -103,7 +103,7 @@ void TDG_Game::gameloop()
         }
 
         ////////////////////////////////////////////////////////////////////
-        delay = 1000/gui->getFPSCap() - ((int) SDL_GetTicks() - before);  //
+        delay = 1000/win->getFPSCap() - ((int) SDL_GetTicks() - before);  //
                                                                           //
         if(delay > 0)                                                     //
             SDL_Delay(delay);                                             //

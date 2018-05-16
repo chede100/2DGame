@@ -3,7 +3,7 @@
 
 #include "TDG_StoredTiles.h"
 #include "TDG_Tile.h"
-#include "TDG_GUI.h"
+#include "TDG_Window.h"
 #include "TDG_SpriteLoader.h"
 
 using namespace std;
@@ -14,10 +14,14 @@ class TDG_Background
         TDG_Background();
         virtual ~TDG_Background();
 
-        bool create(TDG_GUI* gui, Room* room);
-        bool createEmpty(TDG_GUI* gui, int rows, int columns);
+        bool create(TDG_Window* win, Room* room);
+        bool createEmpty(TDG_Window* win, int rows, int columns);
 
-        bool renderAtPos(TDG_GUI* gui, int x, int y);
+        bool renderAtPos(TDG_Window* win, int x, int y);
+
+        bool addImage(TDG_Window* win, TDG_SpriteLoader* sprite, int id);
+        bool isTileImgStored(int id);
+        void removeUnusedImages();
 
         bool isTileImpassable(int row, int column);
         bool isGate(int row, int column);
@@ -34,7 +38,7 @@ class TDG_Background
     protected:
 
     private:
-        bool initRoom(TDG_GUI* gui, int rows, int columns);
+        bool initRoom(TDG_Window* win, int rows, int columns);
         SDL_Texture* getTileImage(int id);
 
         int tileRows, tileColumns;

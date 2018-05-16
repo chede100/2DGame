@@ -10,14 +10,14 @@ class TDG_GameBoard
         TDG_GameBoard();
         virtual ~TDG_GameBoard();
 
-        bool init(TDG_GUI* gui, TDG_FileHandler* specs);
+        bool init(TDG_Window* win, TDG_FileHandler* specs);
 
-        bool render(TDG_GUI* gui);
+        bool render(TDG_Window* win);
 
         void userInput(TDG_EventHandler* event);
 
         bool throughGate(Gate* enterGate);
-        bool changeRoom(TDG_GUI* gui, Gate* enterGate);
+        bool changeRoom(TDG_Window* win, Gate* enterGate);
 
         void startTimer();
         void stopTimer();
@@ -27,10 +27,10 @@ class TDG_GameBoard
     protected:
 
     private:
-        bool createRoom(TDG_GUI* gui, Room* room);
-        bool createPlayer(TDG_GUI* gui, SavePoint* sp);
+        bool createRoom(TDG_Window* win, Room* room);
+        bool createPlayer(TDG_Window* win, SavePoint* sp);
 
-        bool renderBackground(TDG_GUI* gui);
+        bool renderBackground(TDG_Window* win);
 
         string roomName;
         int roomID;

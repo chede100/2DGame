@@ -20,7 +20,7 @@ class TDG_EntityHandler
         void removeAllExcept(TDG_Entity* expt);
 
         //sorts and renders the entities
-        void render(TDG_GUI* gui, TDG_View* view);
+        void render(TDG_Window* win, TDG_View* view);
 
         bool collisionDetectionFor(TDG_Character* chara);
 

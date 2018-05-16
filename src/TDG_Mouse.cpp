@@ -15,7 +15,7 @@ TDG_Mouse::~TDG_Mouse()
     }
 }
 
-void TDG_Mouse::renderSelRect(TDG_GUI* gui, TDG_View* view)
+void TDG_Mouse::renderSelRect(TDG_Window* win, TDG_View* view)
 {
     int x, y;
     if(this->typ == TILE)
@@ -24,7 +24,7 @@ void TDG_Mouse::renderSelRect(TDG_GUI* gui, TDG_View* view)
         x = sT->c*sT->w - view->getPosX();
         y = sT->r*sT->h - view->getPosY();
         SDL_Rect rect = {x, y, sT->w, sT->h};
-        if(SDL_RenderDrawRect(gui->getRenderer(), &rect))
+        if(SDL_RenderDrawRect(win->getRenderer(), &rect))
             cout << "Failed to render mouse selection marking." << endl;
     }
     else if(this->typ == ENTITY)
@@ -33,7 +33,7 @@ void TDG_Mouse::renderSelRect(TDG_GUI* gui, TDG_View* view)
         x = ent->getPos()->getPosX() - view->getPosX();
         y = ent->getPos()->getPosY() - view->getPosY();
         SDL_Rect rect = {x, y, ent->getImageWidth(), ent->getImageHight()};
-        if(SDL_RenderDrawRect(gui->getRenderer(), &rect))
+        if(SDL_RenderDrawRect(win->getRenderer(), &rect))
             cout << "Failed to render mouse selection marking." << endl;
     }
 }
@@ -206,4 +206,12 @@ bool TDG_Mouse::selectTile(TDG_Background* bg, int posX, int posY)
         }
     }
     return false;
+}
+
+bool TDG_Mouse::selectedSomething()
+{
+    if(this->typ == noSelection)
+        return false;
+
+    return true;
 }

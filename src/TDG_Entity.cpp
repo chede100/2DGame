@@ -93,7 +93,7 @@ bool TDG_Entity::assignAnimations(TDG_StoredEntityAnimations* storedGraphics)
     return true;
 }
 
-void TDG_Entity::render(TDG_GUI* gui, TDG_View* view)
+void TDG_Entity::render(TDG_Window* win, TDG_View* view)
 {
     int x = this->pos->getPosX() - view->getPosX();
     int y = this->pos->getPosY() - view->getPosY();
@@ -105,9 +105,9 @@ void TDG_Entity::render(TDG_GUI* gui, TDG_View* view)
     //flip the animation image because only the move or stand animations for direction east are stored (west animations not stored)
     if((this->curStatus == m_north_west) || (this->curStatus == m_west) || (this->curStatus == m_south_west)
        || (this->curStatus == s_north_west) || (this->curStatus == s_west) || (this->curStatus == s_south_west))
-       SDL_RenderCopyEx(gui->getRenderer(), this->currentImage->getImg(), NULL, &rect, 0.0, NULL, SDL_FLIP_HORIZONTAL);
+       SDL_RenderCopyEx(win->getRenderer(), this->currentImage->getImg(), NULL, &rect, 0.0, NULL, SDL_FLIP_HORIZONTAL);
     else
-        SDL_RenderCopy(gui->getRenderer(), this->currentImage->getImg(), NULL, &rect);
+        SDL_RenderCopy(win->getRenderer(), this->currentImage->getImg(), NULL, &rect);
 }
 
 bool TDG_Entity::updateAnimation()

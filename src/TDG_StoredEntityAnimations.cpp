@@ -17,7 +17,7 @@ TDG_StoredEntityAnimations::~TDG_StoredEntityAnimations()
     }
 }
 
-bool TDG_StoredEntityAnimations::loadAndAdd(TDG_GUI* gui, EntityTyp typ, int animationID)
+bool TDG_StoredEntityAnimations::loadAndAdd(TDG_Window* win, EntityTyp typ, int animationID)
 {
     if(this->isStored(typ, animationID))
     {
@@ -31,7 +31,7 @@ bool TDG_StoredEntityAnimations::loadAndAdd(TDG_GUI* gui, EntityTyp typ, int ani
         this->eAniL = new TDG_EntityAnimationsList();
 
         TDG_EntityAnimations* newEAni = new TDG_EntityAnimations();
-        if(!newEAni->loadAnimations(gui, animationID, typ))
+        if(!newEAni->loadAnimations(win, animationID, typ))
         {
             cout << "Unable to load Animations from entity " << typ << " ID: " << animationID << endl;
             delete this->eAniL;
@@ -58,7 +58,7 @@ bool TDG_StoredEntityAnimations::loadAndAdd(TDG_GUI* gui, EntityTyp typ, int ani
         TDG_EntityAnimationsList* newEAniL = new TDG_EntityAnimationsList();
 
         TDG_EntityAnimations* newEAni = new TDG_EntityAnimations();
-        if(!newEAni->loadAnimations(gui, animationID, typ))
+        if(!newEAni->loadAnimations(win, animationID, typ))
         {
             cout << "Unable to load Animations from entity " << typ << " ID: " << animationID << endl;
             delete newEAniL;

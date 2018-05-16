@@ -20,20 +20,20 @@ TDG_GameBoard::~TDG_GameBoard()
         delete this->entities;
 }
 
-bool TDG_GameBoard::init(TDG_GUI* gui, TDG_FileHandler* specs)
+bool TDG_GameBoard::init(TDG_Window* win, TDG_FileHandler* specs)
 {
     this->entityGraphics = new TDG_StoredEntityAnimations();
 
     this->entities = new TDG_EntityHandler();
 
     //create the room and init all entities
-    if(!createRoom(gui, specs->getRoom()))
+    if(!createRoom(win, specs->getRoom()))
     {
         cout << "Unable to create room." << endl;
         return false;
     }
 
-    if(!createPlayer(gui, specs->getSPoint()))
+    if(!createPlayer(win, specs->getSPoint()))
     {
         cout << "Unable to create player character!" << endl;
         return false;
@@ -61,14 +61,14 @@ bool TDG_GameBoard::init(TDG_GUI* gui, TDG_FileHandler* specs)
     return true;
 }
 
-bool TDG_GameBoard::createRoom(TDG_GUI* gui, Room* room)
+bool TDG_GameBoard::createRoom(TDG_Window* win, Room* room)
 {
     this->roomName = room->roomName;
     this->roomID = room->roomID;
 
     //Create background
     this->backg = new TDG_Background();
-    if(!this->backg->create(gui, room))
+    if(!this->backg->create(win, room))
     {
         cout << "Unable to create background!" << endl;
         return false;
@@ -84,14 +84,14 @@ bool TDG_GameBoard::createRoom(TDG_GUI* gui, Room* room)
     for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
     {
         if(!this->entityGraphics->isStored(Character, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, Character, it->animationID);
+            this->entityGraphics->loadAndAdd(win, Character, it->animationID);
     }
 
     //Store all object graphics/animations
     for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
     {
         if(!this->entityGraphics->isStored(Object, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, Object, it->animationID);
+            this->entityGraphics->loadAndAdd(win, Object, it->animationID);
     }
     //***************************************************************************************
     //create all npc
@@ -133,11 +133,11 @@ bool TDG_GameBoard::createRoom(TDG_GUI* gui, Room* room)
     return true;
 }
 
-bool TDG_GameBoard::createPlayer(TDG_GUI* gui, SavePoint* sp)
+bool TDG_GameBoard::createPlayer(TDG_Window* win, SavePoint* sp)
 {
     //Store player graphics/animations
     if(!this->entityGraphics->isStored(Character, sp->player.animationID))
-        this->entityGraphics->loadAndAdd(gui, Character, sp->player.animationID);
+        this->entityGraphics->loadAndAdd(win, Character, sp->player.animationID);
 
     //create player
     this->player = new TDG_Player();
@@ -178,7 +178,7 @@ bool TDG_GameBoard::throughGate(Gate* enterGate)
     return false;
 }
 
-bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Gate* enterGate)
+bool TDG_GameBoard::changeRoom(TDG_Window* win, Gate* enterGate)
 {
     TDG_FileHandler* newRoom = new TDG_FileHandler();
     newRoom->loadRoom(enterGate->destinationRoomID);
@@ -189,7 +189,7 @@ bool TDG_GameBoard::changeRoom(TDG_GUI* gui, Gate* enterGate)
     delete this->backg;
     this->backg = NULL;
 
-    if(!createRoom(gui, newRoom->getRoom()))
+    if(!createRoom(win, newRoom->getRoom()))
     {
         cout << "Unable to change room. New room cant be created!" << endl;
         return false;
@@ -241,21 +241,21 @@ void TDG_GameBoard::stopTimer()
     this->entities->stopMotion();
 }
 
-bool TDG_GameBoard::render(TDG_GUI* gui)
+bool TDG_GameBoard::render(TDG_Window* win)
 {
-    SDL_RenderClear(gui->getRenderer());
+    SDL_RenderClear(win->getRenderer());
 
-    if(!renderBackground(gui))
+    if(!renderBackground(win))
         return false;
 
-    this->entities->render(gui, this->view);
+    this->entities->render(win, this->view);
 
-    SDL_RenderPresent(gui->getRenderer());
+    SDL_RenderPresent(win->getRenderer());
 
     return true;
 }
 
-bool TDG_GameBoard::renderBackground(TDG_GUI* gui)
+bool TDG_GameBoard::renderBackground(TDG_Window* win)
 {
     //position of field of view on the game board
     int xPosView = this->view->getPosX();
@@ -265,7 +265,7 @@ bool TDG_GameBoard::renderBackground(TDG_GUI* gui)
     int backgRenderPosX = xPosView*(-1);
     int backgRenderPosY = yPosView*(-1);
 
-    if(!this->backg->renderAtPos(gui, backgRenderPosX, backgRenderPosY))
+    if(!this->backg->renderAtPos(win, backgRenderPosX, backgRenderPosY))
     {
         cout << "Unable to render background at Position X: " << backgRenderPosX << " Y: " << backgRenderPosY << "!" << endl;
         return false;

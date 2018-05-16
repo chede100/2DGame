@@ -1,7 +1,7 @@
 #ifndef TDG_GAME_H
 #define TDG_GAME_H
 
-#include "TDG_GUI.h"
+#include "TDG_Window.h"
 #include "TDG_EventHandler.h"
 #include "TDG_GameBoard.h"
 
@@ -21,7 +21,7 @@ class TDG_Game
     protected:
 
     private:
-        TDG_GUI* gui;
+        TDG_Window* win;
         TDG_EventHandler* event;
 
         TDG_GameBoard* board;

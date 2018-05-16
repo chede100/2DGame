@@ -3,10 +3,10 @@
 TDG_EditorBoard::TDG_EditorBoard()
 {
     this->backg = NULL;
-    this->view = NULL;
+    this->gui = NULL;
     this->entityGraphics = NULL;
     this->entities = NULL;
-    this->viewPos = NULL;
+    this->guiPos = NULL;
     this->mouse = NULL;
 
     this->roomID = 0;
@@ -16,78 +16,71 @@ TDG_EditorBoard::~TDG_EditorBoard()
 {
     if(this->backg != NULL)
         delete this->backg;
-    if(this->view != NULL)
-        delete this->view;
+    if(this->gui != NULL)
+        delete this->gui;
     if(this->entityGraphics != NULL)
         delete this->entityGraphics;
     if(this->entities != NULL)
         delete this->entities;
-    if(this->viewPos != NULL)
-        delete this->viewPos;
+    if(this->guiPos != NULL)
+        delete this->guiPos;
     if(this->mouse != NULL)
         delete this->mouse;
 }
 
-bool TDG_EditorBoard::init()
+bool TDG_EditorBoard::init(TDG_Window* win)
 {
     this->mouse = new TDG_Mouse();
+    this->gui = new TDG_GUI();
 
-    this->view = new TDG_View();
+    //bind view by default to the left upper corner
+    this->guiPos = new TDG_Position(0, 0);
 
-    // set the field of view to the size of the window
-    int viewWidth = 420;
-    int viewHight = 320;
-    this->view->init(viewWidth, viewHight, 352, 224);
-
-    //bind view to center of the window
-    this->viewPos = new TDG_Position(160.0, 96.0);
-
-    //bind the field of view to the players character on the game board
-    if(!this->view->bindTo(this->viewPos, 0, 0))
+    if(!this->gui->init(win, guiPos))
     {
-        cout << "Unable to bind field of view!" << endl;
+        cout << "Unable to initialize graphical user interface!" << endl;
         return false;
     }
 
     return true;
 }
 
-bool TDG_EditorBoard::render(TDG_GUI* gui)
+bool TDG_EditorBoard::render(TDG_Window* win)
 {
-    SDL_RenderClear(gui->getRenderer());
+    SDL_RenderClear(win->getRenderer());
 
     if(this->backg != NULL)
     {
-        if(!renderBackground(gui))
+        if(!renderBackground(win))
             return false;
     }
 
     if(this->entities != NULL)
     {
-        this->entities->render(gui, this->view);
+        this->entities->render(win, this->gui->getView());
     }
 
     if(this->mouse != NULL)
     {
-        this->mouse->renderSelRect(gui, this->view);
+        this->mouse->renderSelRect(win, this->gui->getView());
     }
 
-    SDL_RenderPresent(gui->getRenderer());
+    SDL_RenderPresent(win->getRenderer());
 
     return true;
 }
 
-bool TDG_EditorBoard::renderBackground(TDG_GUI* gui)
+bool TDG_EditorBoard::renderBackground(TDG_Window* win)
 {
     //position of field of view on the game board
-    int xPosView = this->view->getPosX();
-    int yPosView = this->view->getPosY();
+    int xPosView = this->gui->getView()->getPosX();
+    int yPosView = this->gui->getView()->getPosY();
 
     //render the background at this position, so the field of view keeps its relative path to the game board.
     int backgRenderPosX = xPosView*(-1);
     int backgRenderPosY = yPosView*(-1);
 
-    if(!this->backg->renderAtPos(gui, backgRenderPosX, backgRenderPosY))
+    if(!this->backg->renderAtPos(win, backgRenderPosX, backgRenderPosY))
     {
         cout << "Unable to render background at Position X: " << backgRenderPosX << " Y: " << backgRenderPosY << "!" << endl;
         return false;
@@ -96,7 +89,7 @@ bool TDG_EditorBoard::renderBackground(TDG_GUI* gui)
     return true;
 }
 
-bool TDG_EditorBoard::createRoom(TDG_GUI* gui, string& name, int id, int rows, int columns)
+bool TDG_EditorBoard::createRoom(TDG_Window* win, string& name, int id, int rows, int columns)
 {
     if(this->entityGraphics != NULL)
         delete this->entityGraphics;
@@ -112,7 +105,7 @@ bool TDG_EditorBoard::createRoom(TDG_GUI* gui, string& name, int id, int rows, i
     this->roomID = id;
 
     this->backg = new TDG_Background();
-    if(!this->backg->createEmpty(gui, rows, columns))
+    if(!this->backg->createEmpty(win, rows, columns))
     {
         cout << "Unable to create background!" << endl;
         return false;
@@ -124,17 +117,17 @@ bool TDG_EditorBoard::createRoom(TDG_GUI* gui, string& name, int id, int rows, i
     //new field of view collision with background
     int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
     int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
-    this->view->updateMovementInterval(bgWidth, bgHight);
+    this->gui->getView()->updateMovementInterval(bgWidth, bgHight);
 
     double bgCenterX = bgWidth/2;
     double bgCenterY = bgHight/2;
-    this->viewPos->setPosX(bgCenterX);
-    this->viewPos->setPosY(bgCenterY);
+    this->gui->getPos()->setPosX(bgCenterX);
+    this->gui->getPos()->setPosY(bgCenterY);
 
     return true;
 }
 
-bool TDG_EditorBoard::loadRoom(TDG_GUI* gui, Room* room)
+bool TDG_EditorBoard::loadRoom(TDG_Window* win, Room* room)
 {
     if(this->entityGraphics != NULL)
         delete this->entityGraphics;
@@ -151,7 +144,7 @@ bool TDG_EditorBoard::loadRoom(TDG_GUI* gui, Room* room)
 
     //Create background
     this->backg = new TDG_Background();
-    if(!this->backg->create(gui, room))
+    if(!this->backg->create(win, room))
     {
         cout << "Unable to create background!" << endl;
         return false;
@@ -167,14 +160,14 @@ bool TDG_EditorBoard::loadRoom(TDG_GUI* gui, Room* room)
     for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
     {
         if(!this->entityGraphics->isStored(Character, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, Character, it->animationID);
+            this->entityGraphics->loadAndAdd(win, Character, it->animationID);
     }
 
     //Store all object graphics/animations
     for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
     {
         if(!this->entityGraphics->isStored(Object, it->animationID))
-            this->entityGraphics->loadAndAdd(gui, Object, it->animationID);
+            this->entityGraphics->loadAndAdd(win, Object, it->animationID);
     }
     //***************************************************************************************
     //create all npc
@@ -216,12 +209,12 @@ bool TDG_EditorBoard::loadRoom(TDG_GUI* gui, Room* room)
     //new field of view collision with background
     int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
     int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
-    this->view->updateMovementInterval(bgWidth, bgHight);
+    this->gui->getView()->updateMovementInterval(bgWidth, bgHight);
 
     double bgCenterX = bgWidth/2;
     double bgCenterY = bgHight/2;
-    this->viewPos->setPosX(bgCenterX);
-    this->viewPos->setPosY(bgCenterY);
+    this->gui->getPos()->setPosX(bgCenterX);
+    this->gui->getPos()->setPosY(bgCenterY);
 
     return true;
 }
@@ -277,6 +270,21 @@ bool TDG_EditorBoard::saveRoom()
     return true;
 }
 
+void TDG_EditorBoard::addTile(int id)
+{
+    if(this->mouse->selectedSomething())
+        cout << "Unselect the current tile to add a new one!" << endl;
+    else
+    {
+
+    }
+}
+
+void TDG_EditorBoard::addEntity(EntityTyp typ, int id)
+{
+
+}
+
 void TDG_EditorBoard::startTimer()
 {
     if(this->entities != NULL)
@@ -291,7 +299,7 @@ void TDG_EditorBoard::stopTimer()
 
 void TDG_EditorBoard::handleInput(TDG_EventHandler* event)
 {
-    this->mouse->handleEvent(event->getEvent(), this->entities, this->backg, this->view);
+    this->mouse->handleEvent(event->getEvent(), this->entities, this->backg, this->gui->getView());
 }
 
 bool TDG_EditorBoard::roomStored()

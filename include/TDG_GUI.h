@@ -1,10 +1,10 @@
 #ifndef TDG_GUI_H
 #define TDG_GUI_H
 
-#include <SDL_image.h>
-#include "TDG_FileHandler.h"
-
-using namespace std;
+#include <list>
+#include "TDG_Window.h"
+#include "TDG_View.h"
+#include "TDG_GUIElement.h"
 
 class TDG_GUI
 {
@@ -12,22 +12,23 @@ class TDG_GUI
         TDG_GUI();
         virtual ~TDG_GUI();
 
-        bool init(Options* opt);
+        bool init(TDG_Window* win, TDG_Position* pos);
 
-        SDL_Renderer* getRenderer();
+        bool createEditorGUI();
 
-        int getWinWidth();
-        int getWinHight();
+        bool createGameGUI();
 
-        int getFPSCap();
+        TDG_View* getView();
+        TDG_Position* getPos();
 
     protected:
 
     private:
-        SDL_Window* m_window;
-        SDL_Renderer* m_renderer;
-        int winWidth, winHight;
-        int fpsCap;
+
+        TDG_Position* pos;
+        TDG_View* view;
+
+        list<TDG_GUIElement*> elements;
 };
 
 #endif // TDG_GUI_H

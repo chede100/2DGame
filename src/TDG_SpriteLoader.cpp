@@ -60,7 +60,7 @@ bool TDG_SpriteLoader::loadSprite(string pathToFolder, string spriteName)
     return true;
 }
 
-SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
+SDL_Texture* TDG_SpriteLoader::getImage(TDG_Window* win, int row, int column)
 {
     if((row <= 0) || (column <= 0))
     {
@@ -98,7 +98,7 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     }
 
     //create Texture based on the new image
-    SDL_Texture* newImage = SDL_CreateTextureFromSurface(gui->getRenderer(), image);
+    SDL_Texture* newImage = SDL_CreateTextureFromSurface(win->getRenderer(), image);
     if(newImage == NULL)
     {
         cout << "Unable to create Texture from Surface!" << endl;
@@ -111,7 +111,7 @@ SDL_Texture* TDG_SpriteLoader::getImage(TDG_GUI* gui, int row, int column)
     return newImage;
 }
 
-TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row)
+TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_Window* win, int row)
 {
     int imagesAtRow;
     AnimationTyp typ;
@@ -160,7 +160,7 @@ TDG_Animation* TDG_SpriteLoader::getAnimation(TDG_GUI* gui, int row)
     int i;
     for(i = 1; i <= imagesAtRow; i++)
     {
-        SDL_Texture* img = getImage(gui, row, i);
+        SDL_Texture* img = getImage(win, row, i);
         if(img == NULL)
         {
             cout << "Unable to load image from sprite " << this->path << " Row:" << row << " Column: " << i << endl;
