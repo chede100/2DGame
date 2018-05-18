@@ -5,15 +5,6 @@
 #include "TDG_EventHandler.h"
 #include "TDG_EditorBoard.h"
 
-typedef struct
-{
-    bool load, create, save;
-    int roomID;
-    string rName;
-    int rows, columns;
-
-}ConsoleStatus;
-
 class TDG_RoomEditor
 {
     public:
@@ -46,7 +37,6 @@ class TDG_RoomEditor
 
         int nextInt(vector<string>& entries);
         vector<string> split(const string& str, char delimiter);
-        bool roomExists(const string& roomDirectoryPath);
 };
 
 #endif // TDG_ROOMEDITOR_H

@@ -82,6 +82,7 @@ class TDG_FileHandler
         bool loadRoom(int roomID);
         bool loadOpt();
         bool loadSPoint();
+        bool loadEntity(EntityTyp typ, Entity* e);
 
         Room* getRoom();
         Options* getOpt();
@@ -94,7 +95,6 @@ class TDG_FileHandler
         SavePoint* sPoint;
         Options* opt;
 
-        bool loadEntity(EntityTyp typ, Entity* e);
         bool loadNPCs(string path);
         bool loadOBJs(string path);
 

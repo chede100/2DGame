@@ -145,7 +145,7 @@ bool TDG_Background::renderAtPos(TDG_Window* win, int x, int y)
         for(c = 0; c < this->tileColumns; c++)
         {
             //get image from stored background tiles
-            SDL_Texture* tileImg = getTileImage(this->tileArrangement[r][c].getID());
+            SDL_Texture* tileImg = getTileImage(this->tileArrangement[r][c].getID())->getImage();
             if(tileImg == NULL)
             {
                 cout << "Unable to find tile image in the list of stored ones!" << endl;
@@ -215,11 +215,13 @@ void TDG_Background::removeUnusedImages()
                 if(*it == this->tileArrangement[i][j].getID())
                 {
                     alreadyStored = true;
-                    it = usedT.end();
+                    break;
                 }
             }
             if(!alreadyStored)
+            {
                 usedT.push_back(this->tileArrangement[i][j].getID());
+            }
         }
     }
 
@@ -227,31 +229,48 @@ void TDG_Background::removeUnusedImages()
     TDG_StoredTiles* prevT = NULL;
     while(allT != NULL)
     {
-        bool inUse = false;
-        for(list<int>::const_iterator it = usedT.begin(), end = usedT.end(); it != end; it++)
+        if(allT->getTileID() != 1)
         {
-            if(*it == allT->getTileID())
+            bool inUse = false;
+            for(list<int>::const_iterator it = usedT.begin(), end = usedT.end(); it != end; it++)
             {
-                inUse = true;
-                it = usedT.end();
+                if(*it == allT->getTileID())
+                {
+                    inUse = true;
+                    break;
+                }
             }
-        }
-        if(!inUse)
-        {
-            if(prevT == NULL)
+            if(!inUse)
             {
-                TDG_StoredTiles* next = this->sTiles->getNext();
-                delete this->sTiles;
-                this->sTiles = next;
+                cout << "Deleted unused tile: " << allT->getTileID() << "!" << endl;
+                if(prevT == NULL)
+                {
+                    TDG_StoredTiles* next = this->sTiles->getNext();
+                    delete this->sTiles;
+                    this->sTiles = next;
+
+                    allT = this->sTiles;
+                    prevT = NULL;
+                }
+                else
+                {
+                    prevT->setNext(allT->getNext());
+                    delete allT;
+
+                    allT = prevT->getNext();
+                }
             }
             else
             {
-                prevT->setNext(allT->getNext());
-                delete allT;
+                prevT = allT;
+                allT = allT->getNext();
             }
         }
-        prevT = allT;
-        allT = allT->getNext();
+        else
+        {
+            prevT = allT;
+            allT = allT->getNext();
+        }
     }
 }
 
@@ -368,18 +387,18 @@ TDG_Tile* TDG_Background::getTile(int row, int column)
     return &this->tileArrangement[row][column];
 }
 
-SDL_Texture* TDG_Background::getTileImage(int id)
+TDG_StoredTiles* TDG_Background::getTileImage(int tileID)
 {
     TDG_StoredTiles* tmp = this->sTiles;
     while(tmp != NULL)
     {
-        if(id == tmp->getTileID())
-            return tmp->getImage();
+        if(tileID == tmp->getTileID())
+            return tmp;
         else
             tmp = tmp->getNext();
     }
 
-    cout << "List of background tile images contains no image with ID: " << id << endl;
+    cout << "List of background tile images contains no image with ID: " << tileID << endl;
 
     return NULL;
 }

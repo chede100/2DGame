@@ -11,7 +11,7 @@ class TDG_Entity
         TDG_Entity();
         virtual ~TDG_Entity();
 
-        void init(Entity entity, EntityTyp typ);
+        void init(const Entity* entity, EntityTyp typ);
         bool assignAnimations(TDG_StoredEntityAnimations* storedGraphics);
         void bindCBox();
 

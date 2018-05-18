@@ -98,7 +98,7 @@ bool TDG_GameBoard::createRoom(TDG_Window* win, Room* room)
     for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
     {
         TDG_Character* chara = new TDG_Character();
-        chara->init(*it, Character, false);
+        chara->init(&(*it), Character, false);
         //bind npc animations to the npc
         if(!chara->assignAnimations(this->entityGraphics))
         {
@@ -116,7 +116,7 @@ bool TDG_GameBoard::createRoom(TDG_Window* win, Room* room)
     for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
     {
         TDG_Object* obj = new TDG_Object();
-        obj->init(*it, Object);
+        obj->init(&(*it), Object);
         //bind object animations to the object
         if(!obj->assignAnimations(this->entityGraphics))
         {
@@ -141,7 +141,7 @@ bool TDG_GameBoard::createPlayer(TDG_Window* win, SavePoint* sp)
 
     //create player
     this->player = new TDG_Player();
-    this->player->init(sp->player, Character, true);
+    this->player->init(&sp->player, Character, true);
 
     //bind player animations to the players character
     if(!this->player->assignAnimations(this->entityGraphics))

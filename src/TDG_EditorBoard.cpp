@@ -31,7 +31,7 @@ TDG_EditorBoard::~TDG_EditorBoard()
 bool TDG_EditorBoard::init(TDG_Window* win)
 {
     this->mouse = new TDG_Mouse();
-    this->gui = new TDG_GUI();
+    this->gui = new TDG_EditorGUI();
 
     //bind view by default to the left upper corner
     this->guiPos = new TDG_Position(0, 0);
@@ -39,6 +39,12 @@ bool TDG_EditorBoard::init(TDG_Window* win)
     if(!this->gui->init(win, guiPos))
     {
         cout << "Unable to initialize graphical user interface!" << endl;
+        return false;
+    }
+
+    if(!this->gui->create())
+    {
+        cout << "Unable to create graphical user interface!" << endl;
         return false;
     }
 
@@ -63,6 +69,11 @@ bool TDG_EditorBoard::render(TDG_Window* win)
     if(this->mouse != NULL)
     {
         this->mouse->renderSelRect(win, this->gui->getView());
+    }
+
+    if(this->gui != NULL)
+    {
+        this->gui->render(win);
     }
 
     SDL_RenderPresent(win->getRenderer());
@@ -97,6 +108,8 @@ bool TDG_EditorBoard::createRoom(TDG_Window* win, string& name, int id, int rows
         delete this->entities;
     if(this->backg != NULL)
         delete this->backg;
+    if(this->mouse != NULL)
+        this->mouse->deselect();
 
     this->entityGraphics = new TDG_StoredEntityAnimations();
     this->entities = new TDG_EntityHandler();
@@ -135,6 +148,8 @@ bool TDG_EditorBoard::loadRoom(TDG_Window* win, Room* room)
         delete this->entities;
     if(this->backg != NULL)
         delete this->backg;
+    if(this->mouse != NULL)
+        this->mouse->deselect();
 
     this->entities = new TDG_EntityHandler();
     this->entityGraphics = new TDG_StoredEntityAnimations();
@@ -174,7 +189,7 @@ bool TDG_EditorBoard::loadRoom(TDG_Window* win, Room* room)
     for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
     {
         TDG_Character* chara = new TDG_Character();
-        chara->init(*it, Character, false);
+        chara->init(&(*it), Character, false);
         //bind npc animations to the npc
         if(!chara->assignAnimations(this->entityGraphics))
         {
@@ -192,7 +207,7 @@ bool TDG_EditorBoard::loadRoom(TDG_Window* win, Room* room)
     for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
     {
         TDG_Object* obj = new TDG_Object();
-        obj->init(*it, Object);
+        obj->init(&(*it), Object);
         //bind object animations to the object
         if(!obj->assignAnimations(this->entityGraphics))
         {
@@ -270,21 +285,6 @@ bool TDG_EditorBoard::saveRoom()
     return true;
 }
 
-void TDG_EditorBoard::addTile(int id)
-{
-    if(this->mouse->selectedSomething())
-        cout << "Unselect the current tile to add a new one!" << endl;
-    else
-    {
-
-    }
-}
-
-void TDG_EditorBoard::addEntity(EntityTyp typ, int id)
-{
-
-}
-
 void TDG_EditorBoard::startTimer()
 {
     if(this->entities != NULL)
@@ -297,9 +297,134 @@ void TDG_EditorBoard::stopTimer()
         this->entities->stopAnimations();
 }
 
-void TDG_EditorBoard::handleInput(TDG_EventHandler* event)
+void TDG_EditorBoard::handleInput(TDG_Window* win, TDG_EventHandler* event, ConsoleStatus* status)
 {
     this->mouse->handleEvent(event->getEvent(), this->entities, this->backg, this->gui->getView());
+    this->gui->handleKeyboardInput(event->getEvent(), win, this->mouse, this->backg);
+
+    if(status->create && (status->roomID != 0) && (status->rows != 0) && (status->columns != 0))
+    {
+        this->stopTimer();
+
+        if(status->save)
+        {
+            if(!this->saveRoom())
+                cout << "Unable to save room!" << endl;
+        }
+
+        if(!this->createRoom(win, status->rName, status->roomID, status->rows, status->columns))
+            cout << "Unable to create Room!" << endl;
+
+        status->create = false;
+        status->roomID = 0;
+        status->rName = "";
+        status->rows = 0;
+        status->columns = 0;
+
+        this->startTimer();
+    }
+    else if(status->load && (status->roomID != 0))
+    {
+        this->stopTimer();
+
+        string path = "./data/spec/room/";
+        ostringstream ss;
+        ss << status->roomID;
+        path += ss.str() + "/";
+
+        if(roomExists(path.c_str()))
+        {
+            TDG_FileHandler* fh = new TDG_FileHandler();
+            fh->loadRoom(status->roomID);
+
+            if(!this->loadRoom(win, fh->getRoom()))
+                cout << "Unable to load room!" << endl;
+
+            delete fh;
+        }
+        else
+        {
+            cout << "Room does not exist!" << endl;
+        }
+
+        status->load = false;
+        status->roomID = 0;
+
+        this->startTimer();
+    }
+    else if(status->addT && (status->addID != 0) && (status->palettePos != 0))
+    {
+        if(this->gui != NULL)
+        {
+            this->gui->addTileToPalette(win, status->addID, (unsigned int) status->palettePos);
+        }
+
+        status->addT = false;
+        status->addID = 0;
+        status->palettePos = 0;
+    }
+    else if((status->addO || status->addC) && (status->addID != 0))
+    {
+        if((this->entities != NULL) && (this->entityGraphics != NULL) && (this->mouse != NULL))
+        {
+            if(!this->mouse->selectedSomething())
+            {
+                Entity ent;
+                ent.id = status->addID;
+                ent.firstStatus = s_south;
+                ent.posX = 0;
+                ent.posY = 0;
+
+                if(status->addC)
+                {
+                    TDG_FileHandler* fh = new TDG_FileHandler();
+                    fh->loadEntity(Character, &ent);
+
+                    if(!this->entityGraphics->isStored(Character, ent.animationID))
+                        this->entityGraphics->loadAndAdd(win, Character, ent.animationID);
+
+                    TDG_Character* newChara = new TDG_Character();
+                    newChara->init(&ent, Character, false);
+                    newChara->assignAnimations(this->entityGraphics);
+                    newChara->bindCBox();
+
+                    this->entities->add(newChara);
+                    this->mouse->selectEntity(newChara);
+                    delete fh;
+                }
+                else if(status->addO)
+                {
+                    TDG_FileHandler* fh = new TDG_FileHandler();
+                    fh->loadEntity(Object, &ent);
+
+                    if(!this->entityGraphics->isStored(Object, ent.animationID))
+                        this->entityGraphics->loadAndAdd(win, Object, ent.animationID);
+
+                    TDG_Object* newObj = new TDG_Object();
+                    newObj->init(&ent, Object);
+                    newObj->assignAnimations(this->entityGraphics);
+                    newObj->bindCBox();
+
+                    this->entities->add(newObj);
+                    this->mouse->selectEntity(newObj);
+                    delete fh;
+                }
+            }
+            else
+                cout << "Already selected something! Please deselect current tile or entity." << endl;
+
+            status->addC = false;
+            status->addO = false;
+            status->addID = 0;
+        }
+    }
+    else if(status->save)
+    {
+        if(!this->saveRoom())
+            cout << "Failed to store room!" << endl;
+
+        status->save = false;
+    }
 }
 
 bool TDG_EditorBoard::roomStored()
@@ -307,4 +432,16 @@ bool TDG_EditorBoard::roomStored()
     if(this->roomID != 0)
         return true;
     return false;
+}
+
+bool TDG_EditorBoard::roomExists(const string& roomDirectoryPath)
+{
+  DWORD ftyp = GetFileAttributesA(roomDirectoryPath.c_str());
+  if (ftyp == INVALID_FILE_ATTRIBUTES)
+    return false;  //something is wrong with your path!
+
+  if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+    return true;   // this is a directory!
+
+  return false;    // this is not a directory!
 }

@@ -29,6 +29,7 @@ class TDG_Background
         void print(ofstream* out);
 
         TDG_Tile* getTile(int row, int column);
+        TDG_StoredTiles* getTileImage(int tileID);
         int getTileWidth();
         int getTileHight();
         int getTileRows();
@@ -39,7 +40,6 @@ class TDG_Background
 
     private:
         bool initRoom(TDG_Window* win, int rows, int columns);
-        SDL_Texture* getTileImage(int id);
 
         int tileRows, tileColumns;
         int tileWidth, tileHight;

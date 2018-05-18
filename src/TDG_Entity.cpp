@@ -21,23 +21,23 @@ TDG_Entity::~TDG_Entity()
         delete this->pos;
 }
 
-void TDG_Entity::init(Entity entity, EntityTyp typ)
+void TDG_Entity::init(const Entity* entity, EntityTyp typ)
 {
-    this->name = entity.name;
-    this->id = entity.id;
-    this->animationID = entity.animationID;
-    this->scale = entity.scale;
+    this->name = entity->name;
+    this->id = entity->id;
+    this->animationID = entity->animationID;
+    this->scale = entity->scale;
 
-    this->pos->setPosX((double)entity.posX);
-    this->pos->setPosY((double)entity.posY);
+    this->pos->setPosX((double)entity->posX);
+    this->pos->setPosY((double)entity->posY);
 
     this->typ = typ;
-    this->curStatus = entity.firstStatus;
+    this->curStatus = entity->firstStatus;
 
     //init collision box
     this->cBox = new TDG_CollisionBox();
 
-    this->cBox->setSize(entity.width, entity.hight);
+    this->cBox->setSize(entity->width, entity->hight);
 }
 
 void TDG_Entity::bindCBox()

@@ -13,6 +13,11 @@ TDG_RoomEditor::TDG_RoomEditor()
     this->cStatus.rName = "";
     this->cStatus.rows = 0;
     this->cStatus.columns = 0;
+    this->cStatus.addC = false;
+    this->cStatus.addT = false;
+    this->cStatus.addO = false;
+    this->cStatus.addID = 0;
+    this->cStatus.palettePos = 0;
 
     this->consoleInputRunning = false;
 }
@@ -90,65 +95,7 @@ void TDG_RoomEditor::stop()
 
 void TDG_RoomEditor::input()
 {
-    this->board->handleInput(this->event);
-
-    if(this->cStatus.create && (this->cStatus.roomID != 0) && (this->cStatus.rows != 0) && (this->cStatus.columns != 0))
-    {
-        this->board->stopTimer();
-
-        if(this->cStatus.save)
-        {
-            if(!this->board->saveRoom())
-                cout << "Unable to save room!" << endl;
-        }
-
-        if(!this->board->createRoom(this->win, this->cStatus.rName, this->cStatus.roomID, this->cStatus.rows, this->cStatus.columns))
-            cout << "Unable to create Room!" << endl;
-
-        this->cStatus.create = false;
-        this->cStatus.roomID = 0;
-        this->cStatus.rName = "";
-        this->cStatus.rows = 0;
-        this->cStatus.columns = 0;
-
-        this->board->startTimer();
-    }
-    else if(this->cStatus.load && (this->cStatus.roomID != 0))
-    {
-        this->board->stopTimer();
-
-        string path = "./data/spec/room/";
-        ostringstream ss;
-        ss << this->cStatus.roomID;
-        path += ss.str() + "/";
-
-        if(roomExists(path.c_str()))
-        {
-            TDG_FileHandler* fh = new TDG_FileHandler();
-            fh->loadRoom(this->cStatus.roomID);
-
-            if(!this->board->loadRoom(this->win, fh->getRoom()))
-                cout << "Unable to load room!" << endl;
-
-            delete fh;
-        }
-        else
-        {
-            cout << "Room does not exist!" << endl;
-        }
-
-        this->cStatus.load = false;
-        this->cStatus.roomID = 0;
-
-        this->board->startTimer();
-    }
-    else if(this->cStatus.save)
-    {
-        if(!this->board->saveRoom())
-            cout << "Failed to store room!" << endl;
-
-        this->cStatus.save = false;
-    }
+    this->board->handleInput(this->win, this->event, &this->cStatus);
 }
 
 void TDG_RoomEditor::programLoop()
@@ -224,7 +171,7 @@ void TDG_RoomEditor::handleConsoleInput()
                 ss << roomID;
                 path += ss.str() + "/";
 
-                if(roomExists(path.c_str()))
+                if(this->board->roomExists(path.c_str()))
                 {
                     cout << "Room does already exist!" << endl;
                 }
@@ -242,21 +189,38 @@ void TDG_RoomEditor::handleConsoleInput()
         {
             if(this->board->roomStored())
             {
-                if(!inst.front().compare("add"))
+                if(!inst.front().compare("addT"))
                 {
                     inst.erase(inst.begin());
-                    if(!inst.front().compare("o"))
+                    if(inst.size() != 2)
+                        cout << "Invalid count of arguments for [addT]. Please use the format: addT [id] [palette position]" << endl;
+                    else
                     {
-                        //int id = nextInt(inst);
-
+                        this->cStatus.addID = nextInt(inst);
+                        this->cStatus.palettePos = nextInt(inst);
+                        this->cStatus.addT = true;
                     }
-                    else if(!inst.front().compare("c"))
+                }
+                else if(!inst.front().compare("addC"))
+                {
+                    inst.erase(inst.begin());
+                    if(inst.size() != 1)
+                        cout << "Invalid count of arguments for [addC]. Please use the format: addC [id]" << endl;
+                    else
                     {
-                        //int id = nextInt(inst);
+                        this->cStatus.addID = nextInt(inst);
+                        this->cStatus.addC = true;
                     }
-                    else if(!inst.front().compare("t"))
+                }
+                else if(!inst.front().compare("addO"))
+                {
+                    inst.erase(inst.begin());
+                    if(inst.size() != 1)
+                        cout << "Invalid count of arguments for [addO]. Please use the format: addO [id]" << endl;
+                    else
                     {
-                        //int id = nextInt(inst);
+                        this->cStatus.addID = nextInt(inst);
+                        this->cStatus.addO = true;
                     }
                 }
             }
@@ -274,18 +238,6 @@ int TDG_RoomEditor::console_thread(void* param)
 {
     ((TDG_RoomEditor*)param)->handleConsoleInput();
     return 0;
-}
-
-bool TDG_RoomEditor::roomExists(const string& roomDirectoryPath)
-{
-  DWORD ftyp = GetFileAttributesA(roomDirectoryPath.c_str());
-  if (ftyp == INVALID_FILE_ATTRIBUTES)
-    return false;  //something is wrong with your path!
-
-  if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
-    return true;   // this is a directory!
-
-  return false;    // this is not a directory!
 }
 
 int TDG_RoomEditor::nextInt(vector<string>& entries)

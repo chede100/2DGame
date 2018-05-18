@@ -21,6 +21,7 @@ typedef struct
     bool impassable;
     int flip;
     int w, h;
+    bool multipleTimesPlaceable;
 }SelectedTile;
 
 typedef enum
@@ -38,6 +39,12 @@ class TDG_Mouse
 
         void renderSelRect(TDG_Window* win, TDG_View* view);
 
+        bool selectTile(TDG_Window* win, TDG_View* view, TDG_Background* bg, int tileID);
+
+        bool selectEntity(TDG_Entity* e);
+
+        void deselect();
+
         bool selectedSomething();
 
     protected:
@@ -48,6 +55,7 @@ class TDG_Mouse
 
         SelectionTyp typ;
         void* sel;
+        bool selected;
 };
 
 #endif // TDG_MOUSE_H

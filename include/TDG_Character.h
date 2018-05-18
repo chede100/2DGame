@@ -11,7 +11,7 @@ class TDG_Character : public TDG_Entity
         TDG_Character();
         virtual ~TDG_Character();
 
-        void init(Entity entity, EntityTyp typ, bool moveable);
+        void init(const Entity* entity, EntityTyp typ, bool moveable);
 
         //move character and check collision, if collision is detected move back
         void moveAndCollision(TDG_EntityList* elist, TDG_Background* bground);

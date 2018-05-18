@@ -2,10 +2,23 @@
 #define TDG_EDITORBOARD_H
 
 #include <windows.h>
-#include "TDG_GUI.h"
+#include "TDG_EditorGUI.h"
 #include "TDG_EntityHandler.h"
 #include "TDG_EventHandler.h"
 #include "TDG_Mouse.h"
+
+typedef struct
+{
+    bool load, create, save;
+    int roomID;
+    string rName;
+    int rows, columns;
+
+    bool addT, addC, addO;
+    int addID;
+    int palettePos;
+
+}ConsoleStatus;
 
 class TDG_EditorBoard
 {
@@ -17,19 +30,17 @@ class TDG_EditorBoard
 
         bool render(TDG_Window* win);
 
-        void handleInput(TDG_EventHandler* event);
+        void handleInput(TDG_Window* win, TDG_EventHandler* event, ConsoleStatus* status);
 
         bool createRoom(TDG_Window* win, string& name, int id, int rows, int columns);
         bool loadRoom(TDG_Window* win, Room* room);
         bool saveRoom();
 
-        void addTile(int id);
-        void addEntity(EntityTyp typ, int id);
-
         void startTimer();
         void stopTimer();
 
         bool roomStored();
+        bool roomExists(const string& roomDirectoryPath);
 
     protected:
 
@@ -40,7 +51,7 @@ class TDG_EditorBoard
         int roomID;
 
         TDG_Position* guiPos;
-        TDG_GUI* gui;
+        TDG_EditorGUI* gui;
 
         TDG_Mouse* mouse;
 

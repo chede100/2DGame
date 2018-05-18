@@ -10,7 +10,7 @@ TDG_Player::~TDG_Player()
     //dtor
 }
 
-void TDG_Player::init(Entity entity, EntityTyp typ, bool moveable)
+void TDG_Player::init(const Entity* entity, EntityTyp typ, bool moveable)
 {
     this->TDG_Character::init(entity, typ, moveable);
 }

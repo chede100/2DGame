@@ -10,7 +10,7 @@ TDG_Object::~TDG_Object()
     //dtor
 }
 
-void TDG_Object::init(Entity entity, EntityTyp typ)
+void TDG_Object::init(const Entity* entity, EntityTyp typ)
 {
     this->TDG_Entity::init(entity, typ);
 }
