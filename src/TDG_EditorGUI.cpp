@@ -74,7 +74,48 @@ void TDG_EditorGUI::addTileToPalette(TDG_Window* win, int tileID, unsigned int s
 
 void TDG_EditorGUI::handleKeyboardInput(SDL_Event* event, TDG_Window* win, TDG_Mouse* mouse, TDG_Background* bg)
 {
+    //handle tile palette input
     this->tp->handleInupt(event, win, this->view, mouse, bg);
+
+    //handle movement input
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    double speed = 2.0;
+    double x = this->pos->getPosX();
+    double y = this->pos->getPosY();
+
+    cout << "X: " << x << " Y: " << y << endl;
+
+    int maxWidth = bg->getTileColumns()*bg->getTileWidth();
+    int maxHight = bg->getTileRows()*bg->getTileHight();
+
+    if(this->view->getWidth() < maxWidth)
+    {
+        if(state[SDL_SCANCODE_RIGHT])
+            x = x + speed;
+        if(state[SDL_SCANCODE_LEFT])
+            x = x - speed;
+
+        //collision
+        if(x - this->view->getWidth()/2 < 0) x = this->view->getWidth()/2;
+        else if(x + this->view->getWidth()/2 > maxWidth) x = maxWidth - this->view->getWidth()/2;
+
+        this->pos->setPosX((double)x);
+    }
+
+    if(this->view->getHight() < maxHight)
+    {
+        if(state[SDL_SCANCODE_UP])
+            y = y - speed;
+        if(state[SDL_SCANCODE_DOWN])
+            y = y + speed;
+
+        //collision
+        if(y - this->view->getHight()/2 < 0) y = this->view->getHight()/2;
+        else if(y + this->view->getHight()/2 > maxHight) y = maxHight - this->view->getHight()/2;
+
+        this->pos->setPosY((double)y);
+    }
 }
 
 void TDG_EditorGUI::addKey(list<SDL_Event>& keys, const Uint32 eventTyp, SDL_Scancode key)

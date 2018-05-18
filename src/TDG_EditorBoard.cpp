@@ -299,8 +299,11 @@ void TDG_EditorBoard::stopTimer()
 
 void TDG_EditorBoard::handleInput(TDG_Window* win, TDG_EventHandler* event, ConsoleStatus* status)
 {
-    this->mouse->handleEvent(event->getEvent(), this->entities, this->backg, this->gui->getView());
-    this->gui->handleKeyboardInput(event->getEvent(), win, this->mouse, this->backg);
+    if((this->backg != NULL) && (this->entities != NULL))
+    {
+        this->mouse->handleEvent(event->getEvent(), this->entities, this->backg, this->gui->getView());
+        this->gui->handleKeyboardInput(event->getEvent(), win, this->mouse, this->backg);
+    }
 
     if(status->create && (status->roomID != 0) && (status->rows != 0) && (status->columns != 0))
     {
