@@ -130,7 +130,8 @@ void TDG_RoomEditor::handleConsoleInput()
         getline(cin, in);
         vector<string> inst = split(in, ' ');
 
-        if(!inst.front().compare("help"))
+        if(inst.size() == 0);
+        else if(!inst.front().compare("help"))
         {
             cout << "List of instructions:" << endl;
             cout << "1) help                       : Shows help massage." << endl;
