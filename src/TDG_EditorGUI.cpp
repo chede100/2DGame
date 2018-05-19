@@ -84,8 +84,6 @@ void TDG_EditorGUI::handleKeyboardInput(SDL_Event* event, TDG_Window* win, TDG_M
     double x = this->pos->getPosX();
     double y = this->pos->getPosY();
 
-    cout << "X: " << x << " Y: " << y << endl;
-
     int maxWidth = bg->getTileColumns()*bg->getTileWidth();
     int maxHight = bg->getTileRows()*bg->getTileHight();
 

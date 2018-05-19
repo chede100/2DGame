@@ -5,6 +5,7 @@ TDG_Mouse::TDG_Mouse()
     this->sel = NULL;
     this->typ = noSelection;
     this->selected = false;
+    this->keyPressed = false;
 }
 
 TDG_Mouse::~TDG_Mouse()
@@ -22,27 +23,48 @@ void TDG_Mouse::renderSelRect(TDG_Window* win, TDG_View* view)
     if(this->typ == TILE)
     {
         SelectedTile* sT = (SelectedTile*) this->sel;
+
+        //render selection rect green if collision is enabled and to yellow if not
+        if(sT->impassable == true)
+        {
+            if(SDL_SetRenderDrawColor(win->getRenderer(), 21, 206, 0, 0) < 0)
+                cout << "Unable to set mouse selection rectangle color to green!" << endl;
+        }
+        else if(sT->impassable == false)
+        {
+            if(SDL_SetRenderDrawColor(win->getRenderer(), 255, 247, 0, 0) < 0)
+                cout << "Unable to set mouse selection rectangle color to yellow!" << endl;
+        }
+
         x = sT->c*sT->w - view->getPosX();
         y = sT->r*sT->h - view->getPosY();
         SDL_Rect rect = {x, y, sT->w, sT->h};
         if(SDL_RenderDrawRect(win->getRenderer(), &rect))
             cout << "Failed to render mouse selection marking." << endl;
+
+        if(SDL_SetRenderDrawColor(win->getRenderer(), 0, 0, 0, 0) < 0)
+            cout << "Unable to set draw color!" << endl;
     }
     else if(this->typ == ENTITY)
     {
+        if(SDL_SetRenderDrawColor(win->getRenderer(), 255, 247, 0, 0) < 0)
+            cout << "Unable to set mouse selection rectangle color to yellow!" << endl;
+
         TDG_Entity* ent = (TDG_Entity*) this->sel;
         x = ent->getPos()->getPosX() - view->getPosX();
         y = ent->getPos()->getPosY() - view->getPosY();
         SDL_Rect rect = {x, y, ent->getImageWidth(), ent->getImageHight()};
         if(SDL_RenderDrawRect(win->getRenderer(), &rect))
             cout << "Failed to render mouse selection marking." << endl;
+
+        if(SDL_SetRenderDrawColor(win->getRenderer(), 0, 0, 0, 0) < 0)
+            cout << "Unable to set draw color!" << endl;
     }
 }
 
 void TDG_Mouse::handleEvent(SDL_Event* event, TDG_EntityHandler* eh, TDG_Background* bg, TDG_View* view)
 {
-    if((eh == NULL) || (bg == NULL));
-
+    if((eh == NULL) || (bg == NULL) || (view == NULL));
     //If mouse event happened
     else if( event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP )
     {
@@ -215,6 +237,50 @@ void TDG_Mouse::handleEvent(SDL_Event* event, TDG_EntityHandler* eh, TDG_Backgro
                 }
             }
         }
+    }
+    else if(event->type == 771)
+    {
+        if(this->keyPressed == false)
+        {
+            if(((this->typ == TILE) && (this->sel != NULL)))
+            {
+                SelectedTile* sT = (SelectedTile*) this->sel;
+                TDG_Tile* t = bg->getTile(sT->r, sT->c);
+
+                const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+                //if user input == r rotate the tile by 90 degree
+                if(state[SDL_SCANCODE_R])
+                {
+                    sT->rotDegree += 90;
+                    this->keyPressed = true;
+                }
+
+                //if user input == f flip the tile
+                if(state[SDL_SCANCODE_F])
+                {
+                    sT->flip = (sT->flip + 1)%3;
+                    this->keyPressed = true;
+                }
+
+                //if user input == c enable collision for selected tile
+                if(state[SDL_SCANCODE_C])
+                {
+                    if(sT->impassable == true)
+                        sT->impassable = false;
+                    else
+                        sT->impassable = true;
+
+                    this->keyPressed = true;
+                }
+
+                t->set(sT->id, sT->rotDegree, sT->impassable, sT->flip);
+            }
+        }
+    }
+    else if(event->type == 769)
+    {
+        this->keyPressed = false;
     }
 }
 

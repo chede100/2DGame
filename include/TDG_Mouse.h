@@ -56,6 +56,8 @@ class TDG_Mouse
         SelectionTyp typ;
         void* sel;
         bool selected;
+
+        bool keyPressed;
 };
 
 #endif // TDG_MOUSE_H
