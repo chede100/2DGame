@@ -11,9 +11,9 @@ TDG_Character::~TDG_Character()
     //dtor
 }
 
-void TDG_Character::init(const Entity* entity, EntityTyp typ, bool moveable)
+void TDG_Character::init(const Entity* entity, EntityTyp typ, TDG_StoredEntityAnimations* storedGraphics, bool moveable)
 {
-    this->TDG_Entity::init(entity, typ);
+    this->TDG_Entity::init(entity, typ, storedGraphics);
 
     this->speed = entity->speed;
 

@@ -422,7 +422,7 @@ bool TDG_FileHandler::loadSPoint()
     saveP.open(spPath.c_str(), ios::out);
     if(!saveP.is_open())
     {
-        cout << "Path " << spPath << " to Save-Point-file is unvalid!" << endl;
+        cout << "Path " << spPath << " to Save-Point-file is invalid!" << endl;
         return false;
     }
     else
@@ -476,7 +476,7 @@ bool TDG_FileHandler::loadSPoint()
                     }
                     this->sPoint->player.firstStatus = status;
 
-                    if(!loadEntity(Character, &this->sPoint->player))
+                    if(!loadEntity(Player, &this->sPoint->player))
                     {
                         cout << "Unable to load player specifications! ID: " << this->sPoint->player.id << endl;
                         saveP.close();
@@ -488,6 +488,74 @@ bool TDG_FileHandler::loadSPoint()
                     cout << "Invalid count of arguments in " << spPath << " at statement -player-!"<< endl;
                     saveP.close();
                     return false;
+                }
+            }
+            else if(!entry.compare("inventorySize:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() >= 1))
+                {
+                    this->sPoint->player.inventorySize = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << spPath << " at statement -inventorySize-!"<< endl;
+                    saveP.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("<item_list>"))
+            {
+                entries.erase(entries.begin());
+
+                getline(saveP, line);
+
+                //ignore comment
+                size_t c;
+                if((c = line.find('/')) != string::npos)
+                    line.erase(c, line.size());
+
+                //skip empty lines
+                if(!line.compare(""))
+                    continue;
+
+                entries = split(line, ' ');
+                entry =  entries.front();
+
+                if(entries.size() >= 3)
+                {
+                    this->sPoint->player.inventory.clear();
+
+                    while(entry.compare("<item_list_end>") && (entries.size() >= 3))
+                    {
+                        Item i;
+                        i.id = nextInt(entries);
+                        i.amount = nextInt(entries);
+                        i.position = nextInt(entries);
+
+                        if(!loadItem(&i))
+                        {
+                            cout << "Item couldnt be loaded! ID: " << i.id << endl;
+                            saveP.close();
+                            return false;
+                        }
+
+                        this->sPoint->player.inventory.push_back(i);
+
+                        getline(saveP, line);
+
+                        //ignore comment
+                        size_t c;
+                        if((c = line.find('/')) != string::npos)
+                            line.erase(c, line.size());
+
+                        //skip empty lines
+                        if(!line.compare(""))
+                            continue;
+
+                        entries = split(line, ' ');
+                        entry =  entries.front();
+                    }
                 }
             }
         }
@@ -724,6 +792,8 @@ bool TDG_FileHandler::loadEntity(EntityTyp typ, Entity* e)
         path = "./data/spec/entity/char/";
     else if(typ == Object)
         path = "./data/spec/entity/object/";
+    else if(typ == Player)
+        path = "./data/spec/player/";
     else
     {
         cout << "Unable to load entity because the entity typ is invalid." << endl;
@@ -737,6 +807,8 @@ bool TDG_FileHandler::loadEntity(EntityTyp typ, Entity* e)
         path += ss.str() + ".character";
     else if(typ == Object)
         path += ss.str() + ".object";
+    else if(typ == Player)
+        path += ss.str() + ".player";
 
     ifstream entity;
     entity.open(path.c_str(), ios::out);
@@ -746,6 +818,8 @@ bool TDG_FileHandler::loadEntity(EntityTyp typ, Entity* e)
             cout << "Unable to load a specific character! ID: " << e->id << endl;
         else if(typ == Object)
             cout << "Unable to load a specific object! ID: " << e->id << endl;
+        else if(typ == Player)
+            cout << "Unable to load a specific player character! ID: " << e->id << endl;
         return false;
     }
     else
@@ -836,8 +910,125 @@ bool TDG_FileHandler::loadEntity(EntityTyp typ, Entity* e)
                     return false;
                 }
             }
+            else if(!entry.compare("inventorySize:"))
+            {
+                entries.erase(entries.begin());
+                if(!entries.empty() && (entries.size() == 1))
+                {
+                    e->inventorySize = nextInt(entries);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -inventorySize-!"<< endl;
+                    entity.close();
+                    return false;
+                }
+            }
+            else if(!entry.compare("<item_list>"))
+            {
+                entries.erase(entries.begin());
+                while(entries.front().compare("<item_list_end>"))
+                {
+                    getline(entity, line);
+
+                    //ignore comment
+                    size_t c;
+                    if((c = line.find('/')) != string::npos)
+                        line.erase(c, line.size());
+
+                    //skip empty lines
+                    if(!line.compare(""))
+                        continue;
+
+                    entries = split(line, ' ');
+                    entry =  entries.front();
+
+                    while((!entries.empty()) && (entries.size() >= 3))
+                    {
+                        Item i;
+                        i.id = nextInt(entries);
+                        i.amount = nextInt(entries);
+                        i.position = nextInt(entries);
+
+                        if(!loadItem(&i))
+                        {
+                            cout << "Item couldnt be loaded! ID: " << i.id << endl;
+                            entity.close();
+                            return false;
+                        }
+
+                        e->inventory.push_back(i);
+                    }
+                }
+            }
         }
         entity.close();
+    }
+
+    return true;
+}
+
+bool TDG_FileHandler::loadItem(Item* newItem)
+{
+    string path = "./data/spec/item/";
+    ostringstream ss;
+    ss << newItem->id;
+    path += ss.str() + ".item";
+
+    ifstream item;
+    item.open(path.c_str(), ios::out);
+    if(!item.is_open())
+    {
+        cout << "Unable to load item! ID: " << newItem->id << endl;
+        return false;
+    }
+    else
+    {
+        string line;
+        while(getline(item, line))
+        {
+            //ignore comment
+            size_t c;
+            if((c = line.find('/')) != string::npos)
+                line.erase(c, line.size());
+
+            //skip empty lines
+            if(!line.compare(""))
+                continue;
+
+            vector<string> itemInfo = split(line, ' ');
+            string info = itemInfo.front();
+
+            if(!info.compare("name:"))
+            {
+                itemInfo.erase(itemInfo.begin());
+                if(!itemInfo.empty() && (itemInfo.size() == 1))
+                {
+                    nextString(itemInfo, newItem->name);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -name-!"<< endl;
+                    item.close();
+                    return false;
+                }
+            }
+            else if(!info.compare("maxAmount:"))
+            {
+                itemInfo.erase(itemInfo.begin());
+                if(!itemInfo.empty() && (itemInfo.size() == 1))
+                {
+                    newItem->maxAmount = nextInt(itemInfo);
+                }
+                else
+                {
+                    cout << "Invalid count of arguments in " << path << " at statement -maxAmount-!"<< endl;
+                    item.close();
+                    return false;
+                }
+            }
+        }
+        item.close();
     }
 
     return true;

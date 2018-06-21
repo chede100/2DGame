@@ -25,6 +25,12 @@ typedef struct
 
 typedef struct
 {
+    string name;
+    int id, amount, maxAmount, position;
+}Item;
+
+typedef struct
+{
     int id;
     int posX;
     int posY;
@@ -35,6 +41,9 @@ typedef struct
     double scale;
     int width, hight;
     double speed;
+
+    int inventorySize;
+    list<Item> inventory;
 }Entity;
 
 typedef struct
@@ -83,6 +92,7 @@ class TDG_FileHandler
         bool loadOpt();
         bool loadSPoint();
         bool loadEntity(EntityTyp typ, Entity* e);
+        bool loadItem(Item* newItem);
 
         Room* getRoom();
         Options* getOpt();

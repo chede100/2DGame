@@ -14,6 +14,8 @@ TDG_TPalette::~TDG_TPalette()
         if(*it != NULL)
             delete *it;
     }
+
+    this->palette.clear();
 }
 
 void TDG_TPalette::create(int numberOfButtons, int bWidth, int bHight, int borderWidth)

@@ -10,7 +10,7 @@ TDG_Object::~TDG_Object()
     //dtor
 }
 
-void TDG_Object::init(const Entity* entity, EntityTyp typ)
+void TDG_Object::init(const Entity* entity, EntityTyp typ, TDG_StoredEntityAnimations* storedGraphics)
 {
-    this->TDG_Entity::init(entity, typ);
+    this->TDG_Entity::init(entity, typ, storedGraphics);
 }

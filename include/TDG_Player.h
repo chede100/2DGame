@@ -10,7 +10,7 @@ class TDG_Player : public TDG_Character
         TDG_Player();
         virtual ~TDG_Player();
 
-        void init(const Entity* entity, EntityTyp typ, bool moveable);
+        void init(const Entity* entity, EntityTyp typ, TDG_StoredEntityAnimations* storedGraphics, bool moveable);
 
         void handlePlayerEvents(TDG_EventHandler* event);
 

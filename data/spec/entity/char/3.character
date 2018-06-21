@@ -3,3 +3,7 @@ animationID: 3
 scale: 0.5
 size: 8 8
 speed: 0.0
+inventorySize: 16
+<item_list>
+1 1 0
+<item_list_end>

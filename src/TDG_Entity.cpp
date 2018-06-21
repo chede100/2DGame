@@ -11,6 +11,7 @@ TDG_Entity::TDG_Entity()
     this->currentAnimation = NULL;
     this->currentImage = NULL;
     this->cBox = NULL;
+    this->inv = NULL;
 }
 
 TDG_Entity::~TDG_Entity()
@@ -19,9 +20,11 @@ TDG_Entity::~TDG_Entity()
         delete this->cBox;
     if(this->pos != NULL)
         delete this->pos;
+    if(this->inv != NULL)
+        delete this->inv;
 }
 
-void TDG_Entity::init(const Entity* entity, EntityTyp typ)
+void TDG_Entity::init(const Entity* entity, EntityTyp typ, TDG_StoredEntityAnimations* storedGraphics)
 {
     this->name = entity->name;
     this->id = entity->id;
@@ -34,25 +37,35 @@ void TDG_Entity::init(const Entity* entity, EntityTyp typ)
     this->typ = typ;
     this->curStatus = entity->firstStatus;
 
-    //init collision box
-    this->cBox = new TDG_CollisionBox();
-
-    this->cBox->setSize(entity->width, entity->hight);
-}
-
-void TDG_Entity::bindCBox()
-{
-    if((this->cBox->getHight() == 0) || (this->cBox->getWidth() == 0))
+    if(assignAnimations(storedGraphics))
     {
-        delete this->cBox;
-        this->cBox = NULL;
+        //init collision box
+        if((entity->width != 0) && (entity->hight != 0))
+        {
+            this->cBox = new TDG_CollisionBox();
+
+            this->cBox->setSize(entity->width, entity->hight);
+
+            int xCorrection = (this->animations->getImagesWidth()*this->scale - this->cBox->getWidth())/2;
+            int yCorrection = this->animations->getImagesHight()*this->scale - this->cBox->getHight();
+
+            //bind cBox to the position of the entity
+            this->getCBox()->bindToPosition(this->getPos(), xCorrection, yCorrection);
+        }
     }
     else
+        cout << "Unable to find graphics for entity! ID: " << entity->id << endl;
+}
+
+void TDG_Entity::createInventory(TDG_Window* win, const Entity* entity)
+{
+    this->inv = new TDG_Inventory();
+    this->inv->create(entity->inventorySize);
+
+    list<Item>::const_iterator it, e;
+    for (it = entity->inventory.begin(), e = entity->inventory.end(); it != e; it++)
     {
-        int xCorrection = (this->animations->getImagesWidth()*this->scale - this->cBox->getWidth())/2;
-        int yCorrection = this->animations->getImagesHight()*this->scale - this->cBox->getHight();
-        //bind cBox to the position of the entity
-        this->getCBox()->bindToPosition(this->getPos(), xCorrection, yCorrection);
+        this->inv->add(win, it->name, it->id, it->amount, it->maxAmount);
     }
 }
 
@@ -182,6 +195,11 @@ int TDG_Entity::getAnimationID()
 int TDG_Entity::getID()
 {
     return this->id;
+}
+
+TDG_Inventory* TDG_Entity::getInventory()
+{
+    return this->inv;
 }
 
 void TDG_Entity::setMovementStatus(MovementStatus status)

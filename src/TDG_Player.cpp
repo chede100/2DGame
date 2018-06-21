@@ -10,9 +10,9 @@ TDG_Player::~TDG_Player()
     //dtor
 }
 
-void TDG_Player::init(const Entity* entity, EntityTyp typ, bool moveable)
+void TDG_Player::init(const Entity* entity, EntityTyp typ, TDG_StoredEntityAnimations* storedGraphics, bool moveable)
 {
-    this->TDG_Character::init(entity, typ, moveable);
+    this->TDG_Character::init(entity, typ, storedGraphics, moveable);
 }
 
 void TDG_Player::handlePlayerEvents(TDG_EventHandler* event)
@@ -25,6 +25,13 @@ void TDG_Player::handlePlayerEvents(TDG_EventHandler* event)
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
 
+    // print inventory
+    if(state[SDL_SCANCODE_I])
+    {
+        getInventory()->print();
+    }
+
+    // handle Movement
     if(state[SDL_SCANCODE_UP])
     {
         up = true;

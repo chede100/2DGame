@@ -189,15 +189,7 @@ bool TDG_EditorBoard::loadRoom(TDG_Window* win, Room* room)
     for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
     {
         TDG_Character* chara = new TDG_Character();
-        chara->init(&(*it), Character, false);
-        //bind npc animations to the npc
-        if(!chara->assignAnimations(this->entityGraphics))
-        {
-            cout << "Unable to bind animations to npc " << it->name << "!" << endl;
-            return false;
-        }
-        //bind cBox to character
-        chara->bindCBox();
+        chara->init(&(*it), Character, this->entityGraphics, false);
 
         //add the npc to the list of all entities
         this->entities->add(chara);
@@ -207,15 +199,7 @@ bool TDG_EditorBoard::loadRoom(TDG_Window* win, Room* room)
     for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
     {
         TDG_Object* obj = new TDG_Object();
-        obj->init(&(*it), Object);
-        //bind object animations to the object
-        if(!obj->assignAnimations(this->entityGraphics))
-        {
-            cout << "Unable to bind animations to obj " << it->name << "!" << endl;
-            return false;
-        }
-        //bind cBox to object
-        obj->bindCBox();
+        obj->init(&(*it), Object, this->entityGraphics);
 
         //add the object to the list of all entities
         this->entities->add(obj);
@@ -387,9 +371,7 @@ void TDG_EditorBoard::handleInput(TDG_Window* win, TDG_EventHandler* event, Cons
                         this->entityGraphics->loadAndAdd(win, Character, ent.animationID);
 
                     TDG_Character* newChara = new TDG_Character();
-                    newChara->init(&ent, Character, false);
-                    newChara->assignAnimations(this->entityGraphics);
-                    newChara->bindCBox();
+                    newChara->init(&ent, Character, this->entityGraphics, false);
 
                     this->entities->add(newChara);
                     this->mouse->selectEntity(newChara);
@@ -404,9 +386,7 @@ void TDG_EditorBoard::handleInput(TDG_Window* win, TDG_EventHandler* event, Cons
                         this->entityGraphics->loadAndAdd(win, Object, ent.animationID);
 
                     TDG_Object* newObj = new TDG_Object();
-                    newObj->init(&ent, Object);
-                    newObj->assignAnimations(this->entityGraphics);
-                    newObj->bindCBox();
+                    newObj->init(&ent, Object, this->entityGraphics);
 
                     this->entities->add(newObj);
                     this->mouse->selectEntity(newObj);

@@ -44,8 +44,8 @@ bool TDG_GameBoard::init(TDG_Window* win, TDG_FileHandler* specs)
     this->view = new TDG_View();
 
     // set the field of view to the size of the window
-    int viewWidth = 420;
-    int viewHight = 320;
+    int viewWidth = win->getLogicalWidth();
+    int viewHight = win->getLogicalHight();
     int bgWidth = this->backg->getTileWidth()*this->backg->getTileColumns();
     int bgHight = this->backg->getTileHight()*this->backg->getTileRows();
     this->view->init(viewWidth, viewHight, bgWidth, bgHight);
@@ -98,15 +98,9 @@ bool TDG_GameBoard::createRoom(TDG_Window* win, Room* room)
     for (it = room->npc.begin(), e = room->npc.end(); it != e; it++)
     {
         TDG_Character* chara = new TDG_Character();
-        chara->init(&(*it), Character, false);
-        //bind npc animations to the npc
-        if(!chara->assignAnimations(this->entityGraphics))
-        {
-            cout << "Unable to bind animations to npc " << it->name << "!" << endl;
-            return false;
-        }
-        //bind cBox to character
-        chara->bindCBox();
+        chara->init(&(*it), Character, this->entityGraphics, false);
+
+        chara->createInventory(win, &(*it));
 
         //add the npc to the list of all entities
         this->entities->add(chara);
@@ -116,15 +110,9 @@ bool TDG_GameBoard::createRoom(TDG_Window* win, Room* room)
     for (it = room->obj.begin(), e = room->obj.end(); it != e; it++)
     {
         TDG_Object* obj = new TDG_Object();
-        obj->init(&(*it), Object);
-        //bind object animations to the object
-        if(!obj->assignAnimations(this->entityGraphics))
-        {
-            cout << "Unable to bind animations to obj " << it->name << "!" << endl;
-            return false;
-        }
-        //bind cBox to object
-        obj->bindCBox();
+        obj->init(&(*it), Object, this->entityGraphics);
+
+        obj->createInventory(win, &(*it));
 
         //add the object to the list of all entities
         this->entities->add(obj);
@@ -141,17 +129,9 @@ bool TDG_GameBoard::createPlayer(TDG_Window* win, SavePoint* sp)
 
     //create player
     this->player = new TDG_Player();
-    this->player->init(&sp->player, Character, true);
+    this->player->init(&sp->player, Character, this->entityGraphics, true);
 
-    //bind player animations to the players character
-    if(!this->player->assignAnimations(this->entityGraphics))
-    {
-        cout << "Unable to bind animations to player!" << endl;
-        return false;
-    }
-
-    //bind cBox to player character
-    player->bindCBox();
+    player->createInventory(win, &sp->player);
 
     //add the player character to the list of all entities
     this->entities->add(this->player);
@@ -301,4 +281,25 @@ void TDG_GameBoard::save()
     else startAnimation = "s_south";
 
     savePoint << "player: " << this->player->getID() << " " << this->player->getPos()->getPosX() << " " << this->player->getPos()->getPosY() << " " << startAnimation << endl;
+
+    savePoint << "inventorySize: " << this->player->getInventory()->getSize() << endl;
+    savePoint << "<item_list>" << endl;
+
+    int invSize = this->player->getInventory()->getSize();
+    for(int i = 0; i < invSize; i++)
+    {
+        TDG_Item* item = this->player->getInventory()->getItem(i);
+        if(item != NULL)
+        {
+            int id = item->getID();
+            int amount = item->getAmount();
+            int pos = item->getPosition();
+
+            savePoint << id << " " << amount << " " << pos << " ";
+        }
+
+        if(i%17 == 16)
+            savePoint << endl;
+    }
+    savePoint << "<item_list_end>" << endl;
 }

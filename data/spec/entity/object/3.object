@@ -2,3 +2,7 @@ name: Grass
 animationID: 3
 scale: 1.0
 size: 0 0
+inventorySize: 8
+<item_list>
+1 1 0
+<item_list_end>

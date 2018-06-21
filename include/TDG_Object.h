@@ -9,7 +9,7 @@ class TDG_Object : public TDG_Entity
         TDG_Object();
         virtual ~TDG_Object();
 
-        void init(const Entity* entity, EntityTyp typ);
+        void init(const Entity* entity, EntityTyp typ, TDG_StoredEntityAnimations* storedGraphics);
 
     protected:
 

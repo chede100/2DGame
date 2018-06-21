@@ -3,7 +3,7 @@
 
 enum EntityTyp
 {
-    Character, Object, nothing
+    Character, Object, Player, nothing
 };
 
 enum Direction
