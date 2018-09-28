@@ -526,21 +526,24 @@ bool TDG_FileHandler::loadSPoint()
                 {
                     this->sPoint->player.inventory.clear();
 
-                    while(entry.compare("<item_list_end>") && (entries.size() >= 3))
+                    while(entry.compare("<item_list_end>"))
                     {
-                        Item i;
-                        i.id = nextInt(entries);
-                        i.amount = nextInt(entries);
-                        i.position = nextInt(entries);
-
-                        if(!loadItem(&i))
+                        while(entries.size() >= 3)
                         {
-                            cout << "Item couldnt be loaded! ID: " << i.id << endl;
-                            saveP.close();
-                            return false;
-                        }
+                            Item i;
+                            i.id = nextInt(entries);
+                            i.amount = nextInt(entries);
+                            i.position = nextInt(entries);
 
-                        this->sPoint->player.inventory.push_back(i);
+                            if(!loadItem(&i))
+                            {
+                                cout << "Item couldnt be loaded! ID: " << i.id << endl;
+                                saveP.close();
+                                return false;
+                            }
+
+                            this->sPoint->player.inventory.push_back(i);
+                        }
 
                         getline(saveP, line);
 

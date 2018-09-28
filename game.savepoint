@@ -1,6 +1,6 @@
 roomID: 2
-player: 1 289 473 s_east
+player: 1 234 453 s_south
 inventorySize: 32
 <item_list>
-1 1 1 
+1 1 1 2 1 2 
 <item_list_end>
